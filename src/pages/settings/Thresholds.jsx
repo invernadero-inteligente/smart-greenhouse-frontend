@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useThresholds } from "../../hooks/useThresholds";
 import { useZones } from "../../hooks/useZones";
+import { useAuth } from "../../hooks/useAuth";
+import { canEdit } from "../../utils/permissions";
 import ThresholdCard from "../components/thresholds/ThresholdCard";
 import ThresholdForm from "../components/thresholds/ThresholdForm";
 
 function ThresholdsList() {
+	const { auth } = useAuth();
+	const allowEdit = canEdit(auth.role);
 	const { zones } = useZones();
 	const [selectedZones, setSelectedZones] = useState([]);
 	const { thresholds, loading, error, createThreshold, updateThreshold } = useThresholds(selectedZones);
@@ -62,15 +66,17 @@ function ThresholdsList() {
 				<h1 className="font-heading text-3xl font-bold text-[#1b4f2f]">
 					Gestión de Umbrales
 				</h1>
-				<button
-					onClick={() => {
-						setEditingThreshold(null);
-						setShowForm(!showForm);
-					}}
-					className="rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f]"
-				>
-					{showForm ? "Cancelar" : "+ Nuevo Umbral"}
-				</button>
+				{allowEdit && (
+					<button
+						onClick={() => {
+							setEditingThreshold(null);
+							setShowForm(!showForm);
+						}}
+						className="rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f]"
+					>
+						{showForm ? "Cancelar" : "+ Nuevo Umbral"}
+					</button>
+				)}
 			</div>
 
 			{error && (
@@ -79,7 +85,7 @@ function ThresholdsList() {
 				</div>
 			)}
 
-			{showForm && (
+			{allowEdit && showForm && (
 				<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-6">
 					<h2 className="mb-4 font-heading text-lg font-bold text-[#1b4f2f]">
 						{editingThreshold ? "Editar Umbral" : "Nuevo Umbral"}

@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useCrops } from "../../hooks/useCrops";
 import { useZones } from "../../hooks/useZones";
+import { useAuth } from "../../hooks/useAuth";
+import { canEdit } from "../../utils/permissions";
 import CropCard from "../components/crops/CropCard";
 import CropForm from "../components/crops/CropForm";
 
 function CropsList() {
+	const { auth } = useAuth();
+	const allowEdit = canEdit(auth.role);
 	const { crops, loading, error, createCrop, updateCrop } = useCrops();
 	const { zones } = useZones();
 	const [showForm, setShowForm] = useState(false);
@@ -62,15 +66,17 @@ function CropsList() {
 				<h1 className="font-heading text-3xl font-bold text-[#1b4f2f]">
 					Gestión de Cultivos
 				</h1>
-				<button
-					onClick={() => {
-						setEditingCrop(null);
-						setShowForm(!showForm);
-					}}
-					className="rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f]"
-				>
-					{showForm ? "Cancelar" : "+ Nuevo Cultivo"}
-				</button>
+				{allowEdit && (
+					<button
+						onClick={() => {
+							setEditingCrop(null);
+							setShowForm(!showForm);
+						}}
+						className="rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f]"
+					>
+						{showForm ? "Cancelar" : "+ Nuevo Cultivo"}
+					</button>
+				)}
 			</div>
 
 			{error && (
@@ -79,7 +85,7 @@ function CropsList() {
 				</div>
 			)}
 
-			{showForm && (
+			{allowEdit && showForm && (
 				<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-6">
 					<h2 className="mb-4 font-heading text-lg font-bold text-[#1b4f2f]">
 						{editingCrop ? "Editar Cultivo" : "Nuevo Cultivo"}
@@ -162,7 +168,7 @@ function CropsList() {
 						<CropCard
 							key={crop.id}
 							crop={crop}
-							onEdit={handleEdit}
+							onEdit={allowEdit ? handleEdit : undefined}
 						/>
 					))}
 				</div>

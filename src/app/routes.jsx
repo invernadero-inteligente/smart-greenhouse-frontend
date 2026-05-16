@@ -81,23 +81,23 @@ const routes = [
 					{
 						path: "/inventario",
 						element: <InventoryList />
-					}
-				]
-			},
-			{
-				element: <AdminRoute />,
-				children: [
-					{
-						path: "/backoffice",
-						element: <Backoffice />
 					},
 					{
-						path: "/admin/usuarios",
-						element: <AdminUsers />
-					},
-					{
-						path: "/admin/users",
-						element: <Navigate to="/admin/usuarios" replace />
+						element: <AdminRoute />,
+						children: [
+							{
+								path: "/backoffice",
+								element: <Backoffice />
+							},
+							{
+								path: "/admin/usuarios",
+								element: <AdminUsers />
+							},
+							{
+								path: "/admin/users",
+								element: <Navigate to="/admin/usuarios" replace />
+							}
+						]
 					}
 				]
 			}

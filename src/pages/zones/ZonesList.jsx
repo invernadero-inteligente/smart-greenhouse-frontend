@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { useZones } from "../../hooks/useZones";
+import { useAuth } from "../../hooks/useAuth";
+import { canEdit } from "../../utils/permissions";
 import ZoneCard from "../components/zones/ZoneCard";
 import ZoneForm from "../components/zones/ZoneForm";
 
 function ZonesList() {
+	const { auth } = useAuth();
+	const allowEdit = canEdit(auth.role);
 	const { zones, loading, error, fetchZones, createZone, updateZone } = useZones();
 	const [showForm, setShowForm] = useState(false);
 	const [editingZone, setEditingZone] = useState(null);
@@ -55,15 +59,17 @@ function ZonesList() {
 				<h1 className="font-heading text-3xl font-bold text-[#1b4f2f]">
 					Gestión de Zonas
 				</h1>
-				<button
-					onClick={() => {
-						setEditingZone(null);
-						setShowForm(!showForm);
-					}}
-					className="rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f]"
-				>
-					{showForm ? "Cancelar" : "+ Nueva Zona"}
-				</button>
+				{allowEdit && (
+					<button
+						onClick={() => {
+							setEditingZone(null);
+							setShowForm(!showForm);
+						}}
+						className="rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f]"
+					>
+						{showForm ? "Cancelar" : "+ Nueva Zona"}
+					</button>
+				)}
 			</div>
 
 			{error && (
@@ -133,7 +139,7 @@ function ZonesList() {
 						<ZoneCard
 							key={zone.id}
 							zone={zone}
-							onEdit={handleEdit}
+							onEdit={allowEdit ? handleEdit : undefined}
 						/>
 					))}
 				</div>
