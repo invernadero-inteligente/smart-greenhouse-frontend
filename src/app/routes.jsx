@@ -3,8 +3,15 @@ import Home from "../pages/Home";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import Dashboard from "../pages/dashboard/Dashboard";
-import Navbar from "../pages/components/layout/Navbar";
+import Layout from "../pages/components/layout/Layout";
 import Backoffice from "../pages/admin/Backoffice";
+import AdminUsers from "../pages/admin/AdminUsers";
+import ZonesList from "../pages/zones/ZonesList";
+import CropsList from "../pages/crops/CropsList";
+import Thresholds from "../pages/settings/Thresholds";
+import AlertsList from "../pages/alerts/AlertsList";
+import ActuatorsList from "../pages/actuators/ActuatorsList";
+import InventoryList from "../pages/inventory/InventoryList";
 import NotFound from "../pages/NotFound";
 import { useAuth } from "../hooks/useAuth";
 
@@ -24,12 +31,7 @@ function AdminRoute() {
 }
 
 function ProtectedLayout() {
-	return (
-		<div className="min-h-screen bg-[radial-gradient(circle_at_20%_15%,#ffffff_0%,transparent_35%),linear-gradient(145deg,#f3efe6,#dbecd7)] font-body text-[#143321]">
-			<Navbar />
-			<Outlet />
-		</div>
-	);
+	return <Layout />;
 }
 
 const routes = [
@@ -54,6 +56,31 @@ const routes = [
 					{
 						path: "/panel",
 						element: <Dashboard />
+					},
+					{
+						path: "/zonas",
+						element: <ZonesList />
+					},
+					{
+						path: "/cultivos",
+						element: <CropsList />
+					},
+					{
+						path: "/umbrales",
+						element: <Thresholds />
+					}
+					,
+					{
+						path: "/alertas",
+						element: <AlertsList />
+					},
+					{
+						path: "/actuadores",
+						element: <ActuatorsList />
+					},
+					{
+						path: "/inventario",
+						element: <InventoryList />
 					}
 				]
 			},
@@ -65,8 +92,12 @@ const routes = [
 						element: <Backoffice />
 					},
 					{
+						path: "/admin/usuarios",
+						element: <AdminUsers />
+					},
+					{
 						path: "/admin/users",
-						element: <Navigate to="/backoffice" replace />
+						element: <Navigate to="/admin/usuarios" replace />
 					}
 				]
 			}
