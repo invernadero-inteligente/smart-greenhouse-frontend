@@ -10,7 +10,26 @@ const fetchCrops = useCallback(async () => {
 try {
 setLoading(true);
 const response = await cropService.listCrops(status, zoneId);
-setCrops(Array.isArray(response) ? response : (response.content ?? []));
+// El endpoint /api/crops devuelve CropsDataResponseDTO con zona-grupos:
+// { data: [{ zoneId, zoneName, info: [{id, name, ...}] }] }
+// Aplanamos en un array de cultivos individuales
+const raw = response?.data ?? response ?? [];
+let list;
+if (Array.isArray(raw) && raw.length > 0 && raw[0]?.info !== undefined) {
+// Respuesta zona-agrupada: aplanamos
+list = raw.flatMap(group =>
+(group.info ?? []).map(crop => ({
+...crop,
+zoneId: group.zoneId,
+zoneName: group.zoneName,
+}))
+);
+} else if (Array.isArray(raw)) {
+list = raw;
+} else {
+list = [];
+}
+setCrops(list);
 setError(null);
 } catch (err) {
 setError(err.message || "Error del servidor");
@@ -23,9 +42,10 @@ useEffect(() => { fetchCrops(); }, [fetchCrops]);
 
 const createCrop = async (data) => {
 try {
-const response = await cropService.createCrop(data);
-setCrops(prev => [...prev, response]);
-return response;
+await cropService.createCrop(data);
+// La respuesta de create solo tiene {name, status}, sin id.
+// Re-fetch para obtener la lista actualizada con ids reales.
+await fetchCrops();
 } catch (err) {
 if (!err.response) {
 const newCrop = { ...data, id: Date.now(), createdAt: new Date().toISOString() };
@@ -39,9 +59,9 @@ throw err;
 
 const updateCrop = async (id, data) => {
 try {
-const response = await cropService.updateCrop(id, data);
-setCrops(prev => prev.map(c => c.id === id ? response : c));
-return response;
+await cropService.updateCrop(id, data);
+// 204 No Content — re-fetch para actualizar lista con datos reales
+await fetchCrops();
 } catch (err) {
 if (!err.response) {
 const updated = { ...crops.find(c => c.id === id), ...data };

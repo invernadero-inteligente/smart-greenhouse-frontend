@@ -1,12 +1,11 @@
 function CropCard({ crop, onEdit, onDelete }) {
 	const statusConfig = {
-		PLANTED: { bg: "#e9f5e6", text: "#2f7f3c", label: "Plantado" },
-		GROWING: { bg: "#fff4e6", text: "#9f6b3d", label: "Creciendo" },
-		HARVESTING: { bg: "#f0f4ff", text: "#3d5f9f", label: "Cosechando" },
-		HARVESTED: { bg: "#f0f0f0", text: "#666", label: "Cosechado" }
+		ACTIVE:   { bg: "#e9f5e6", text: "#2f7f3c", label: "Activo" },
+		HARVEST:  { bg: "#fff4e6", text: "#9f6b3d", label: "Cosechando" },
+		FINISHED: { bg: "#f0f0f0", text: "#666",    label: "Finalizado" }
 	};
 
-	const config = statusConfig[crop.status] || statusConfig.GROWING;
+	const config = statusConfig[crop.status] || { bg: "#f0f0f0", text: "#666", label: crop.status ?? "—" };
 
 	return (
 		<div className="rounded-2xl border border-[#e9f5e6] bg-white p-6 shadow-soft transition hover:shadow-lg">

@@ -6,10 +6,10 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 	const [formData, setFormData] = useState({
 		name: crop?.name || "",
 		variety: crop?.variety || "",
-		zoneId: crop?.zoneId || "",
+		zoneId: crop?.zoneId ? Number(crop.zoneId) : "",
 		plantCount: crop?.plantCount || 0,
 		sowingDate: crop?.sowingDate ? crop.sowingDate.split("T")[0] : "",
-		status: crop?.status || "PLANTED"
+		status: crop?.status || "ACTIVE"
 	});
 
 	const [errors, setErrors] = useState({});
@@ -29,7 +29,13 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (validateForm()) {
-			onSubmit(formData);
+			const payload = {
+				...formData,
+				sowingDate: formData.sowingDate || null,
+				plantCount: formData.plantCount > 0 ? formData.plantCount : null,
+				zoneId: formData.zoneId !== "" ? Number(formData.zoneId) : null,
+			};
+			onSubmit(payload);
 		}
 	};
 
@@ -37,7 +43,9 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 		const { name, value, type } = e.target;
 		setFormData(prev => ({
 			...prev,
-			[name]: type === "number" ? parseInt(value) || 0 : value
+			[name]: name === "zoneId"
+				? (value === "" ? "" : Number(value))
+				: type === "number" ? parseInt(value) || 0 : value
 		}));
 	};
 
@@ -146,10 +154,9 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						onChange={handleChange}
 						className="w-full rounded-lg border border-[#d0e5c9] px-4 py-2 font-body text-sm transition focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#2f7f3c]/20"
 					>
-						<option value="PLANTED">Plantado</option>
-						<option value="GROWING">Creciendo</option>
-						<option value="HARVESTING">Cosechando</option>
-						<option value="HARVESTED">Cosechado</option>
+					<option value="ACTIVE">Activo</option>
+					<option value="HARVEST">Cosechando</option>
+					<option value="FINISHED">Finalizado</option>
 					</select>
 				</div>
 			</div>

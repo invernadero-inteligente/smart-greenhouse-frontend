@@ -10,7 +10,7 @@ const fetchUsers = async () => {
 try {
 setLoading(true);
 const response = await userService.listUsers();
-setUsers(Array.isArray(response) ? response : (response.content ?? []));
+setUsers(Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : (response?.data?.content ?? response?.content ?? []));
 setError(null);
 } catch (err) {
 setError(err.message || "Error del servidor");
@@ -24,8 +24,9 @@ useEffect(() => { fetchUsers(); }, []);
 const createUser = async (data) => {
 try {
 const response = await userService.createUser(data);
-setUsers(prev => [...prev, response]);
-return response;
+const user = response?.data ?? response;
+setUsers(prev => [...prev, user]);
+return user;
 } catch (err) {
 if (!err.response) {
 const newUser = { ...data, id: Date.now(), active: data.active ?? true };
@@ -40,8 +41,9 @@ throw err;
 const updateUser = async (id, data) => {
 try {
 const response = await userService.updateUser(id, data);
-setUsers(prev => prev.map(u => u.id === id ? response : u));
-return response;
+const user = response?.data ?? response;
+setUsers(prev => prev.map(u => u.id === id ? user : u));
+return user;
 } catch (err) {
 if (!err.response) {
 const updated = { ...users.find(u => u.id === id), ...data };

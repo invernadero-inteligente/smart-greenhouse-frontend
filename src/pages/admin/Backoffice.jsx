@@ -4,8 +4,6 @@ import { useZones } from "../../hooks/useZones";
 import { useCrops } from "../../hooks/useCrops";
 import { useThresholds } from "../../hooks/useThresholds";
 import { userService } from "../../services/user.service";
-import { alertService } from "../../services/alert.service";
-import { inventoryService } from "../../services/inventory.service";
 
 const ROLES = ["ADMIN", "MANAGER", "TECHNICIAN", "VIEWER"];
 
@@ -24,10 +22,9 @@ VIEWER:     "bg-[#f0f4ff] text-[#3d5f9f]",
 };
 
 const STATUS_CROP = {
-GROWING:    { label: "En crecimiento", cls: "bg-[#e9f5e6] text-[#2f7f3c]" },
-HARVESTING: { label: "Cosechando",     cls: "bg-[#fff4e6] text-[#9f6b3d]" },
-PLANTED:    { label: "Plantado",        cls: "bg-[#f0f4ff] text-[#3d5f9f]" },
-HARVESTED:  { label: "Cosechado",       cls: "bg-[#f0f0f0] text-[#666]" },
+ACTIVE:   { label: "Activo",      cls: "bg-[#e9f5e6] text-[#2f7f3c]" },
+HARVEST:  { label: "Cosechando",  cls: "bg-[#fff4e6] text-[#9f6b3d]" },
+FINISHED: { label: "Finalizado",  cls: "bg-[#f0f0f0] text-[#666]" },
 };
 
 const SEVERITY_COLORS = {
@@ -74,8 +71,6 @@ const SECTIONS = [
 { key: "zonas",      label: "Zonas" },
 { key: "cultivos",   label: "Cultivos" },
 { key: "umbrales",   label: "Umbrales" },
-{ key: "alertas",    label: "Alertas" },
-{ key: "inventario", label: "Inventario" },
 { key: "usuarios",   label: "Usuarios" },
 { key: "auditoria",  label: "Auditoria" },
 ];
@@ -138,16 +133,8 @@ const { auth } = useAuth();
 const [active, setActive]   = useState("resumen");
 const { zones } = useZones();
 	const { crops } = useCrops();
-	const { thresholds } = useThresholds();
-	const [alerts, setAlerts]   = useState([]);
-
-	const [inventory, setInventory] = useState([]);
-
-	useEffect(() => {
-		alertService.listAlerts().then((d) => setAlerts(Array.isArray(d) ? d : (d.content ?? []))).catch(() => {});
-		inventoryService.listItems().then((d) => setInventory(Array.isArray(d) ? d : (d.content ?? []))).catch(() => {});
-	}, []);
-
+	const zoneIds = zones.map(z => z.id);
+	const { thresholds } = useThresholds(zoneIds);
 	const [users, setUsers]           = useState([]);
 const [loadingUsers, setLoading]  = useState(true);
 const [userError, setUserError]   = useState("");
@@ -236,28 +223,24 @@ setSaving(false);
 };
 
 // ── stats ──
-const activeZones  = zones.filter((z) => z.isActive).length;
+		const activeZones  = zones.filter((z) => z.isActive ?? z.active).length;
 		const activeCrops  = crops.filter((c) => c.status !== "HARVESTED").length;
-		const critAlerts   = alerts.filter((a) => a.severity === "CRITICAL" || a.severity === "WARNING").length;
-		const lowStock     = inventory.filter((i) => i.quantity <= i.minStock).length;
+		const critAlerts   = 0;
+		const lowStock     = 0;
 
 // ── input style shared ──
 const inp = "w-full rounded-lg border border-[#d6e8d0] bg-white px-3 py-2 text-sm text-[#1b4f2f] outline-none focus:border-[#2f7f3c] focus:ring-1 focus:ring-[#2f7f3c]";
 
 return (
-<div className="flex gap-0 rounded-2xl border border-[#d6e8d0] bg-white overflow-hidden min-h-[600px]">
-{/* ── nav lateral ── */}
-<nav className="w-52 shrink-0 border-r border-[#d6e8d0] bg-[#f9fcf8] p-4">
-<p className="mb-3 px-2 text-[10px] font-bold uppercase tracking-widest text-[#9dbaa5]">
-Panel admin
-</p>
-<div className="space-y-0.5">
+<div className="space-y-6">
+{/* ── tabs horizontales ── */}
+<div className="flex flex-wrap gap-1 border-b border-[#d6e8d0] pb-1">
 {SECTIONS.map((s) => (
 <button
 key={s.key}
 onClick={() => setActive(s.key)}
 className={
-"w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium transition " +
+"rounded-lg px-4 py-2 text-sm font-medium transition " +
 (active === s.key
 ? "bg-[#2f7f3c] text-white"
 : "text-[#3a5745] hover:bg-[#e9f5e6]")
@@ -267,21 +250,18 @@ className={
 </button>
 ))}
 </div>
-</nav>
 
 {/* ── contenido ── */}
-<div className="flex-1 overflow-y-auto p-6 space-y-6">
+<div className="space-y-6">
 
 {/* ══ RESUMEN ══════════════════════════════════════════════════ */}
 {active === "resumen" && (
 <>
 <SectionTitle title="Resumen general" sub="Vista consolidada del estado del sistema" />
 
-<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-<StatCard label="Zonas activas"     value={activeZones}  sub={MOCK_ZONES.length + " totales"} valueColor="text-[#2f7f3c]" />
-<StatCard label="Cultivos activos"  value={activeCrops}  sub={MOCK_CROPS.length + " totales"} valueColor="text-[#1b4f2f]" />
-<StatCard label="Alertas activas"   value={critAlerts}   sub="críticas o advertencias" valueColor={critAlerts > 0 ? "text-[#b43a2f]" : "text-[#2f7f3c]"} />
-<StatCard label="Stock bajo"        value={lowStock}     sub="items por reabastecer" valueColor={lowStock > 0 ? "text-[#9f6b3d]" : "text-[#2f7f3c]"} />
+<div className="grid grid-cols-2 gap-4 lg:grid-cols-2">
+<StatCard label="Zonas activas"     value={activeZones}  sub={zones.length + " totales"} valueColor="text-[#2f7f3c]" />
+<StatCard label="Cultivos activos"  value={activeCrops}  sub={crops.length + " totales"} valueColor="text-[#1b4f2f]" />
 </div>
 
 {/* Zonas resumen */}
@@ -291,37 +271,17 @@ className={
 {zones.map((z) => (
 <div key={z.id} className="rounded-xl border border-[#d6e8d0] bg-[#f9fcf8] p-4">
 <div className="flex items-center gap-2 mb-1">
-<span className={"h-2 w-2 rounded-full " + (z.isActive ? "bg-[#2f7f3c]" : "bg-[#ccc]")} />
+<span className={"h-2 w-2 rounded-full " + ((z.isActive ?? z.active) ? "bg-[#2f7f3c]" : "bg-[#ccc]")} />
 <p className="text-xs font-semibold text-[#1b4f2f] truncate">{z.name}</p>
 </div>
 <p className="text-[10px] text-[#9dbaa5] truncate">{z.description}</p>
-<Badge cls={z.isActive ? "bg-[#e9f5e6] text-[#2f7f3c] mt-2" : "bg-[#f0f0f0] text-[#999] mt-2"}>
-{z.isActive ? "Activa" : "Inactiva"}
+<Badge cls={(z.isActive ?? z.active) ? "bg-[#e9f5e6] text-[#2f7f3c] mt-2" : "bg-[#f0f0f0] text-[#999] mt-2"}>
+{(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
 </Badge>
 </div>
 ))}
 </div>
 </div>
-
-{/* Alertas recientes */}
-{alerts.length > 0 && (
-<div>
-<h3 className="mb-3 font-heading text-sm font-bold text-[#1b4f2f]">Alertas recientes</h3>
-<div className="space-y-2">
-{alerts.slice(0, 3).map((a) => (
-<div key={a.id} className="flex items-center justify-between rounded-xl border border-[#d6e8d0] bg-white px-4 py-3">
-<div className="flex items-center gap-3">
-<Badge cls={SEVERITY_COLORS[a.severity] ?? "bg-gray-100 text-gray-600"}>
-{a.severity}
-</Badge>
-<span className="text-sm text-[#1b4f2f]">{a.message}</span>
-</div>
-<span className="text-xs text-[#9dbaa5]">{a.zone}</span>
-</div>
-))}
-</div>
-</div>
-)}
 
 {/* Cultivos por estado */}
 <div>
@@ -355,8 +315,8 @@ return (
 <Td><span className="font-semibold text-[#1b4f2f]">{z.name}</span></Td>
 <Td className="text-[#6b8f72]">{z.description}</Td>
 <Td>
-<Badge cls={z.isActive ? "bg-[#e9f5e6] text-[#2f7f3c]" : "bg-[#f0f0f0] text-[#999]"}>
-{z.isActive ? "Activa" : "Inactiva"}
+<Badge cls={(z.isActive ?? z.active) ? "bg-[#e9f5e6] text-[#2f7f3c]" : "bg-[#f0f0f0] text-[#999]"}>
+{(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
 </Badge>
 </Td>
 <Td className="text-[#9dbaa5]">{new Date(z.createdAt).toLocaleDateString("es")}</Td>
@@ -405,10 +365,10 @@ return (
 <tbody>
 {thresholds.map((t, i) => (
 <tr key={t.id} className={"border-b border-[#e9f5e6] " + (i % 2 === 0 ? "bg-white" : "bg-[#fafaf9]")}>
-<Td className="font-semibold text-[#1b4f2f]">{t.zoneName}</Td>
+<Td className="font-semibold text-[#1b4f2f]">{zones.find(z => z.id === t.zoneId)?.name ?? `Zona ${t.zoneId}`}</Td>
 <Td>
 <Badge cls="bg-[#e9f5e6] text-[#2f7f3c]">
-{VAR_NAMES[t.variable] ?? t.variable}
+{VAR_NAMES[t.name] ?? t.name}
 </Badge>
 </Td>
 <Td>{t.minValue}</Td>
@@ -416,88 +376,6 @@ return (
 <Td className="text-[#9dbaa5]">{t.unit}</Td>
 </tr>
 ))}
-</tbody>
-</TableWrap>
-</>
-)}
-
-{/* ══ ALERTAS ═══════════════════════════════════════════════════ */}
-{active === "alertas" && (
-<>
-<div className="flex items-center justify-between">
-<SectionTitle title="Gestión de alertas" sub={alerts.length + " alertas activas"} />
-{alerts.length > 0 && (
-<button
-onClick={() => setAlerts([])}
-className="rounded-lg bg-[#e9f5e6] px-4 py-2 text-sm font-semibold text-[#2f7f3c] transition hover:bg-[#d0e5c9]"
->
-Resolver todas
-</button>
-)}
-</div>
-{alerts.length === 0 ? (
-<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-10 text-center">
-<p className="font-heading text-lg font-semibold text-[#2f7f3c]">Sin alertas activas</p>
-<p className="mt-1 text-sm text-[#9dbaa5]">El sistema opera con normalidad</p>
-</div>
-) : (
-<TableWrap>
-<thead className="border-b border-[#d6e8d0] bg-[#f9fcf8]">
-<tr><Th>Severidad</Th><Th>Variable</Th><Th>Zona</Th><Th>Valor</Th><Th>Mensaje</Th><Th>Accion</Th></tr>
-</thead>
-<tbody>
-{alerts.map((a, i) => (
-<tr key={a.id} className={"border-b border-[#e9f5e6] " + (i % 2 === 0 ? "bg-white" : "bg-[#fafaf9]")}>
-<Td><Badge cls={SEVERITY_COLORS[a.severity] ?? "bg-gray-100 text-gray-600"}>{a.severity}</Badge></Td>
-<Td className="text-[#6b8f72]">{VAR_NAMES[a.variableName] ?? a.variableName}</Td>
-<Td className="font-semibold text-[#1b4f2f]">{a.zone}</Td>
-<Td>{a.value} {a.unit}</Td>
-<Td className="text-[#6b8f72] max-w-xs truncate">{a.message}</Td>
-<Td>
-<button
-onClick={() => setAlerts((prev) => prev.filter((x) => x.id !== a.id))}
-className="rounded-lg bg-[#e9f5e6] px-3 py-1 text-xs font-semibold text-[#2f7f3c] transition hover:bg-[#d0e5c9]"
->
-Resolver
-</button>
-</Td>
-</tr>
-))}
-</tbody>
-</TableWrap>
-)}
-</>
-)}
-
-{/* ══ INVENTARIO ════════════════════════════════════════════════ */}
-{active === "inventario" && (
-<>
-<SectionTitle title="Inventario del sistema" sub={inventory.length + " items registrados"} />
-<TableWrap>
-<thead className="border-b border-[#d6e8d0] bg-[#f9fcf8]">
-<tr><Th>Nombre</Th><Th>Categoria</Th><Th>Cantidad</Th><Th>Stock min.</Th><Th>Estado</Th></tr>
-</thead>
-<tbody>
-{inventory.map((item, i) => {
-const isLow = item.quantity <= item.minStock;
-return (
-<tr key={item.id} className={"border-b border-[#e9f5e6] " + (i % 2 === 0 ? "bg-white" : "bg-[#fafaf9]")}>
-<Td className="font-semibold text-[#1b4f2f]">{item.name}</Td>
-<Td>
-<Badge cls="bg-[#f0f4ff] text-[#3d5f9f]">
-{CATEGORY_LABELS[item.category] ?? item.category}
-</Badge>
-</Td>
-<Td>{item.quantity} {item.unit}</Td>
-<Td className="text-[#9dbaa5]">{item.minStock} {item.unit}</Td>
-<Td>
-<Badge cls={isLow ? "bg-[#fbe8e5] text-[#b43a2f]" : "bg-[#e9f5e6] text-[#2f7f3c]"}>
-{isLow ? "Stock bajo" : "OK"}
-</Badge>
-</Td>
-</tr>
-);
-})}
 </tbody>
 </TableWrap>
 </>

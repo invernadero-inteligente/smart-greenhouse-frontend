@@ -114,24 +114,24 @@ function CropsList() {
 					Todos ({crops.length})
 				</button>
 				<button
-					onClick={() => setFilterStatus("GROWING")}
+					onClick={() => setFilterStatus("ACTIVE")}
 					className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-						filterStatus === "GROWING"
+						filterStatus === "ACTIVE"
 							? "bg-[#2f7f3c] text-white"
 							: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
 					}`}
 				>
-					Creciendo ({crops.filter(c => c.status === "GROWING").length})
+					Activos ({crops.filter(c => c.status === "ACTIVE").length})
 				</button>
 				<button
-					onClick={() => setFilterStatus("HARVESTING")}
+					onClick={() => setFilterStatus("HARVEST")}
 					className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-						filterStatus === "HARVESTING"
+						filterStatus === "HARVEST"
 							? "bg-[#2f7f3c] text-white"
 							: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
 					}`}
 				>
-					Cosechando ({crops.filter(c => c.status === "HARVESTING").length})
+					Cosechando ({crops.filter(c => c.status === "HARVEST").length})
 				</button>
 			</div>
 

@@ -1,4 +1,4 @@
-function ThresholdCard({ threshold, onEdit, onDelete }) {
+function ThresholdCard({ threshold, zoneName, onEdit, onDelete }) {
 	return (
 		<div className="rounded-2xl border border-[#e9f5e6] bg-white p-6 shadow-soft transition hover:shadow-lg">
 			<div className="space-y-4">
@@ -7,7 +7,7 @@ function ThresholdCard({ threshold, onEdit, onDelete }) {
 						{threshold.name || threshold.variableName}
 					</h3>
 					<p className="text-xs text-[#999]">
-						Zona ID: {threshold.zoneId || "-"}
+						Zona: {zoneName ?? (threshold.zoneId ? `ID: ${threshold.zoneId}` : "-")}
 					</p>
 				</div>
 

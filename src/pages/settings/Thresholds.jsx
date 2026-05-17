@@ -11,7 +11,9 @@ function ThresholdsList() {
 	const allowEdit = canEdit(auth.role);
 	const { zones } = useZones();
 	const [selectedZones, setSelectedZones] = useState([]);
-	const { thresholds, loading, error, createThreshold, updateThreshold } = useThresholds(selectedZones);
+	const allZoneIds = zones.map(z => z.id);
+	const fetchIds = selectedZones.length > 0 ? selectedZones : allZoneIds;
+	const { thresholds, loading, error, createThreshold, updateThreshold } = useThresholds(fetchIds);
 
 	const [showForm, setShowForm] = useState(false);
 	const [editingThreshold, setEditingThreshold] = useState(null);
@@ -140,13 +142,17 @@ function ThresholdsList() {
 				</div>
 			) : (
 				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-					{thresholds.map(threshold => (
-						<ThresholdCard
-							key={threshold.id}
-							threshold={threshold}
-							onEdit={handleEdit}
-						/>
-					))}
+					{thresholds.map(threshold => {
+						const zone = zones.find(z => z.id === threshold.zoneId);
+						return (
+							<ThresholdCard
+								key={threshold.id}
+								threshold={threshold}
+								zoneName={zone?.name}
+								onEdit={handleEdit}
+							/>
+						);
+					})}
 				</div>
 			)}
 		</div>

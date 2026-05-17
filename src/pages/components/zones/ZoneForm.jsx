@@ -4,7 +4,7 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 	const [formData, setFormData] = useState({
 		name: zone?.name || "",
 		description: zone?.description || "",
-		isActive: zone?.isActive !== false
+		isActive: (zone?.isActive ?? zone?.active) !== false
 	});
 
 	const [errors, setErrors] = useState({});

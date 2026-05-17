@@ -10,7 +10,8 @@ const fetchZones = useCallback(async () => {
 try {
 setLoading(true);
 const response = await zoneService.listZones(isActive);
-setZones(Array.isArray(response) ? response : (response.content ?? []));
+const list = Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : (response?.data?.content ?? response?.content ?? []);
+setZones(list);
 setError(null);
 } catch (err) {
 setError(err.message || "Error del servidor");
@@ -24,8 +25,9 @@ useEffect(() => { fetchZones(); }, [fetchZones]);
 const createZone = async (data) => {
 try {
 const response = await zoneService.createZone(data);
-setZones(prev => [...prev, response]);
-return response;
+const zone = response?.data ?? response;
+setZones(prev => [...prev, zone]);
+return zone;
 } catch (err) {
 if (!err.response) {
 const newZone = { ...data, id: Date.now(), createdAt: new Date().toISOString() };
@@ -39,9 +41,14 @@ throw err;
 
 const updateZone = async (id, data) => {
 try {
+if (id == null) {
+console.error("updateZone: id de zona inválido", id);
+throw new Error("ID de zona inválido");
+}
 const response = await zoneService.updateZone(id, data);
-setZones(prev => prev.map(z => z.id === id ? response : z));
-return response;
+const zone = response?.data ?? response;
+setZones(prev => prev.map(z => z.id === id ? zone : z));
+return zone;
 } catch (err) {
 if (!err.response) {
 const updated = { ...zones.find(z => z.id === id), ...data };

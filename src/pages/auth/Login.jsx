@@ -49,7 +49,7 @@ type="email"
 required
 value={form.email}
 onChange={onChange}
-placeholder="admin@invernadero.com"
+placeholder="admin1@invernadero.com"
 className="w-full rounded-xl border border-[#14332133] bg-white px-3 py-2.5 outline-none focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#88bf86]"
 />
 </label>

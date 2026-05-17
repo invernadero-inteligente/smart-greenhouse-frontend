@@ -16,7 +16,7 @@ function ZonesList() {
 
 	const filteredZones = filterActive === null
 		? zones
-		: zones.filter(z => z.isActive === filterActive);
+		: zones.filter(z => (z.isActive ?? z.active) === filterActive);
 
 	const handleSubmit = async (formData) => {
 		try {
@@ -111,7 +111,7 @@ function ZonesList() {
 							: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
 					}`}
 				>
-					Activas ({zones.filter(z => z.isActive).length})
+					Activas ({zones.filter(z => (z.isActive ?? z.active)).length})
 				</button>
 				<button
 					onClick={() => setFilterActive(false)}
@@ -121,7 +121,7 @@ function ZonesList() {
 							: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
 					}`}
 				>
-					Inactivas ({zones.filter(z => !z.isActive).length})
+					Inactivas ({zones.filter(z => !(z.isActive ?? z.active)).length})
 				</button>
 			</div>
 

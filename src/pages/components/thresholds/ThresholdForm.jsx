@@ -70,7 +70,12 @@ function ThresholdForm({ threshold, onSubmit, isLoading = false, onCancel }) {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (validateForm()) {
-			onSubmit(formData);
+			onSubmit({
+				...formData,
+				zoneId: formData.zoneId !== "" ? Number(formData.zoneId) : null,
+				minValue: Number(formData.minValue),
+				maxValue: Number(formData.maxValue),
+			});
 		}
 	};
 

@@ -12,11 +12,11 @@ function ZoneCard({ zone, onEdit, onDelete }) {
 					<div className="mt-4 flex items-center gap-2">
 						<span
 							className={`inline-block h-3 w-3 rounded-full ${
-								zone.isActive ? "bg-[#2f7f3c]" : "bg-[#999]"
+								(zone.isActive ?? zone.active) ? "bg-[#2f7f3c]" : "bg-[#999]"
 							}`}
 						/>
 						<span className="text-xs font-semibold text-[#666]">
-							{zone.isActive ? "Activa" : "Inactiva"}
+							{(zone.isActive ?? zone.active) ? "Activa" : "Inactiva"}
 						</span>
 					</div>
 				</div>

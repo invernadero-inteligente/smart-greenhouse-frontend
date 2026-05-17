@@ -32,9 +32,6 @@ const NAV_ITEMS = [
 { to: "/zonas", label: "Zonas", icon: "zones" },
 { to: "/cultivos", label: "Cultivos", icon: "crops" },
 { to: "/umbrales", label: "Umbrales", icon: "thresholds" },
-{ to: "/alertas", label: "Alertas", icon: "alerts", badge: "alerts" },
-{ to: "/actuadores", label: "Actuadores", icon: "actuators" },
-{ to: "/inventario", label: "Inventario", icon: "inventory" },
 ];
 
 function Icon({ name }) {

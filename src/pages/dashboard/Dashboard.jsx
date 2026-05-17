@@ -19,9 +19,6 @@ const MODULES = [
 { to: "/zonas", label: "Zonas", desc: "Gestiona tus áreas de cultivo", accent: "#2f7f3c" },
 { to: "/cultivos", label: "Cultivos", desc: "Seguimiento de siembra y cosecha", accent: "#4a7c3f" },
 { to: "/umbrales", label: "Umbrales", desc: "Configura rangos de variables", accent: "#9f6b3d" },
-{ to: "/alertas", label: "Alertas", desc: "Revisa incidencias del sistema", accent: "#b43a2f" },
-{ to: "/actuadores", label: "Actuadores", desc: "Control de bombas y ventiladores", accent: "#3d5f9f" },
-{ to: "/inventario", label: "Inventario", desc: "Insumos y stock disponible", accent: "#7b5ea7" },
 ];
 
 function greeting() {
@@ -97,13 +94,13 @@ className={
 <StatCard
 label="Zonas activas"
 value={activeZones}
-sub={MOCK_ZONES.length + " totales"}
+sub="totales"
 valueColor="text-[#2f7f3c]"
 />
 <StatCard
 label="Cultivos activos"
 value={activeCrops}
-sub={MOCK_CROPS.length + " totales"}
+sub="totales"
 valueColor="text-[#1b4f2f]"
 />
 <StatCard
