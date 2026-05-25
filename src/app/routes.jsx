@@ -9,6 +9,8 @@ import AdminUsers from "../pages/admin/AdminUsers";
 import ZonesList from "../pages/zones/ZonesList";
 import CropsList from "../pages/crops/CropsList";
 import Thresholds from "../pages/settings/Thresholds";
+import AlertsList from "../pages/alerts/AlertsList";
+import Inventory from "../pages/inventory/Inventory";
 import NotFound from "../pages/NotFound";
 import { useAuth } from "../hooks/useAuth";
 
@@ -65,8 +67,15 @@ const routes = [
 					{
 						path: "/umbrales",
 						element: <Thresholds />
-					}
-					,
+					},
+					{
+						path: "/alertas",
+						element: <AlertsList />
+					},
+					{
+						path: "/inventario",
+						element: <Inventory />
+					},
 					{
 						element: <AdminRoute />,
 						children: [

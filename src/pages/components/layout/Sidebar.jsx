@@ -1,5 +1,6 @@
 ﻿import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
+import { useAlerts } from "../../../hooks/useAlerts";
 
 const PATHS = {
 home: "M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25",
@@ -32,6 +33,8 @@ const NAV_ITEMS = [
 { to: "/zonas", label: "Zonas", icon: "zones" },
 { to: "/cultivos", label: "Cultivos", icon: "crops" },
 { to: "/umbrales", label: "Umbrales", icon: "thresholds" },
+	{ to: "/alertas", label: "Alertas", icon: "alerts", badge: "alerts" },
+	{ to: "/inventario", label: "Inventario", icon: "inventory" },
 ];
 
 function Icon({ name }) {
@@ -99,12 +102,13 @@ className={({ isActive }) =>
 export default function Sidebar({ open, onClose }) {
 const { auth, isAdmin, logout } = useAuth();
 const navigate = useNavigate();
+const { highAlerts } = useAlerts({ status: "OPEN" });
 
 const displayName = auth.fullName || auth.email || "Usuario";
 const initial = displayName[0].toUpperCase();
 const roleBadge = ROLE_BADGES[auth.role];
 
-const criticalAlerts = 0;
+const criticalAlerts = highAlerts.length;
 	const totalUsers = 0;
 	const activeUsers = 0;
 
