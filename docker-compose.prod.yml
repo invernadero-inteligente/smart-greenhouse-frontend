@@ -1,0 +1,39 @@
+services:
+  frontend:
+    container_name: gh-frontend
+    working_dir: /app
+    volumes:
+      - frontend_dist:/dist
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    restart: "no"
+
+  nginx:
+    image: nginx:latest
+    container_name: gh-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - frontend_dist:/usr/share/nginx/html:ro
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+    depends_on:
+      frontend:
+        condition: service_completed_successfully
+    restart: unless-stopped
+  
+  certbot: 
+    image: certbot/certbot
+    container_name: gh-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --email liangcamilo2006@gmail.com --agree-tos --no-eff-email -d liangcatech.top -d www.liangcatech.top -d smartgreenhouse.liangcatech.top
+volumes:
+  frontend_dist:
