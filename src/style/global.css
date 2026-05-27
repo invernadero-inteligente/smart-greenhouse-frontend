@@ -1,1 +1,100 @@
+@import "@fontsource/inter/latin.css";
 @import "tailwindcss";
+
+/* Theme CSS variables used by Tailwind color tokens */
+/* Paleta limpia: blanco, verde, beige, dorado, negro solo para texto */
+:root {
+	--bg: #fffbe9; /* beige claro */
+	--fg: #222222; /* negro para texto */
+	--card: #ffffff; /* blanco puro */
+	--card-muted: #f5eedc; /* beige más oscuro */
+	--muted: #2f7f3c; /* verde para detalles */
+	--accent: #2f7f3c; /* verde principal */
+	--primary: #2f7f3c; /* verde principal */
+	--secondary: #d4af37; /* dorado */
+	--destructive: #b43a2f; /* rojo para errores */
+	--border: #e5e0c3; /* beige para bordes */
+	--input-bg: #ffffff;
+	--ring: rgba(212,175,55,0.18); /* dorado translúcido */
+}
+
+@layer base {
+	html,
+	body,
+	#root {
+		@apply min-h-full;
+	}
+	body {
+		background-color: var(--bg);
+		color: var(--fg);
+		@apply antialiased;
+	}
+}
+
+@layer components {
+	.card-surface {
+		@apply rounded-2xl shadow-sm;
+		background-color: var(--card);
+		color: var(--fg);
+		border: 1px solid var(--border);
+	}
+	.card-muted {
+		@apply rounded-2xl;
+		background-color: var(--card-muted);
+		color: var(--accent);
+		border: 1px solid var(--border);
+	}
+
+	.card-accent {
+		@apply rounded-xl shadow-sm;
+		background-color: var(--card-muted);
+		color: var(--fg);
+		border: 1px solid var(--border);
+	}
+
+	.card-input,
+	.input-base {
+		@apply w-full rounded-xl px-3 py-2.5 text-sm outline-none transition;
+		background-color: var(--input-bg);
+		color: var(--fg);
+		border: 1px solid var(--border);
+		box-shadow: none;
+		--tw-ring-color: var(--ring);
+		--tw-ring-shadow: 0 0 0 3px var(--ring);
+	}
+
+	.btn {
+		@apply inline-flex items-center justify-center rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+		--tw-ring-color: var(--ring);
+	}
+
+	.btn-primary {
+		@apply text-white shadow-sm hover:opacity-90;
+		background-color: var(--primary);
+	}
+
+	.btn-secondary {
+		@apply shadow-sm hover:opacity-90;
+		background-color: var(--muted);
+		color: var(--fg);
+	}
+
+	.btn-destructive {
+		@apply text-white shadow-sm hover:opacity-90;
+		background-color: var(--destructive);
+	}
+
+	.badge {
+		@apply inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold;
+		background-color: var(--card-muted);
+		color: var(--fg);
+		border: 1px solid var(--border);
+	}
+
+	.surface {
+		@apply rounded-3xl shadow-sm;
+		background-color: var(--card);
+		color: var(--fg);
+		border: 1px solid var(--border);
+	}
+}

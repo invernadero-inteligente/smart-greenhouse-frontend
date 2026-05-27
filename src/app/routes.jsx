@@ -3,9 +3,17 @@ import Home from "../pages/Home";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import Dashboard from "../pages/dashboard/Dashboard";
-import Navbar from "../pages/components/layout/Navbar";
+import Layout from "../pages/components/layout/Layout";
 import Backoffice from "../pages/admin/Backoffice";
+import AdminUsers from "../pages/admin/AdminUsers";
+import ZonesList from "../pages/zones/ZonesList";
+import CropsList from "../pages/crops/CropsList";
+import Thresholds from "../pages/settings/Thresholds";
+import AlertsList from "../pages/alerts/AlertsList";
+import Inventory from "../pages/inventory/Inventory";
+import ActuatorsList from "../pages/actuators/ActuatorsList";
 import NotFound from "../pages/NotFound";
+import ActuatorAdmin from "../pages/actuators/ActuatorAdmin";
 import { useAuth } from "../hooks/useAuth";
 
 function ProtectedRoute() {
@@ -24,12 +32,7 @@ function AdminRoute() {
 }
 
 function ProtectedLayout() {
-	return (
-		<div className="min-h-screen bg-[radial-gradient(circle_at_20%_15%,#ffffff_0%,transparent_35%),linear-gradient(145deg,#f3efe6,#dbecd7)] font-body text-[#143321]">
-			<Navbar />
-			<Outlet />
-		</div>
-	);
+	return <Layout />;
 }
 
 const routes = [
@@ -54,19 +57,51 @@ const routes = [
 					{
 						path: "/panel",
 						element: <Dashboard />
-					}
-				]
-			},
-			{
-				element: <AdminRoute />,
-				children: [
-					{
-						path: "/backoffice",
-						element: <Backoffice />
 					},
 					{
-						path: "/admin/users",
-						element: <Navigate to="/backoffice" replace />
+						path: "/zonas",
+						element: <ZonesList />
+					},
+					{
+						path: "/cultivos",
+						element: <CropsList />
+					},
+					{
+						path: "/umbrales",
+						element: <Thresholds />
+					},
+					{
+						path: "/alertas",
+						element: <AlertsList />
+					},
+					{
+						path: "/inventario",
+						element: <Inventory />
+					},
+					{
+						path: "/actuadores",
+						element: <ActuatorsList />
+					},
+					{
+						element: <AdminRoute />,
+						children: [
+							{
+								path: "/backoffice",
+								element: <Backoffice />
+							},
+							{
+								path: "/admin/usuarios",
+								element: <AdminUsers />
+							},
+							{
+								path: "/admin/users",
+								element: <Navigate to="/admin/usuarios" replace />
+							},
+							{
+								path: "/admin/actuadores",
+								element: <ActuatorAdmin />
+							}
+						]
 					}
 				]
 			}

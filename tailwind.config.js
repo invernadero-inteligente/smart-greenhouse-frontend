@@ -4,24 +4,27 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				moss: {
-					100: "#e9f5e6",
-					300: "#9fd69b",
-					600: "#2f7f3c",
-					800: "#1b4f2f"
-				},
-				soil: {
-					100: "#f5efe8",
-					500: "#9f6b3d",
-					700: "#754825"
-				}
+				background: 'var(--bg)',
+				foreground: 'var(--fg)',
+				card: 'var(--card)',
+				'card-muted': 'var(--card-muted)',
+				muted: 'var(--muted)', // verde
+				accent: 'var(--accent)', // verde
+				primary: 'var(--primary)', // verde
+				secondary: 'var(--secondary)', // dorado
+				gold: '#d4af37',
+				destructive: 'var(--destructive)',
+				border: 'var(--border)',
+				input: 'var(--input-bg)',
+				ring: 'var(--ring)'
 			},
 			fontFamily: {
-				heading: ["Space Grotesk", "sans-serif"],
-				body: ["Manrope", "sans-serif"]
+				sans: ["Inter", "Geist", "ui-sans-serif", "system-ui", "sans-serif"],
+				heading: ["Inter", "Geist", "ui-sans-serif", "system-ui", "sans-serif"],
+				body: ["Inter", "Geist", "ui-sans-serif", "system-ui", "sans-serif"]
 			},
 			boxShadow: {
-				soft: "0 18px 60px rgba(27, 79, 47, 0.18)"
+				soft: "0 18px 60px rgba(0, 0, 0, 0.35)"
 			}
 		}
 	},
