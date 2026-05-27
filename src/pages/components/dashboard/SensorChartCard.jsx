@@ -12,7 +12,7 @@ export default function SensorChartCard({ title, variable, data, current, avg, m
   const TrendIcon = trendIcon[trend] || ArrowRight;
   return (
     <motion.div
-      className="relative rounded-3xl bg-gradient-to-br from-[#f5f3e7]/80 to-white/90 dark:from-[#1b2e23]/80 dark:to-[#1b2e23]/60 border border-[#e5e0c3] dark:border-[#2d3c2e] shadow-xl p-6 flex flex-col gap-4 hover:scale-[1.01] transition-transform duration-200 group"
+      className="relative rounded-3xl bg-gradient-to-br from-[#f5f3e7]/80 to-white/90 border border-[#e5e0c3] shadow-xl p-6 flex flex-col gap-4 hover:scale-[1.01] transition-transform duration-200 group"
       whileHover={{ scale: 1.015 }}
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
@@ -20,30 +20,30 @@ export default function SensorChartCard({ title, variable, data, current, avg, m
     >
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h2 className="font-heading text-lg font-bold text-emerald-900 dark:text-emerald-100">{title}</h2>
-          <span className="text-xs text-emerald-700/70 dark:text-emerald-200/80 uppercase tracking-widest">{variable}</span>
+          <h2 className="font-heading text-lg font-bold text-emerald-900">{title}</h2>
+          <span className="text-xs text-emerald-700/70 uppercase tracking-widest">{variable}</span>
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-3xl font-bold text-emerald-900 dark:text-emerald-100">{current}</span>
-          <span className="text-xs text-emerald-700/60 dark:text-emerald-200/80">actual</span>
+          <span className="text-3xl font-bold text-emerald-900">{current}</span>
+          <span className="text-xs text-emerald-700/60">actual</span>
         </div>
       </div>
       <div className="flex gap-4 mb-2">
         <div className="flex flex-col items-center">
-          <span className="font-semibold text-emerald-900 dark:text-emerald-100">{avg}</span>
-          <span className="text-xs text-emerald-700/60 dark:text-emerald-200/80">Prom</span>
+          <span className="font-semibold text-emerald-900">{avg}</span>
+          <span className="text-xs text-emerald-700/60">Prom</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="font-semibold text-emerald-900 dark:text-emerald-100">{max}</span>
-          <span className="text-xs text-emerald-700/60 dark:text-emerald-200/80">Max</span>
+          <span className="font-semibold text-emerald-900">{max}</span>
+          <span className="text-xs text-emerald-700/60">Max</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="font-semibold text-emerald-900 dark:text-emerald-100">{min}</span>
-          <span className="text-xs text-emerald-700/60 dark:text-emerald-200/80">Min</span>
+          <span className="font-semibold text-emerald-900">{min}</span>
+          <span className="text-xs text-emerald-700/60">Min</span>
         </div>
         <div className="flex flex-col items-center">
           <TrendIcon className={trend === "up" ? "text-emerald-500" : trend === "down" ? "text-red-400" : "text-amber-400"} />
-          <span className="text-xs text-emerald-700/60 dark:text-emerald-200/80">Tendencia</span>
+          <span className="text-xs text-emerald-700/60">Tendencia</span>
         </div>
       </div>
       <div className="relative h-40 w-full">

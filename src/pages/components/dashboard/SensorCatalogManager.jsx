@@ -43,14 +43,14 @@ export default function SensorCatalogManager() {
   };
 
   return (
-    <section className="rounded-3xl bg-gradient-to-br from-[#f5f3e7]/80 to-white/90 dark:from-[#1b2e23]/80 dark:to-[#1b2e23]/60 border border-[#e5e0c3] dark:border-[#2d3c2e] shadow-xl p-6 mt-4">
-      <h3 className="font-heading text-lg font-bold text-emerald-900 dark:text-emerald-100 mb-2">Catálogo manual de sensores</h3>
+    <section className="rounded-3xl bg-gradient-to-br from-[#f5f3e7]/80 to-white/90 border border-[#e5e0c3] shadow-xl p-6 mt-4">
+      <h3 className="font-heading text-lg font-bold text-emerald-900 mb-2">Catálogo manual de sensores</h3>
       <form onSubmit={handleRegisterSensor} className="grid gap-3 md:grid-cols-5 mb-4">
         <select
           name="zoneId"
           value={sensorForm.zoneId}
           onChange={handleSensorFormChange}
-          className="rounded-lg border border-[#e5e0c3] dark:border-[#2d3c2e] bg-white dark:bg-[#1b2e23] px-3 py-2 text-sm text-emerald-900 dark:text-emerald-100"
+          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900"
         >
           <option value="">Selecciona zona</option>
           {zones.map((zone) => (
@@ -62,21 +62,21 @@ export default function SensorCatalogManager() {
           value={sensorForm.alias}
           onChange={handleSensorFormChange}
           placeholder="Alias (ej: Sensor Camellón A)"
-          className="rounded-lg border border-[#e5e0c3] dark:border-[#2d3c2e] bg-white dark:bg-[#1b2e23] px-3 py-2 text-sm text-emerald-900 dark:text-emerald-100"
+          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900"
         />
         <input
           name="variable"
           value={sensorForm.variable}
           onChange={handleSensorFormChange}
           placeholder="Variable (ej: TEMPERATURE)"
-          className="rounded-lg border border-[#e5e0c3] dark:border-[#2d3c2e] bg-white dark:bg-[#1b2e23] px-3 py-2 text-sm text-emerald-900 dark:text-emerald-100"
+          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900"
         />
         <input
           name="unit"
           value={sensorForm.unit}
           onChange={handleSensorFormChange}
           placeholder="Unidad (ej: C)"
-          className="rounded-lg border border-[#e5e0c3] dark:border-[#2d3c2e] bg-white dark:bg-[#1b2e23] px-3 py-2 text-sm text-emerald-900 dark:text-emerald-100"
+          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900"
         />
         <button
           type="submit"
@@ -96,9 +96,9 @@ export default function SensorCatalogManager() {
         </div>
       )}
       <div className="mt-4">
-        <h4 className="font-semibold text-emerald-900 dark:text-emerald-100 mb-2 text-sm">Sensores registrados</h4>
+        <h4 className="font-semibold text-emerald-900 mb-2 text-sm">Sensores registrados</h4>
         {registeredSensors.length === 0 ? (
-          <p className="text-sm text-emerald-700/60 dark:text-emerald-200/80">Aún no hay sensores registrados manualmente.</p>
+          <p className="text-sm text-emerald-700/60">Aún no hay sensores registrados manualmente.</p>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {registeredSensors.map((sensor) => (
@@ -113,7 +113,7 @@ export default function SensorCatalogManager() {
                   timestamp: sensor.updatedAt
                 }} />
                 <div className="mt-2 flex items-center justify-between px-1">
-                  <p className="text-xs text-emerald-700/60 dark:text-emerald-200/80">
+                  <p className="text-xs text-emerald-700/60">
                     {zones.find(z => z.id === sensor.zoneId)?.name || "Zona"} · {sensor.alias || sensor.variable}
                   </p>
                   {sensor.isActive ? (

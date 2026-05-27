@@ -139,16 +139,16 @@ function KpiCard({ label, value, icon, trend, color, bg }) {
   // Iconos Lucide
   const icons = {
     map: <svg className="w-8 h-8 mb-3 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A2 2 0 013 15.382V5.618a2 2 0 011.053-1.764l5.447-2.724a2 2 0 011.788 0l5.447 2.724A2 2 0 0121 5.618v9.764a2 2 0 01-1.053 1.764L14.5 20.5a2 2 0 01-1.788 0L9 20z" /></svg>,
-    leaf: <svg className="w-8 h-8 mb-3 text-lime-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 21c0-4.418 7-10 7-10s7 5.582 7 10a7 7 0 01-14 0z" /></svg>,
+    leaf: <svg className="w-8 h-8 mb-3 text-lime-500" style={{overflow: 'visible'}} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 21c0-4.418 7-10 7-10s7 5.582 7 10a7 7 0 01-14 0z" /></svg>,
     alert: <svg className="w-8 h-8 mb-3 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     package: <svg className="w-8 h-8 mb-3 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 16V8a2 2 0 00-1.106-1.789l-7-4a2 2 0 00-1.788 0l-7 4A2 2 0 003 8v8a2 2 0 001.106 1.789l7 4a2 2 0 001.788 0l7-4A2 2 0 0021 16z" /></svg>,
   };
   return (
-    <div className={`rounded-3xl shadow-xl border border-[#e5e0c3]/60 dark:border-[#2d3c2e]/60 ${bg} p-8 flex flex-col items-center hover:scale-[1.03] transition-transform duration-200 group min-h-[180px]`}> 
+    <div className={`rounded-3xl shadow-xl border border-[#e5e0c3]/60 ${bg} p-8 flex flex-col items-center hover:scale-[1.03] transition-transform duration-200 group min-h-[180px]`}> 
       {icons[icon]}
-      <span className="text-4xl md:text-5xl font-bold text-emerald-900 dark:text-emerald-100 mb-2">{value}</span>
-      <span className="text-base font-semibold text-emerald-700/80 dark:text-emerald-200/80 mb-1">{label}</span>
-      {trend && <span className="text-xs mt-1 font-semibold text-emerald-500 dark:text-emerald-300">{trend} hoy</span>}
+      <span className="text-4xl md:text-5xl font-bold text-emerald-900 mb-2">{value}</span>
+      <span className="text-base font-semibold text-emerald-700/80 mb-1">{label}</span>
+      {trend && <span className="text-xs mt-1 font-semibold text-emerald-500">{trend} hoy</span>}
     </div>
   );
 }

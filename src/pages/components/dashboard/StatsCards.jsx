@@ -45,7 +45,7 @@ export default function StatsCards({ stats = statsMock }) {
           <motion.div
             key={stat.label}
             className={
-              `flex flex-col items-center justify-center rounded-2xl p-5 shadow border border-[#e5e0c3] dark:border-[#2d3c2e] bg-white/90 dark:bg-[#1b2e23]/80 hover:scale-[1.03] transition-transform duration-200 group ${stat.bg}`
+              `flex flex-col items-center justify-center rounded-2xl p-5 shadow border border-[#e5e0c3] bg-white/90 hover:scale-[1.03] transition-transform duration-200 group ${stat.bg}`
             }
             whileHover={{ scale: 1.04 }}
             initial={{ opacity: 0, y: 16 }}
@@ -53,9 +53,9 @@ export default function StatsCards({ stats = statsMock }) {
             transition={{ duration: 0.4, delay: i * 0.05 }}
           >
             <Icon className={`w-8 h-8 mb-2 ${stat.color}`} />
-            <span className="text-3xl font-bold text-emerald-900 dark:text-emerald-100">{stat.value}</span>
-            <span className="text-xs text-emerald-700/60 dark:text-emerald-200/80 uppercase tracking-widest">{stat.label}</span>
-            <span className="text-xs mt-1 font-semibold text-emerald-500 dark:text-emerald-300">{stat.trend} hoy</span>
+            <span className="text-3xl font-bold text-emerald-900">{stat.value}</span>
+            <span className="text-xs text-emerald-700/60 uppercase tracking-widest">{stat.label}</span>
+            <span className="text-xs mt-1 font-semibold text-emerald-500">{stat.trend} hoy</span>
           </motion.div>
         );
       })}

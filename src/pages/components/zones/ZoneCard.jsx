@@ -2,13 +2,13 @@ function ZoneCard({ zone, onEdit, onDeactivate, onActivate }) {
 	const isActive = (zone.isActive ?? zone.active) !== false;
 
 	return (
-		<div className="rounded-2xl border border-zinc-300 bg-white p-6 shadow-soft transition hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+		<div className="rounded-2xl border border-zinc-300 bg-white p-6 shadow-soft transition hover:shadow-lg">
 			<div className="flex items-start justify-between">
 				<div className="flex-1">
-					<h3 className="font-heading text-lg font-bold text-zinc-900 dark:text-zinc-100">
+					<h3 className="font-heading text-lg font-bold text-zinc-900">
 						{zone.name}
 					</h3>
-					<p className="mt-2 line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">
+					<p className="mt-2 line-clamp-2 text-sm text-zinc-500">
 						{zone.description || "Sin descripción"}
 					</p>
 					<div className="mt-4 flex items-center gap-2">
@@ -17,7 +17,7 @@ function ZoneCard({ zone, onEdit, onDeactivate, onActivate }) {
 								isActive ? "bg-emerald-500" : "bg-zinc-500"
 							}`}
 						/>
-						<span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+						<span className="text-xs font-semibold text-zinc-500">
 							{isActive ? "Activa" : "Inactiva"}
 						</span>
 					</div>

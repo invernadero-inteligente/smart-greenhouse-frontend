@@ -425,7 +425,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 					<div className="mt-3 card-muted p-3.5">
 						<button
 							onClick={() => setMobileSection((prev) => prev === "quick" ? "" : "quick")}
-							className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-white px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 lg:hidden"
+							className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-white px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700 lg:hidden"
 						>
 							<span>Acciones rápidas</span>
 							<span>{mobileSection === "quick" ? "Ocultar" : "Mostrar"}</span>
@@ -482,7 +482,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 							</div>
 						))}
 						{filteredSuggestedActuators.length === 0 && (
-							<div className="rounded-lg border border-zinc-200 bg-white p-3 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300">
+							<div className="rounded-lg border border-zinc-200 bg-white p-3 text-xs text-zinc-700">
 								No hay actuadores que coincidan con la búsqueda.
 							</div>
 						)}
@@ -493,30 +493,30 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 					<div className="mt-4 card-muted p-3.5">
 						<button
 							onClick={() => setMobileSection((prev) => prev === "operator" ? "" : "operator")}
-							className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-white px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 lg:hidden"
+							className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-white px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700 lg:hidden"
 						>
 							<span>Modo operador</span>
 							<span>{mobileSection === "operator" ? "Ocultar" : "Mostrar"}</span>
 						</button>
 						<div className={(mobileSection === "operator" ? "block" : "hidden") + " lg:block"}>
-						<p className="text-xs font-bold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Modo operador</p>
-						<p className="mt-1 text-[11px] text-zinc-600 dark:text-zinc-300">Plantillas por zona para ejecutar secuencias en un clic.</p>
+						<p className="text-xs font-bold uppercase tracking-wide text-zinc-500">Modo operador</p>
+						<p className="mt-1 text-[11px] text-zinc-600">Plantillas por zona para ejecutar secuencias en un clic.</p>
 						<div className="mt-2 max-h-[240px] space-y-2 overflow-y-auto pr-1">
 							{zoneTemplates.map((template) => (
 								<div key={template.id} className="card-surface p-3 shadow-sm transition hover:shadow-md">
 									<div className="flex items-center justify-between gap-2">
-										<p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{template.name}</p>
+										<p className="text-xs font-semibold text-zinc-900">{template.name}</p>
 										{isCustomTemplate(template.id) && (
 											<button
 												onClick={() => deleteTemplate(template.id)}
-												className="rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-200"
+												className="rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700"
 											>
 												Borrar
 											</button>
 										)}
 									</div>
-									<p className="mt-0.5 text-[11px] text-zinc-600 dark:text-zinc-300">{template.description}</p>
-									<p className="mt-0.5 text-[10px] text-zinc-500 dark:text-zinc-400">Pasos: {template.steps.map((s) => `${s.actuatorName}:${s.action}`).join(" | ")}</p>
+									<p className="mt-0.5 text-[11px] text-zinc-600">{template.description}</p>
+									<p className="mt-0.5 text-[10px] text-zinc-500">Pasos: {template.steps.map((s) => `${s.actuatorName}:${s.action}`).join(" | ")}</p>
 									<button
 										onClick={() => runTemplate(template)}
 										disabled={sending || runningTemplateId !== null || !allowOperate || !targetZoneId}
@@ -528,13 +528,13 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 							))}
 						</div>
 						{templateFeedback && (
-							<p className="mt-2 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">{templateFeedback}</p>
+							<p className="mt-2 text-[11px] font-semibold text-emerald-700">{templateFeedback}</p>
 						)}
 
-						<div className="mt-3 rounded-xl border border-zinc-200 bg-white p-2.5 dark:border-zinc-700 dark:bg-zinc-950">
+						<div className="mt-3 rounded-xl border border-zinc-200 bg-white p-2.5">
 							<button
 								onClick={() => setShowTemplateEditor((prev) => !prev)}
-								className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200"
+								className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700"
 							>
 								<span>Nueva plantilla</span>
 								<span>{showTemplateEditor ? "Ocultar" : "Mostrar"}</span>
@@ -573,7 +573,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 										</select>
 										<button
 											onClick={() => removeTemplateStep(idx)}
-											className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1.5 text-[10px] font-semibold text-rose-700 dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-200"
+											className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1.5 text-[10px] font-semibold text-rose-700"
 										>
 											X
 										</button>
@@ -583,7 +583,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 							<div className="mt-2 flex gap-1.5">
 								<button
 									onClick={addTemplateStep}
-									className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-[10px] font-semibold text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
+									className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-[10px] font-semibold text-zinc-700 transition hover:bg-zinc-100"
 								>
 									+ Paso
 								</button>
@@ -607,9 +607,9 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 
 			<div className="card-surface">
 				<div className="flex flex-wrap items-center justify-between gap-2">
-					<h2 className="font-heading text-lg font-bold text-zinc-900 dark:text-zinc-100">Historial local de comandos</h2>
+							<h2 className="font-heading text-lg font-bold text-zinc-900">Historial local de comandos</h2>
 					<div className="flex flex-wrap items-center gap-2">
-						<div className="flex items-center gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-1 text-xs dark:border-zinc-700 dark:bg-zinc-950">
+						<div className="flex items-center gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-1 text-xs">
 						<button
 							onClick={() => setHistoryFilter("ALL")}
 							className={(historyFilter === "ALL" ? "bg-emerald-600 text-white " : "text-zinc-700 ") + "rounded-lg px-2.5 py-1.5 font-semibold transition"}
@@ -632,7 +632,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 						<select
 							value={historySort}
 							onChange={(e) => setHistorySort(e.target.value)}
-							className="rounded-xl border border-zinc-300 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200"
+							className="rounded-xl border border-zinc-300 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700"
 						>
 							<option value="DATE_DESC">Recientes</option>
 							<option value="DATE_ASC">Antiguos</option>
@@ -642,7 +642,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 						<button
 							onClick={exportHistoryCsv}
 							disabled={displayedHistory.length === 0}
-							className="rounded-xl border border-zinc-300 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-white dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+							className="rounded-xl border border-zinc-300 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
 						>
 							Exportar CSV
 						</button>
@@ -655,15 +655,15 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 						</button>
 					</div>
 				</div>
-<p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">Registro de la sesión actual (éxitos y fallos).</p>
+						<p className="mt-1 text-xs text-zinc-600">Registro de la sesión actual (éxitos y fallos).</p>
 
 				{history.length === 0 ? (
-					<div className="mt-3 rounded-xl border border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-600 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300">Aún no has enviado comandos.</div>
+							<div className="mt-3 rounded-xl border border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-600">Aún no has enviado comandos.</div>
 				) : (
-					<div className="mt-3 overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-700">
+							<div className="mt-3 overflow-x-auto rounded-2xl border border-zinc-200">
 						<table className="min-w-full text-left text-sm">
 							<thead>
-								<tr className="border-b border-zinc-200 bg-zinc-50 text-xs uppercase tracking-wide text-zinc-700 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200">
+								<tr className="border-b border-zinc-200 bg-zinc-50 text-xs uppercase tracking-wide text-zinc-700">
 									<th className="px-2 py-2">Hora</th>
 									<th className="px-2 py-2">Zona</th>
 									<th className="px-2 py-2">Actuador</th>
@@ -675,7 +675,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 							</thead>
 							<tbody>
 								{displayedHistory.map((item) => (
-									<tr key={item.id} className="border-b border-zinc-200 odd:bg-white even:bg-zinc-50 transition hover:bg-zinc-100 dark:odd:bg-zinc-950 dark:even:bg-zinc-900 dark:hover:bg-zinc-800">
+									<tr key={item.id} className="border-b border-zinc-200 odd:bg-white even:bg-zinc-50 transition hover:bg-zinc-100">
 										<td className="px-2 py-2 text-zinc-600">
 											{new Date(item.sentAt).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
 										</td>

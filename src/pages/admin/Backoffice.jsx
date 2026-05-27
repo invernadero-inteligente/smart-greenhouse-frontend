@@ -397,22 +397,22 @@ className={
 <SectionTitle title="Resumen general" sub="Vista consolidada del estado del sistema" />
 
 <div className="grid grid-cols-2 gap-4 lg:grid-cols-2">
-<StatCard label="Zonas activas"     value={activeZones}  sub={zones.length + " totales"} valueColor="text-emerald-700 dark:text-emerald-300" />
-<StatCard label="Cultivos activos"  value={activeCrops}  sub={crops.length + " totales"} valueColor="text-emerald-700 dark:text-emerald-300" />
+<StatCard label="Zonas activas"     value={activeZones}  sub={zones.length + " totales"} valueColor="text-emerald-700" />
+<StatCard label="Cultivos activos"  value={activeCrops}  sub={crops.length + " totales"} valueColor="text-emerald-700" />
 </div>
 
 {/* Zonas resumen */}
 <div>
-<h3 className="mb-3 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Estado de zonas</h3>
+<h3 className="mb-3 font-heading text-sm font-bold text-zinc-900">Estado de zonas</h3>
 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 {zones.map((z) => (
-<div key={z.id} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900">
+<div key={z.id} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
 <div className="flex items-center gap-2 mb-1">
-<span className={"h-2 w-2 rounded-full " + ((z.isActive ?? z.active) ? "bg-emerald-700" : "bg-zinc-400 dark:bg-zinc-500")} />
-<p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">{z.name}</p>
+<span className={"h-2 w-2 rounded-full " + ((z.isActive ?? z.active) ? "bg-emerald-700" : "bg-zinc-400")} />
+<p className="text-xs font-semibold text-zinc-900 truncate">{z.name}</p>
 </div>
-<p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">{z.description}</p>
-<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700 mt-2 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-zinc-100 text-zinc-600 mt-2 dark:bg-zinc-800 dark:text-zinc-400"}>
+<p className="text-[10px] text-zinc-500 truncate">{z.description}</p>
+<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700 mt-2" : "bg-zinc-100 text-zinc-600 mt-2"}>
 {(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
 </Badge>
 </div>
@@ -422,14 +422,14 @@ className={
 
 {/* Cultivos por estado */}
 <div>
-<h3 className="mb-3 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Cultivos por estado</h3>
+<h3 className="mb-3 font-heading text-sm font-bold text-zinc-900">Cultivos por estado</h3>
 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 {Object.entries(STATUS_CROP).map(([key, cfg]) => {
 const count = crops.filter((c) => c.status === key).length;
 return (
-<div key={key} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-center dark:border-zinc-700 dark:bg-zinc-900">
+<div key={key} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-center">
 <p className={"font-heading text-2xl font-bold " + cfg.cls.split(" ")[1]}>{count}</p>
-<p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{cfg.label}</p>
+<p className="mt-1 text-xs text-zinc-500">{cfg.label}</p>
 </div>
 );
 })}
@@ -443,20 +443,20 @@ return (
 <>
 <SectionTitle title="Gestión de zonas" sub={"Total: " + zones.length + " zonas registradas"} />
 <TableWrap>
-<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<thead className="border-b border-zinc-200 bg-zinc-50">
 <tr><Th>Nombre</Th><Th>Descripción</Th><Th>Estado</Th><Th>Creada</Th></tr>
 </thead>
 <tbody>
 {zones.map((z, i) => (
-<tr key={z.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
-<Td><span className="font-semibold text-zinc-900 dark:text-zinc-100">{z.name}</span></Td>
-<Td className="text-zinc-600 dark:text-zinc-400">{z.description}</Td>
+<tr key={z.id} className={"border-b border-zinc-200 " + (i % 2 === 0 ? "bg-white" : "bg-zinc-50")}>
+<Td><span className="font-semibold text-zinc-900">{z.name}</span></Td>
+<Td className="text-zinc-600">{z.description}</Td>
 <Td>
-<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"}>
+<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-600"}>
 {(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
 </Badge>
 </Td>
-<Td className="text-zinc-500 dark:text-zinc-400">{new Date(z.createdAt).toLocaleDateString("es")}</Td>
+				<Td className="text-zinc-500">{new Date(z.createdAt).toLocaleDateString("es")}</Td>
 </tr>
 ))}
 </tbody>
@@ -469,19 +469,19 @@ return (
 <>
 <SectionTitle title="Cultivos y estado" sub={"Total: " + crops.length + " cultivos registrados"} />
 <TableWrap>
-<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<thead className="border-b border-zinc-200 bg-zinc-50">
 <tr><Th>Cultivo</Th><Th>Variedad</Th><Th>Zona</Th><Th>Plantas</Th><Th>Siembra</Th><Th>Estado</Th></tr>
 </thead>
 <tbody>
 {crops.map((c, i) => {
 const st = STATUS_CROP[c.status] ?? { label: c.status, cls: "bg-gray-100 text-gray-600" };
 return (
-<tr key={c.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
-<Td><span className="font-semibold text-zinc-900 dark:text-zinc-100">{c.name}</span></Td>
-<Td className="text-zinc-600 dark:text-zinc-400">{c.variety}</Td>
-<Td className="text-zinc-600 dark:text-zinc-400">{c.zoneName}</Td>
+<tr key={c.id} className={"border-b border-zinc-200 " + (i % 2 === 0 ? "bg-white" : "bg-zinc-50")}>
+<Td><span className="font-semibold text-zinc-900">{c.name}</span></Td>
+<Td className="text-zinc-600">{c.variety}</Td>
+<Td className="text-zinc-600">{c.zoneName}</Td>
 <Td>{c.plantCount}</Td>
-<Td className="text-zinc-500 dark:text-zinc-400">{new Date(c.sowingDate).toLocaleDateString("es")}</Td>
+<Td className="text-zinc-500">{new Date(c.sowingDate).toLocaleDateString("es")}</Td>
 <Td><Badge cls={st.cls}>{st.label}</Badge></Td>
 </tr>
 );
@@ -496,21 +496,21 @@ return (
 <>
 <SectionTitle title="Umbrales configurados" sub={"Total: " + thresholds.length + " umbrales activos"} />
 <TableWrap>
-<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<thead className="border-b border-zinc-200 bg-zinc-50">
 <tr><Th>Zona</Th><Th>Variable</Th><Th>Min</Th><Th>Max</Th><Th>Unidad</Th></tr>
 </thead>
 <tbody>
 {thresholds.map((t, i) => (
-<tr key={t.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
-<Td className="font-semibold text-zinc-900 dark:text-zinc-100">{zones.find(z => z.id === t.zoneId)?.name ?? `Zona ${t.zoneId}`}</Td>
+<tr key={t.id} className={"border-b border-zinc-200 " + (i % 2 === 0 ? "bg-white" : "bg-zinc-50")}>
+<Td className="font-semibold text-zinc-900">{zones.find(z => z.id === t.zoneId)?.name ?? `Zona ${t.zoneId}`}</Td>
 <Td>
-<Badge cls="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+<Badge cls="bg-emerald-100 text-emerald-700">
 {VAR_NAMES[t.name] ?? t.name}
 </Badge>
 </Td>
 <Td>{t.minValue}</Td>
 <Td>{t.maxValue}</Td>
-<Td className="text-zinc-500 dark:text-zinc-400">{t.unit}</Td>
+<Td className="text-zinc-500">{t.unit}</Td>
 </tr>
 ))}
 </tbody>
@@ -525,7 +525,7 @@ return (
 
 {/* Formulario crear */}
 <div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-5">
-<h3 className="mb-4 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Nuevo usuario</h3>
+<h3 className="mb-4 font-heading text-sm font-bold text-zinc-900">Nuevo usuario</h3>
 <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5" onSubmit={handleCreate}>
 <input className={inp} placeholder="Nombre completo" required value={createForm.fullName}
 onChange={(e) => setCreate((p) => ({ ...p, fullName: e.target.value }))} />
@@ -543,16 +543,16 @@ className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white 
 </button>
 </form>
 {userError && (
-<p className="mt-3 text-xs font-semibold text-rose-700 dark:text-rose-300">{userError}</p>
+<p className="mt-3 text-xs font-semibold text-rose-700">{userError}</p>
 )}
 </div>
 
 {/* Tabla */}
 {loadingUsers ? (
-<p className="text-sm text-zinc-500 dark:text-zinc-400">Cargando usuarios...</p>
+<p className="text-sm text-zinc-500">Cargando usuarios...</p>
 ) : (
 <TableWrap>
-<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<thead className="border-b border-zinc-200 bg-zinc-50">
 <tr><Th>Nombre</Th><Th>Email</Th><Th>Rol</Th><Th>Estado</Th><Th>Acciones</Th></tr>
 </thead>
 <tbody>
@@ -560,16 +560,16 @@ className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white 
 const isEditing = editingId === u.id;
 const isSelf = Number(u.id) === Number(auth.userId);
 return (
-<tr key={u.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<tr key={u.id} className={"border-b border-zinc-200 " + (i % 2 === 0 ? "bg-white" : "bg-zinc-50")}>
 <Td>
 {isEditing
 ? <input className={inp} value={editForm.fullName} onChange={(e) => setEditForm((p) => ({ ...p, fullName: e.target.value }))} />
-: <span className="font-semibold text-zinc-900 dark:text-zinc-100">{u.fullName}</span>}
+: <span className="font-semibold text-zinc-900">{u.fullName}</span>}
 </Td>
 <Td>
 {isEditing
 ? <input className={inp} type="email" value={editForm.email} onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))} />
-: <span className="text-zinc-600 dark:text-zinc-400">{u.email}</span>}
+: <span className="text-zinc-600">{u.email}</span>}
 </Td>
 <Td>
 {isEditing
@@ -585,7 +585,7 @@ onChange={(e) => setEditForm((p) => ({ ...p, role: e.target.value }))}>
 <button disabled={isSelf || saving}
 onClick={() => toggleStatus(u)}
 className={"rounded-full px-3 py-1 text-xs font-bold transition " +
-(u.active ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:hover:bg-emerald-800/60" : "bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-200 dark:hover:bg-rose-800/40") +
+(u.active ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-rose-100 text-rose-700 hover:bg-rose-200") +
 (isSelf || saving ? " opacity-50 cursor-not-allowed" : "")}>
 {u.active ? "Activo" : "Inactivo"}
 </button>
@@ -631,18 +631,18 @@ No hay eventos de auditoría disponibles todavía.
 </div>
 ) : (
 <TableWrap>
-<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<thead className="border-b border-zinc-200 bg-zinc-50">
 <tr><Th>Usuario</Th><Th>Accion</Th><Th>Detalle</Th><Th>Fecha</Th></tr>
 </thead>
 <tbody>
 {auditEntries.map((entry, i) => (
-<tr key={entry.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
-<Td className="font-semibold text-zinc-900 dark:text-zinc-100">{entry.user}</Td>
+<tr key={entry.id} className={"border-b border-zinc-200 " + (i % 2 === 0 ? "bg-white" : "bg-zinc-50")}>
+<Td className="font-semibold text-zinc-900">{entry.user}</Td>
 <Td>
-<Badge cls="bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-200">{entry.action}</Badge>
+<Badge cls="bg-sky-100 text-sky-700">{entry.action}</Badge>
 </Td>
-<Td className="text-zinc-600 dark:text-zinc-400">{entry.detail}</Td>
-<Td className="text-zinc-500 dark:text-zinc-400">
+<Td className="text-zinc-600">{entry.detail}</Td>
+<Td className="text-zinc-500">
 {entry.ts.toLocaleDateString("es", { day: "2-digit", month: "short" })}
 {" "}
 {entry.ts.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" })}
