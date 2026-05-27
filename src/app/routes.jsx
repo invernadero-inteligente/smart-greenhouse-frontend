@@ -11,7 +11,9 @@ import CropsList from "../pages/crops/CropsList";
 import Thresholds from "../pages/settings/Thresholds";
 import AlertsList from "../pages/alerts/AlertsList";
 import Inventory from "../pages/inventory/Inventory";
+import ActuatorsList from "../pages/actuators/ActuatorsList";
 import NotFound from "../pages/NotFound";
+import ActuatorAdmin from "../pages/actuators/ActuatorAdmin";
 import { useAuth } from "../hooks/useAuth";
 
 function ProtectedRoute() {
@@ -77,6 +79,10 @@ const routes = [
 						element: <Inventory />
 					},
 					{
+						path: "/actuadores",
+						element: <ActuatorsList />
+					},
+					{
 						element: <AdminRoute />,
 						children: [
 							{
@@ -90,6 +96,10 @@ const routes = [
 							{
 								path: "/admin/users",
 								element: <Navigate to="/admin/usuarios" replace />
+							},
+							{
+								path: "/admin/actuadores",
+								element: <ActuatorAdmin />
 							}
 						]
 					}

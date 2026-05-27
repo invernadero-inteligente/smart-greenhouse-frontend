@@ -1,47 +1,44 @@
 function CropCard({ crop, onEdit, onDelete }) {
 	const statusConfig = {
-		ACTIVE:   { bg: "#e9f5e6", text: "#2f7f3c", label: "Activo" },
-		HARVEST:  { bg: "#fff4e6", text: "#9f6b3d", label: "Cosechando" },
-		FINISHED: { bg: "#f0f0f0", text: "#666",    label: "Finalizado" }
+		ACTIVE:   { cls: "bg-emerald-100 text-emerald-700", label: "Activo" },
+		HARVEST:  { cls: "bg-[#fff7e0] text-[#b45309]", label: "Cosechando" },
+		FINISHED: { cls: "bg-[#f5f3e7] text-[#b5a16a]", label: "Finalizado" }
 	};
 
-	const config = statusConfig[crop.status] || { bg: "#f0f0f0", text: "#666", label: crop.status ?? "—" };
+	const config = statusConfig[crop.status] || { cls: "bg-[#f5f3e7] text-[#b5a16a]", label: crop.status ?? "—" };
 
 	return (
-		<div className="rounded-2xl border border-[#e9f5e6] bg-white p-6 shadow-soft transition hover:shadow-lg">
+		<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6 shadow-sm transition hover:shadow-md">
 			<div className="space-y-3">
 				<div>
-					<h3 className="font-heading text-lg font-bold text-[#1b4f2f]">
+					<h3 className="font-heading text-lg font-bold text-emerald-900">
 						{crop.name}
 					</h3>
-					<p className="text-xs text-[#999]">
+					<p className="text-xs text-emerald-700/70">
 						Variedad: {crop.variety || "No especificada"}
 					</p>
 				</div>
 
 				<div className="grid grid-cols-2 gap-3 text-xs">
 					<div>
-						<p className="text-[#666]">Plantas</p>
-						<p className="font-bold text-[#1b4f2f]">{crop.plantCount || 0}</p>
+						<p className="text-emerald-700/70">Plantas</p>
+						<p className="font-bold text-emerald-900">{crop.plantCount || 0}</p>
 					</div>
 					<div>
-						<p className="text-[#666]">Zona</p>
-						<p className="font-bold text-[#1b4f2f]">#{crop.zoneId || "-"}</p>
+						<p className="text-emerald-700/70">Zona</p>
+						<p className="font-bold text-emerald-900">#{crop.zoneId || "-"}</p>
 					</div>
 					{crop.sowingDate && (
 						<div>
-							<p className="text-[#666]">Fecha siembra</p>
-							<p className="font-bold text-[#1b4f2f]">
+							<p className="text-emerald-700/70">Fecha siembra</p>
+							<p className="font-bold text-emerald-900">
 								{new Date(crop.sowingDate).toLocaleDateString()}
 							</p>
 						</div>
 					)}
 				</div>
 
-				<div
-					className="rounded-lg px-3 py-2 text-xs font-semibold text-center"
-					style={{ backgroundColor: config.bg, color: config.text }}
-				>
+				<div className={"rounded-lg px-3 py-2 text-center text-xs font-semibold " + config.cls}>
 					{config.label}
 				</div>
 			</div>
@@ -50,7 +47,7 @@ function CropCard({ crop, onEdit, onDelete }) {
 				{onEdit && (
 					<button
 						onClick={() => onEdit(crop)}
-						className="flex-1 rounded-lg bg-[#2f7f3c] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#1b4f2f]"
+						className="flex-1 rounded-lg bg-emerald-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
 					>
 						Editar
 					</button>
@@ -58,7 +55,7 @@ function CropCard({ crop, onEdit, onDelete }) {
 				{onDelete && (
 					<button
 						onClick={() => onDelete(crop.id)}
-						className="flex-1 rounded-lg bg-[#fbe8e5] px-3 py-2 text-sm font-semibold text-[#b43a2f] transition hover:bg-[#f5d9d5]"
+						className="flex-1 rounded-lg bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-400 transition hover:bg-red-500/20"
 					>
 						Eliminar
 					</button>

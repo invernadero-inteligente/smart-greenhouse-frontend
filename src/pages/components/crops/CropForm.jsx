@@ -53,7 +53,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 		<form onSubmit={handleSubmit} className="space-y-4">
 			<div className="grid grid-cols-2 gap-4">
 				<div>
-					<label className="block text-sm font-semibold text-[#1b4f2f] mb-2">
+					<label className="mb-2 block text-sm font-semibold text-emerald-900">
 						Nombre del Cultivo
 					</label>
 					<input
@@ -61,20 +61,20 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="name"
 						value={formData.name}
 						onChange={handleChange}
-						className={`w-full rounded-lg border px-4 py-2 font-body text-sm transition ${
+						className={`w-full rounded-lg border bg-white px-4 py-2 font-body text-sm text-emerald-900 transition ${
 							errors.name
-								? "border-[#b43a2f] bg-[#fbe8e5]"
-								: "border-[#d0e5c9] focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#2f7f3c]/20"
+								? "border-red-500/50 bg-red-50"
+								: "border-[#e5e0c3] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
 						}`}
 						placeholder="Ej: Tomate"
 					/>
 					{errors.name && (
-						<p className="mt-1 text-xs text-[#b43a2f]">{errors.name}</p>
+						<p className="mt-1 text-xs text-red-400">{errors.name}</p>
 					)}
 				</div>
 
 				<div>
-					<label className="block text-sm font-semibold text-[#1b4f2f] mb-2">
+					<label className="mb-2 block text-sm font-semibold text-zinc-700 dark:text-zinc-200">
 						Variedad
 					</label>
 					<input
@@ -82,7 +82,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="variety"
 						value={formData.variety}
 						onChange={handleChange}
-						className="w-full rounded-lg border border-[#d0e5c9] px-4 py-2 font-body text-sm transition focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#2f7f3c]/20"
+						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
 						placeholder="Ej: Cherry"
 					/>
 				</div>
@@ -90,17 +90,17 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 
 			<div className="grid grid-cols-2 gap-4">
 				<div>
-					<label className="block text-sm font-semibold text-[#1b4f2f] mb-2">
+					<label className="mb-2 block text-sm font-semibold text-zinc-700 dark:text-zinc-200">
 						Zona
 					</label>
 					<select
 						name="zoneId"
 						value={formData.zoneId}
 						onChange={handleChange}
-						className={`w-full rounded-lg border px-4 py-2 font-body text-sm transition ${
+						className={`w-full rounded-lg border bg-white px-4 py-2 font-body text-sm text-emerald-900 transition ${
 							errors.zoneId
-								? "border-[#b43a2f] bg-[#fbe8e5]"
-								: "border-[#d0e5c9] focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#2f7f3c]/20"
+								? "border-red-500/50 bg-red-50"
+								: "border-[#e5e0c3] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
 						}`}
 					>
 						<option value="">Seleccionar zona</option>
@@ -111,12 +111,12 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						))}
 					</select>
 					{errors.zoneId && (
-						<p className="mt-1 text-xs text-[#b43a2f]">{errors.zoneId}</p>
+						<p className="mt-1 text-xs text-red-400">{errors.zoneId}</p>
 					)}
 				</div>
 
 				<div>
-					<label className="block text-sm font-semibold text-[#1b4f2f] mb-2">
+					<label className="mb-2 block text-sm font-semibold text-zinc-700 dark:text-zinc-200">
 						Cantidad de Plantas
 					</label>
 					<input
@@ -124,7 +124,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="plantCount"
 						value={formData.plantCount}
 						onChange={handleChange}
-						className="w-full rounded-lg border border-[#d0e5c9] px-4 py-2 font-body text-sm transition focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#2f7f3c]/20"
+						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
 						placeholder="0"
 					/>
 				</div>
@@ -132,7 +132,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 
 			<div className="grid grid-cols-2 gap-4">
 				<div>
-					<label className="block text-sm font-semibold text-[#1b4f2f] mb-2">
+					<label className="mb-2 block text-sm font-semibold text-zinc-700 dark:text-zinc-200">
 						Fecha de Siembra
 					</label>
 					<input
@@ -140,19 +140,19 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="sowingDate"
 						value={formData.sowingDate}
 						onChange={handleChange}
-						className="w-full rounded-lg border border-[#d0e5c9] px-4 py-2 font-body text-sm transition focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#2f7f3c]/20"
+						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
 					/>
 				</div>
 
 				<div>
-					<label className="block text-sm font-semibold text-[#1b4f2f] mb-2">
+					<label className="mb-2 block text-sm font-semibold text-zinc-700 dark:text-zinc-200">
 						Estado
 					</label>
 					<select
 						name="status"
 						value={formData.status}
 						onChange={handleChange}
-						className="w-full rounded-lg border border-[#d0e5c9] px-4 py-2 font-body text-sm transition focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#2f7f3c]/20"
+						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
 					>
 					<option value="ACTIVE">Activo</option>
 					<option value="HARVEST">Cosechando</option>
@@ -165,7 +165,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 				<button
 					type="submit"
 					disabled={isLoading}
-					className="flex-1 rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f] disabled:opacity-50"
+					className="flex-1 rounded-lg bg-emerald-500 px-4 py-2 font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
 				>
 					{isLoading ? "Guardando..." : crop ? "Actualizar" : "Crear"}
 				</button>
@@ -173,7 +173,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 					<button
 						type="button"
 						onClick={onCancel}
-						className="flex-1 rounded-lg border border-[#d0e5c9] px-4 py-2 font-semibold text-[#1b4f2f] transition hover:bg-[#e9f5e6]"
+						className="flex-1 rounded-lg border border-[#e5e0c3] px-4 py-2 font-semibold text-emerald-900 transition hover:bg-[#f5f3e7]"
 					>
 						Cancelar
 					</button>

@@ -72,29 +72,29 @@ function AdminUsers() {
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
-				<h1 className="font-heading text-3xl font-bold text-[#1b4f2f]">
-					Gestión de Usuarios
-				</h1>
-				<button
-					onClick={() => {
-						setEditingUser(null);
-						setShowForm(!showForm);
-					}}
-					className="rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f]"
-				>
-					{showForm ? "Cancelar" : "+ Nuevo Usuario"}
-				</button>
+				       <h1 className="font-heading text-3xl font-bold text-[var(--primary)]">
+					       Gestión de Usuarios
+				       </h1>
+				       <button
+					       onClick={() => {
+						       setEditingUser(null);
+						       setShowForm(!showForm);
+					       }}
+					       className="rounded-lg bg-[var(--primary)] px-4 py-2 font-semibold text-white transition hover:bg-[var(--secondary)]"
+				       >
+					       {showForm ? "Cancelar" : "+ Nuevo Usuario"}
+				       </button>
 			</div>
 
 			{error && (
-				<div className="rounded-lg border border-[#fde5e0] bg-[#fbe8e5] px-4 py-3 text-sm text-[#b43a2f]">
+				   <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
 					{error}
 				</div>
 			)}
 
 			{showForm && (
-				<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-6">
-					<h2 className="mb-4 font-heading text-lg font-bold text-[#1b4f2f]">
+				       <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-muted)] p-6">
+					       <h2 className="mb-4 font-heading text-lg font-bold text-[var(--primary)]">
 						{editingUser ? "Editar Usuario" : "Nuevo Usuario"}
 					</h2>
 					<UserForm
@@ -107,52 +107,52 @@ function AdminUsers() {
 			)}
 
 			<div className="space-y-4">
-				<input
-					type="text"
-					placeholder="Buscar por nombre o email..."
-					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
-					className="w-full rounded-lg border border-[#d0e5c9] px-4 py-2 font-body text-sm transition focus:border-[#2f7f3c] focus:ring-2 focus:ring-[#2f7f3c]/20"
-				/>
+				       <input
+					       type="text"
+					       placeholder="Buscar por nombre o email..."
+					       value={searchTerm}
+					       onChange={(e) => setSearchTerm(e.target.value)}
+					       className="w-full rounded-lg border border-[var(--border)] px-4 py-2 font-body text-sm transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--secondary)]"
+				       />
 
-				<div className="flex flex-wrap gap-2">
-					<button
-						onClick={() => {
-							setFilterRole(null);
-							setFilterActive(null);
-						}}
-						className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-							filterRole === null && filterActive === null
-								? "bg-[#2f7f3c] text-white"
-								: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
-						}`}
-					>
-						Todos ({users.length})
-					</button>
-					<button
-						onClick={() => setFilterActive(true)}
-						className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-							filterActive === true
-								? "bg-[#2f7f3c] text-white"
-								: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
-						}`}
-					>
-						Activos ({users.filter(u => u.active).length})
-					</button>
-					<button
-						onClick={() => setFilterActive(false)}
-						className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-							filterActive === false
-								? "bg-[#2f7f3c] text-white"
-								: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
-						}`}
-					>
-						Inactivos ({users.filter(u => !u.active).length})
-					</button>
-				</div>
+				       <div className="flex flex-wrap gap-2">
+					       <button
+						       onClick={() => {
+							       setFilterRole(null);
+							       setFilterActive(null);
+						       }}
+						       className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+							       filterRole === null && filterActive === null
+								       ? "bg-[var(--primary)] text-white"
+								       : "border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--card-muted)]"
+						       }`}
+					       >
+						       Todos ({users.length})
+					       </button>
+					       <button
+						       onClick={() => setFilterActive(true)}
+						       className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+							       filterActive === true
+								       ? "bg-[var(--primary)] text-white"
+								       : "border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--card-muted)]"
+						       }`}
+					       >
+						       Activos ({users.filter(u => u.active).length})
+					       </button>
+					       <button
+						       onClick={() => setFilterActive(false)}
+						       className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+							       filterActive === false
+								       ? "bg-[var(--primary)] text-white"
+								       : "border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--card-muted)]"
+						       }`}
+					       >
+						       Inactivos ({users.filter(u => !u.active).length})
+					       </button>
+				       </div>
 
-				<div className="flex flex-wrap gap-2 border-t border-[#d0e5c9] pt-2">
-					<span className="py-2 text-sm font-semibold text-[#666]">Por rol:</span>
+				       <div className="flex flex-wrap gap-2 border-t border-[var(--border)] pt-2">
+					       <span className="py-2 text-sm font-semibold text-[var(--muted)]">Por rol:</span>
 					{["VIEWER", "TECHNICIAN", "MANAGER", "ADMIN"].map(role => {
 						const roleLabels = {
 							VIEWER: "Visualizador",
@@ -164,11 +164,11 @@ function AdminUsers() {
 							<button
 								key={role}
 								onClick={() => setFilterRole(filterRole === role ? null : role)}
-								className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
-									filterRole === role
-										? "bg-[#2f7f3c] text-white"
-										: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
-								}`}
+								       className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+									       filterRole === role
+										       ? "bg-[var(--primary)] text-white"
+										       : "border border-[var(--border)] text-[var(--primary)] hover:bg-[var(--card-muted)]"
+								       }`}
 							>
 								{roleLabels[role]}
 							</button>
@@ -178,8 +178,8 @@ function AdminUsers() {
 			</div>
 
 			{filteredUsers.length === 0 ? (
-				<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-8 text-center">
-					<p className="text-[#666]">
+				       <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-muted)] p-8 text-center">
+					       <p className="text-[var(--muted)]">
 						{users.length === 0
 							? "No hay usuarios"
 							: "No hay usuarios que coincidan con los filtros"}

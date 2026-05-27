@@ -55,24 +55,27 @@ function CropsList() {
 	if (loading && crops.length === 0) {
 		return (
 			<div className="flex h-96 items-center justify-center">
-				<p className="text-[#666]">Cargando cultivos...</p>
+				<p className="text-emerald-600">Cargando cultivos...</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="space-y-6">
-			<div className="flex items-center justify-between">
-				<h1 className="font-heading text-3xl font-bold text-[#1b4f2f]">
-					Gestión de Cultivos
-				</h1>
+		<div className="space-y-6 rounded-3xl border border-[#e5e0c3] bg-white/90 p-7">
+			   <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#e5e0c3] bg-[#f5f3e7] px-7 py-5">
+				<div>
+					<h1 className="font-heading text-3xl font-bold text-emerald-700">
+						Gestión de Cultivos
+					</h1>
+					<p className="mt-1 text-base text-emerald-700/80">Seguimiento de estado, zona y ciclo de los cultivos.</p>
+				</div>
 				{allowEdit && (
 					<button
 						onClick={() => {
 							setEditingCrop(null);
 							setShowForm(!showForm);
 						}}
-						className="rounded-lg bg-[#2f7f3c] px-4 py-2 font-semibold text-white transition hover:bg-[#1b4f2f]"
+						   className="rounded-2xl bg-emerald-500 px-5 py-2.5 text-base font-semibold text-white transition hover:bg-emerald-600"
 					>
 						{showForm ? "Cancelar" : "+ Nuevo Cultivo"}
 					</button>
@@ -80,14 +83,14 @@ function CropsList() {
 			</div>
 
 			{error && (
-				<div className="rounded-lg border border-[#fde5e0] bg-[#fbe8e5] px-4 py-3 text-sm text-[#b43a2f]">
+				<div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
 					{error}
 				</div>
 			)}
 
-			{allowEdit && showForm && (
-				<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-6">
-					<h2 className="mb-4 font-heading text-lg font-bold text-[#1b4f2f]">
+			   {allowEdit && showForm && (
+				   <div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6">
+					   <h2 className="mb-4 font-heading text-lg font-bold text-emerald-900">
 						{editingCrop ? "Editar Cultivo" : "Nuevo Cultivo"}
 					</h2>
 					<CropForm
@@ -99,36 +102,36 @@ function CropsList() {
 				</div>
 			)}
 
-			<div className="flex flex-wrap gap-2">
+			   <div className="flex flex-wrap gap-2 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3">
 				<button
 					onClick={() => {
 						setFilterStatus(null);
 						setFilterZone(null);
 					}}
-					className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterStatus === null && filterZone === null
-							? "bg-[#2f7f3c] text-white"
-							: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
+							   ? "border-transparent bg-emerald-500 text-white"
+							   : "border-[#e5e0c3] bg-white/90 text-emerald-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Todos ({crops.length})
 				</button>
 				<button
 					onClick={() => setFilterStatus("ACTIVE")}
-					className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterStatus === "ACTIVE"
-							? "bg-[#2f7f3c] text-white"
-							: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
+							? "border-transparent bg-emerald-500 text-white"
+							: "border-[#e5e0c3] bg-white text-emerald-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Activos ({crops.filter(c => c.status === "ACTIVE").length})
 				</button>
 				<button
 					onClick={() => setFilterStatus("HARVEST")}
-					className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterStatus === "HARVEST"
-							? "bg-[#2f7f3c] text-white"
-							: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
+							? "border-transparent bg-emerald-500 text-zinc-950"
+							: "border-zinc-700 bg-zinc-950 text-zinc-200 hover:bg-zinc-800"
 					}`}
 				>
 					Cosechando ({crops.filter(c => c.status === "HARVEST").length})
@@ -136,16 +139,16 @@ function CropsList() {
 			</div>
 
 			{zones.length > 0 && (
-				<div className="flex flex-wrap gap-2 border-t border-[#d0e5c9] pt-2">
-					<span className="py-2 text-sm font-semibold text-[#666]">Filtrar por zona:</span>
+				<div className="flex flex-wrap gap-2 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3">
+					<span className="py-2 text-sm font-semibold text-emerald-700/60">Filtrar por zona:</span>
 					{zones.map(zone => (
 						<button
 							key={zone.id}
 							onClick={() => setFilterZone(filterZone === zone.id ? null : zone.id)}
-							className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+							className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 								filterZone === zone.id
-									? "bg-[#2f7f3c] text-white"
-									: "border border-[#d0e5c9] text-[#1b4f2f] hover:bg-[#e9f5e6]"
+									? "border-transparent bg-emerald-500 text-white"
+									: "border-[#e5e0c3] bg-white text-emerald-900 hover:bg-[#f5f3e7]"
 							}`}
 						>
 							{zone.name}
@@ -155,8 +158,8 @@ function CropsList() {
 			)}
 
 			{filteredCrops.length === 0 ? (
-				<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-8 text-center">
-					<p className="text-[#666]">
+				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-10 text-center">
+					<p className="text-zinc-400">
 						{crops.length === 0
 							? "No hay cultivos creados"
 							: "No hay cultivos que coincidan con los filtros"}

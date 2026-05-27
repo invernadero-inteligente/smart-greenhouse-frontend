@@ -14,11 +14,11 @@ const CATEGORY_LABELS = {
 };
 
 const CATEGORY_COLORS = {
-	FERTILIZER: "bg-[#e9f5e6] text-[#2f7f3c]",
-	PESTICIDE:  "bg-[#fff4e6] text-[#9f6b3d]",
-	SEEDS:      "bg-[#f0f4ff] text-[#3d5f9f]",
-	TOOLS:      "bg-[#f5f0ff] text-[#7b5ea7]",
-	OTHER:      "bg-[#f0f0f0] text-[#666]",
+	FERTILIZER: "bg-emerald-100 text-emerald-700",
+	PESTICIDE:  "bg-amber-100 text-amber-700",
+	SEEDS:      "bg-[#EFE7D7] text-emerald-700",
+	TOOLS:      "bg-[#FAF7F2] text-emerald-700",
+	OTHER:      "bg-[#F6F1E8] text-emerald-700",
 };
 
 const EMPTY_FORM = { name: "", category: "SEEDS", quantity: "", unit: "", minStock: "" };
@@ -57,17 +57,17 @@ function InventoryModal({ item, onClose, onSave }) {
 		}
 	};
 
-	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-			<div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-				<div className="mb-5 flex items-center justify-between">
-					<h2 className="font-heading text-xl font-bold text-[#1b4f2f]">
-						{item ? "Editar item" : "Nuevo item"}
-					</h2>
-					<button
-						onClick={onClose}
-						className="rounded-lg p-1.5 text-[#6b8f72] hover:bg-[#e9f5e6]"
-					>
+		return (
+			<div className="fixed inset-0 z-50 flex items-center justify-center bg-emerald-900/10 p-4">
+				   <div className="w-full max-w-md rounded-2xl bg-white p-6">
+					<div className="mb-5 flex items-center justify-between">
+						<h2 className="font-heading text-xl font-bold text-emerald-700">
+							{item ? "Editar item" : "Nuevo item"}
+						</h2>
+						<button
+							onClick={onClose}
+							className="rounded-lg p-1.5 text-emerald-600 hover:bg-[#F6F1E8]"
+						>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-5 w-5">
 							<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
 						</svg>
@@ -75,31 +75,31 @@ function InventoryModal({ item, onClose, onSave }) {
 				</div>
 
 				{formError && (
-					<div className="mb-4 rounded-lg bg-[#fbe8e5] px-3 py-2 text-sm text-[#b43a2f]">
+					<div className="mb-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
 						{formError}
 					</div>
 				)}
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
-						<label className="mb-1 block text-sm font-semibold text-[#1b4f2f]">Nombre</label>
+						   <label className="mb-1 block text-sm font-semibold text-emerald-900">Nombre</label>
 						<input
 							name="name"
 							value={form.name}
 							onChange={handleChange}
 							required
-							className="w-full rounded-lg border border-[#d6e8d0] px-3 py-2 text-sm text-[#1b4f2f] focus:outline-none focus:ring-2 focus:ring-[#2f7f3c]"
+							   className="w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-200/40"
 							placeholder="Ej: Abono NPK"
 						/>
 					</div>
 
 					<div>
-						<label className="mb-1 block text-sm font-semibold text-[#1b4f2f]">Categoría</label>
+						   <label className="mb-1 block text-sm font-semibold text-emerald-900">Categoría</label>
 						<select
 							name="category"
 							value={form.category}
 							onChange={handleChange}
-							className="w-full rounded-lg border border-[#d6e8d0] bg-white px-3 py-2 text-sm text-[#1b4f2f] focus:outline-none focus:ring-2 focus:ring-[#2f7f3c]"
+							   className="w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-200/40"
 						>
 							{CATEGORIES.map((c) => (
 								<option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
@@ -109,7 +109,7 @@ function InventoryModal({ item, onClose, onSave }) {
 
 					<div className="grid grid-cols-2 gap-3">
 						<div>
-							<label className="mb-1 block text-sm font-semibold text-[#1b4f2f]">Cantidad</label>
+							<label className="mb-1 block text-sm font-semibold text-emerald-900">Cantidad</label>
 							<input
 								name="quantity"
 								type="number"
@@ -118,25 +118,25 @@ function InventoryModal({ item, onClose, onSave }) {
 								value={form.quantity}
 								onChange={handleChange}
 								required
-								className="w-full rounded-lg border border-[#d6e8d0] px-3 py-2 text-sm text-[#1b4f2f] focus:outline-none focus:ring-2 focus:ring-[#2f7f3c]"
+								className="w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
 								placeholder="0"
 							/>
 						</div>
 						<div>
-							<label className="mb-1 block text-sm font-semibold text-[#1b4f2f]">Unidad</label>
+							<label className="mb-1 block text-sm font-semibold text-emerald-900">Unidad</label>
 							<input
 								name="unit"
 								value={form.unit}
 								onChange={handleChange}
 								required
-								className="w-full rounded-lg border border-[#d6e8d0] px-3 py-2 text-sm text-[#1b4f2f] focus:outline-none focus:ring-2 focus:ring-[#2f7f3c]"
+								className="w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
 								placeholder="Ej: kg, L, unidades"
 							/>
 						</div>
 					</div>
 
 					<div>
-						<label className="mb-1 block text-sm font-semibold text-[#1b4f2f]">Stock mínimo</label>
+						<label className="mb-1 block text-sm font-semibold text-emerald-900">Stock mínimo</label>
 						<input
 							name="minStock"
 							type="number"
@@ -144,7 +144,7 @@ function InventoryModal({ item, onClose, onSave }) {
 							step="0.01"
 							value={form.minStock}
 							onChange={handleChange}
-							className="w-full rounded-lg border border-[#d6e8d0] px-3 py-2 text-sm text-[#1b4f2f] focus:outline-none focus:ring-2 focus:ring-[#2f7f3c]"
+							className="w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
 							placeholder="0"
 						/>
 					</div>
@@ -153,14 +153,14 @@ function InventoryModal({ item, onClose, onSave }) {
 						<button
 							type="button"
 							onClick={onClose}
-							className="rounded-lg border border-[#d6e8d0] px-4 py-2 text-sm font-semibold text-[#3a5745] hover:bg-[#f9fcf8]"
+							className="rounded-lg border border-[#e5e0c3] px-4 py-2 text-sm font-semibold text-emerald-900 hover:bg-[#f5f3e7]"
 						>
 							Cancelar
 						</button>
 						<button
 							type="submit"
 							disabled={saving}
-							className="rounded-lg bg-[#2f7f3c] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1b4f2f] disabled:opacity-60"
+							className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:opacity-60"
 						>
 							{saving ? "Guardando…" : item ? "Guardar cambios" : "Agregar item"}
 						</button>
@@ -237,25 +237,26 @@ export default function InventoryList() {
 	};
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6 rounded-3xl border border-[#e5e0c3] bg-white/90 p-6">
 			{/* Header */}
-			<div className="flex flex-wrap items-center justify-between gap-3">
+			<div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e5e0c3] bg-[#f5f3e7] px-5 py-4">
 				<div>
-					<h1 className="font-heading text-3xl font-bold text-[#1b4f2f]">Inventario</h1>
+					<h1 className="font-heading text-3xl font-bold text-emerald-900">Inventario</h1>
+					<p className="mt-1 text-sm text-emerald-700/60">Control de insumos con foco en mínimos y reposición.</p>
 					{!allowEdit && (
-						<p className="mt-1 text-xs text-[#9dbaa5]">Solo lectura</p>
+						<p className="mt-1 text-xs text-emerald-700/60">Solo lectura</p>
 					)}
 				</div>
 				<div className="flex flex-wrap items-center gap-2">
 					{lowCount > 0 && (
-						<span className="rounded-full bg-[#fff4e6] px-3 py-1 text-sm font-bold text-[#9f6b3d]">
+						<span className="rounded-full bg-amber-500/10 px-3 py-1 text-sm font-bold text-amber-400">
 							{lowCount} con stock bajo
 						</span>
 					)}
 					{allowEdit && (
 						<button
 							onClick={() => setModal({ mode: "create" })}
-							className="rounded-lg bg-[#2f7f3c] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1b4f2f]"
+							className="rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-400"
 						>
 							+ Agregar item
 						</button>
@@ -264,30 +265,30 @@ export default function InventoryList() {
 			</div>
 
 			{/* Filtros */}
-			<div className="flex flex-wrap gap-3">
+			<div className="flex flex-wrap gap-3 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3">
 				<input
 					type="text"
 					placeholder="Buscar por nombre…"
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}
-					className="rounded-lg border border-[#d6e8d0] bg-white px-3 py-2 text-sm text-[#1b4f2f] focus:outline-none focus:ring-2 focus:ring-[#2f7f3c]"
+					className="rounded-xl border border-[#e5e0c3] bg-white px-3 py-2.5 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
 				/>
 				<select
 					value={categoryFilter}
 					onChange={(e) => setCategoryFilter(e.target.value)}
-					className="rounded-lg border border-[#d6e8d0] bg-white px-3 py-2 text-sm text-[#1b4f2f] focus:outline-none focus:ring-2 focus:ring-[#2f7f3c]"
+					className="rounded-xl border border-[#e5e0c3] bg-white px-3 py-2.5 text-sm text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
 				>
 					<option value="">Todas las categorías</option>
 					{CATEGORIES.map((c) => (
 						<option key={c} value={c}>{CATEGORY_LABELS[c]}</option>
 					))}
 				</select>
-				<label className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#d6e8d0] bg-white px-3 py-2 text-sm font-medium text-[#1b4f2f]">
+				<label className="flex cursor-pointer items-center gap-2 rounded-xl border border-[#e5e0c3] bg-white px-3 py-2.5 text-sm font-medium text-emerald-900">
 					<input
 						type="checkbox"
 						checked={lowStockFilter}
 						onChange={(e) => setLowStockFilter(e.target.checked)}
-						className="accent-[#2f7f3c]"
+						className="accent-emerald-500"
 					/>
 					Solo stock bajo
 				</label>
@@ -295,27 +296,27 @@ export default function InventoryList() {
 
 			{/* Error */}
 			{error && (
-				<div className="rounded-xl border border-[#fbe8e5] bg-[#fbe8e5] px-4 py-3 text-sm text-[#b43a2f]">
+				<div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
 					{error}
 				</div>
 			)}
 
 			{/* Tabla */}
 			{loading ? (
-				<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-10 text-center">
-					<p className="text-sm text-[#9dbaa5]">Cargando inventario…</p>
+				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-10 text-center">
+					<p className="text-sm text-emerald-700/60">Cargando inventario…</p>
 				</div>
 			) : filtered.length === 0 ? (
-				<div className="rounded-2xl border border-[#e9f5e6] bg-[#f9fcf8] p-10 text-center">
-					<p className="font-heading text-lg font-semibold text-[#2f7f3c]">No hay items</p>
-					<p className="mt-1 text-sm text-[#9dbaa5]">
+				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-10 text-center">
+					<p className="font-heading text-lg font-semibold text-emerald-900">No hay items</p>
+					<p className="mt-1 text-sm text-emerald-700/60">
 						{search || categoryFilter || lowStockFilter
 							? "Prueba cambiando los filtros"
 							: "Comienza agregando el primer item al inventario"}
 					</p>
 				</div>
 			) : (
-				<div className="overflow-x-auto rounded-2xl border border-[#e9f5e6] shadow-sm">
+				<div className="overflow-x-auto rounded-2xl border border-[#e5e0c3] bg-white/90">
 					<table className="w-full text-sm">
 						<thead>
 							<tr className="border-b border-[#e9f5e6] bg-[#f9fcf8]">
@@ -343,7 +344,7 @@ export default function InventoryList() {
 									<td className="px-5 py-4">
 										<span className={
 											"rounded-full px-3 py-1 text-xs font-semibold " +
-											(CATEGORY_COLORS[item.category] ?? "bg-gray-100 text-gray-600")
+											(CATEGORY_COLORS[item.category] ?? "bg-[#f5f3e7] text-emerald-700")
 										}>
 											{CATEGORY_LABELS[item.category] ?? item.category}
 										</span>
@@ -406,16 +407,16 @@ export default function InventoryList() {
 
 			{/* Confirmación eliminar */}
 			{deleteConfirm && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-					<div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-						<h2 className="font-heading text-lg font-bold text-[#1b4f2f]">Eliminar item</h2>
-						<p className="mt-2 text-sm text-[#6b8f72]">
-							¿Estás seguro que deseas eliminar <strong className="text-[#1b4f2f]">{deleteConfirm.name}</strong>? Esta acción no se puede deshacer.
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-emerald-900/10 p-4">
+					<div className="w-full max-w-sm rounded-2xl bg-white p-6">
+						<h2 className="font-heading text-lg font-bold text-emerald-900">Eliminar item</h2>
+						<p className="mt-2 text-sm text-emerald-700/60">
+							¿Estás seguro que deseas eliminar <strong className="text-emerald-900">{deleteConfirm.name}</strong>? Esta acción no se puede deshacer.
 						</p>
 						<div className="mt-5 flex justify-end gap-3">
 							<button
 								onClick={() => setDeleteConfirm(null)}
-								className="rounded-lg border border-[#d6e8d0] px-4 py-2 text-sm font-semibold text-[#3a5745] hover:bg-[#f9fcf8]"
+								className="rounded-lg border border-[#e5e0c3] px-4 py-2 text-sm font-semibold text-emerald-900 hover:bg-[#f5f3e7]"
 							>
 								Cancelar
 							</button>

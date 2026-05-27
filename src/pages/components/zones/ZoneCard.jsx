@@ -1,22 +1,24 @@
-function ZoneCard({ zone, onEdit, onDelete }) {
+function ZoneCard({ zone, onEdit, onDeactivate, onActivate }) {
+	const isActive = (zone.isActive ?? zone.active) !== false;
+
 	return (
-		<div className="rounded-2xl border border-[#e9f5e6] bg-white p-6 shadow-soft transition hover:shadow-lg">
+		<div className="rounded-2xl border border-zinc-300 bg-white p-6 shadow-soft transition hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
 			<div className="flex items-start justify-between">
 				<div className="flex-1">
-					<h3 className="font-heading text-lg font-bold text-[#1b4f2f]">
+					<h3 className="font-heading text-lg font-bold text-zinc-900 dark:text-zinc-100">
 						{zone.name}
 					</h3>
-					<p className="mt-2 text-sm text-[#666] line-clamp-2">
+					<p className="mt-2 line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">
 						{zone.description || "Sin descripción"}
 					</p>
 					<div className="mt-4 flex items-center gap-2">
 						<span
 							className={`inline-block h-3 w-3 rounded-full ${
-								(zone.isActive ?? zone.active) ? "bg-[#2f7f3c]" : "bg-[#999]"
+								isActive ? "bg-emerald-500" : "bg-zinc-500"
 							}`}
 						/>
-						<span className="text-xs font-semibold text-[#666]">
-							{(zone.isActive ?? zone.active) ? "Activa" : "Inactiva"}
+						<span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+							{isActive ? "Activa" : "Inactiva"}
 						</span>
 					</div>
 				</div>
@@ -25,17 +27,25 @@ function ZoneCard({ zone, onEdit, onDelete }) {
 				{onEdit && (
 					<button
 						onClick={() => onEdit(zone)}
-						className="flex-1 rounded-lg bg-[#2f7f3c] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#1b4f2f]"
+						className="flex-1 rounded-lg bg-emerald-500 px-3 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
 					>
 						Editar
 					</button>
 				)}
-				{onDelete && (
+				{isActive && onDeactivate && (
 					<button
-						onClick={() => onDelete(zone.id)}
-						className="flex-1 rounded-lg bg-[#fbe8e5] px-3 py-2 text-sm font-semibold text-[#b43a2f] transition hover:bg-[#f5d9d5]"
+						onClick={() => onDeactivate(zone.id)}
+						className="flex-1 rounded-lg bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-400 transition hover:bg-red-500/20"
 					>
-						Eliminar
+						Desactivar
+					</button>
+				)}
+				{!isActive && onActivate && (
+					<button
+						onClick={() => onActivate(zone.id)}
+						className="flex-1 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-400 transition hover:bg-emerald-500/20"
+					>
+						Reactivar
 					</button>
 				)}
 			</div>

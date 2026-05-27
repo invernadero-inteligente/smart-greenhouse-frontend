@@ -62,11 +62,12 @@ throw err;
 
 const deleteZone = async (id) => {
 try {
-await zoneService.deleteZone(id);
-setZones(prev => prev.filter(z => z.id !== id));
+const response = await zoneService.deleteZone(id);
+const zone = response?.data ?? response;
+setZones(prev => prev.map(z => (z.id === id ? { ...z, ...(zone ?? {}), isActive: false } : z)));
 } catch (err) {
 if (!err.response) {
-setZones(prev => prev.filter(z => z.id !== id));
+setZones(prev => prev.map(z => (z.id === id ? { ...z, isActive: false } : z)));
 return;
 }
 setError(err.message);
@@ -74,5 +75,20 @@ throw err;
 }
 };
 
-return { zones, loading, error, fetchZones, createZone, updateZone, deleteZone };
+const restoreZone = async (id) => {
+try {
+const response = await zoneService.restoreZone(id);
+const zone = response?.data ?? response;
+setZones(prev => prev.map(z => (z.id === id ? { ...z, ...(zone ?? {}), isActive: true } : z)));
+} catch (err) {
+if (!err.response) {
+setZones(prev => prev.map(z => (z.id === id ? { ...z, isActive: true } : z)));
+return;
+}
+setError(err.message);
+throw err;
+}
+};
+
+return { zones, loading, error, fetchZones, createZone, updateZone, deleteZone, restoreZone };
 }

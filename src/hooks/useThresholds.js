@@ -1,10 +1,27 @@
 ﻿import { useState, useEffect, useCallback } from "react";
 import { thresholdService } from "../services/threshold.service";
 
+const THRESHOLDS_ACTIVE_OVERRIDES_KEY = "smart-greenhouse.thresholds.active-overrides.v1";
+
+function readOverrides() {
+	try {
+		const raw = localStorage.getItem(THRESHOLDS_ACTIVE_OVERRIDES_KEY);
+		const parsed = raw ? JSON.parse(raw) : {};
+		return parsed && typeof parsed === "object" ? parsed : {};
+	} catch {
+		return {};
+	}
+}
+
+function writeOverrides(overrides) {
+	localStorage.setItem(THRESHOLDS_ACTIVE_OVERRIDES_KEY, JSON.stringify(overrides));
+}
+
 export function useThresholds(zoneIds = [], variables = []) {
 	const [thresholds, setThresholds] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const [activeOverrides, setActiveOverrides] = useState(() => readOverrides());
 
 	const zoneIdsKey = JSON.stringify(zoneIds);
 	const variablesKey = JSON.stringify(variables);
@@ -20,17 +37,29 @@ export function useThresholds(zoneIds = [], variables = []) {
 			const response = await thresholdService.listThresholds(zoneIds, variables);
 			// thresholdService.listThresholds returns the response body, which has shape { data: ThresholdZoneResponseDTO[] }
 			const groups = response?.data ?? [];
-			const flat = Array.isArray(groups)
+			const flatRaw = Array.isArray(groups)
 				? groups.flatMap((group) => (group.variables ?? []).map((v) => ({ ...v, zoneId: group.zoneId })))
 				: [];
-			setThresholds(flat);
+
+			const seen = new Set();
+			const flat = flatRaw.filter((item) => {
+				const key = String(item?.id);
+				if (seen.has(key)) return false;
+				seen.add(key);
+				return true;
+			});
+
+			setThresholds(flat.map((item) => {
+				const override = activeOverrides[String(item.id)];
+				return override === undefined ? item : { ...item, isActive: override };
+			}));
 			setError(null);
 		} catch (err) {
 			setError(err.message || "Error del servidor");
 		} finally {
 			setLoading(false);
 		}
-	}, [zoneIdsKey, variablesKey]);
+	}, [zoneIdsKey, variablesKey, activeOverrides]);
 
 	useEffect(() => {
 		fetchThresholds();
@@ -69,5 +98,60 @@ export function useThresholds(zoneIds = [], variables = []) {
 		}
 	};
 
-	return { thresholds, loading, error, fetchThresholds, createThreshold, updateThreshold };
+	const deactivateThreshold = async (id) => {
+		try {
+			const result = await thresholdService.deactivateThreshold(id);
+			if (result?.fallback) {
+				setActiveOverrides((prev) => {
+					const next = { ...prev, [String(id)]: false };
+					writeOverrides(next);
+					return next;
+				});
+			}
+			setThresholds((prev) => prev.map((t) => (t.id === id ? { ...t, isActive: false } : t)));
+			return true;
+		} catch (err) {
+			if (!err.response) {
+				setThresholds((prev) => prev.map((t) => (t.id === id ? { ...t, isActive: false } : t)));
+				return true;
+			}
+			const msg = err?.response?.data?.message ?? err.message ?? "Error al desactivar umbral";
+			setError(msg);
+			throw err;
+		}
+	};
+
+	const reactivateThreshold = async (id) => {
+		try {
+			const result = await thresholdService.reactivateThreshold(id);
+			if (result?.fallback) {
+				setActiveOverrides((prev) => {
+					const next = { ...prev, [String(id)]: true };
+					writeOverrides(next);
+					return next;
+				});
+			}
+			setThresholds((prev) => prev.map((t) => (t.id === id ? { ...t, isActive: true } : t)));
+			return true;
+		} catch (err) {
+			if (!err.response) {
+				setThresholds((prev) => prev.map((t) => (t.id === id ? { ...t, isActive: true } : t)));
+				return true;
+			}
+			const msg = err?.response?.data?.message ?? err.message ?? "Error al reactivar umbral";
+			setError(msg);
+			throw err;
+		}
+	};
+
+	return {
+		thresholds,
+		loading,
+		error,
+		fetchThresholds,
+		createThreshold,
+		updateThreshold,
+		deactivateThreshold,
+		reactivateThreshold,
+	};
 }

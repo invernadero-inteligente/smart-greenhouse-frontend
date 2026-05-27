@@ -3,8 +3,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useZones } from "../../hooks/useZones";
 import { useCrops } from "../../hooks/useCrops";
 import { useThresholds } from "../../hooks/useThresholds";
-import { userService } from "../../services/user.service";
-
+import { useAlerts } from "../../hooks/useAlerts";
 const ROLES = ["ADMIN", "MANAGER", "TECHNICIAN", "VIEWER"];
 
 const ROLE_LABELS = {
@@ -15,22 +14,22 @@ VIEWER: "Visualizador",
 };
 
 const ROLE_COLORS = {
-ADMIN:      "bg-[#fbe8e5] text-[#b43a2f]",
-MANAGER:    "bg-[#fff4e6] text-[#9f6b3d]",
-TECHNICIAN: "bg-[#e9f5e6] text-[#2f7f3c]",
-VIEWER:     "bg-[#f0f4ff] text-[#3d5f9f]",
+	ADMIN:      "bg-[#fff7e0] text-[#b5a16a]", // dorado premium
+	MANAGER:    "bg-[#f5f3e7] text-emerald-700", // beige premium
+	TECHNICIAN: "bg-emerald-100 text-emerald-700",
+	VIEWER:     "bg-[#f5f3e7] text-emerald-700", // beige premium
 };
 
 const STATUS_CROP = {
-ACTIVE:   { label: "Activo",      cls: "bg-[#e9f5e6] text-[#2f7f3c]" },
-HARVEST:  { label: "Cosechando",  cls: "bg-[#fff4e6] text-[#9f6b3d]" },
-FINISHED: { label: "Finalizado",  cls: "bg-[#f0f0f0] text-[#666]" },
+	ACTIVE:   { label: "Activo",      cls: "bg-emerald-100 text-emerald-700" },
+	HARVEST:  { label: "Cosechando",  cls: "bg-[#fff7e0] text-[#b5a16a]" },
+	FINISHED: { label: "Finalizado",  cls: "bg-[#f5f3e7] text-[#b5a16a]" },
 };
 
 const SEVERITY_COLORS = {
-CRITICAL: "bg-[#fbe8e5] text-[#b43a2f]",
-WARNING:  "bg-[#fff4e6] text-[#9f6b3d]",
-INFO:     "bg-[#f0f4ff] text-[#3d5f9f]",
+	CRITICAL: "bg-[#fff7e0] text-[#b5a16a]",
+	WARNING:  "bg-[#f5f3e7] text-emerald-700",
+	INFO:     "bg-[#f5f3e7] text-emerald-700",
 };
 
 const VAR_NAMES = {
@@ -49,22 +48,7 @@ TOOLS:      "Herramientas",
 OTHER:      "Otro",
 };
 
-const daysAgo = (n) => {
-const d = new Date();
-d.setDate(d.getDate() - n);
-return d;
-};
-
-const MOCK_AUDIT = [
-{ id: 1, user: "Carlos Ramírez", action: "Creó zona", detail: "Zona A - Tomates", ts: daysAgo(0) },
-{ id: 2, user: "María González", action: "Activó cultivo", detail: "Tomate Cherry", ts: daysAgo(0) },
-{ id: 3, user: "Luis Herrera",   action: "Encendió actuador", detail: "Bomba de Riego A", ts: daysAgo(0) },
-{ id: 4, user: "Carlos Ramírez", action: "Creó usuario", detail: "gestor@invernadero.com", ts: daysAgo(1) },
-{ id: 5, user: "María González", action: "Actualizó umbral", detail: "Temperatura · Zona A", ts: daysAgo(1) },
-{ id: 6, user: "Carlos Ramírez", action: "Resolvió alerta", detail: "SOIL_MOISTURE en Zona C", ts: daysAgo(2) },
-{ id: 7, user: "Luis Herrera",   action: "Apagó actuador", detail: "Ventilador Zona A", ts: daysAgo(2) },
-{ id: 8, user: "Carlos Ramírez", action: "Cambió rol",     detail: "visor@invernadero.com → VIEWER", ts: daysAgo(3) },
-];
+const ACTUATOR_HISTORY_KEY = "invernadero_actuator_history";
 
 const SECTIONS = [
 { key: "resumen",    label: "Resumen general" },
@@ -86,26 +70,26 @@ return (
 }
 
 function SectionTitle({ title, sub }) {
-return (
-<div>
-<h2 className="font-heading text-2xl font-bold text-[#1b4f2f]">{title}</h2>
-{sub && <p className="mt-1 text-sm text-[#9dbaa5]">{sub}</p>}
-</div>
-);
+	return (
+		<div>
+			<h2 className="font-heading text-2xl font-bold text-emerald-900">{title}</h2>
+			{sub && <p className="mt-1 text-base text-emerald-700/80">{sub}</p>}
+		</div>
+	);
 }
 
 function StatCard({ label, value, sub, valueColor }) {
-return (
-<div className="rounded-2xl border border-[#d6e8d0] bg-white p-5">
-<p className="text-[10px] font-bold uppercase tracking-widest text-[#9dbaa5]">{label}</p>
-<p className={"mt-1 font-heading text-3xl font-bold " + (valueColor ?? "text-[#1b4f2f]")}>{value}</p>
-{sub && <p className="mt-0.5 text-xs text-[#9dbaa5]">{sub}</p>}
-</div>
-);
+	return (
+			<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-5">
+			<p className="text-[10px] font-bold uppercase tracking-widest text-emerald-700/70">{label}</p>
+			<p className={"mt-1 font-heading text-3xl font-bold " + (valueColor ?? "text-emerald-700")}>{value}</p>
+			{sub && <p className="mt-0.5 text-xs text-emerald-700/60">{sub}</p>}
+		</div>
+	);
 }
 
 function Th({ children }) {
-return <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-[#9dbaa5]">{children}</th>;
+	return <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-emerald-700/70">{children}</th>;
 }
 
 function Td({ children, className }) {
@@ -113,11 +97,11 @@ return <td className={"px-4 py-3 text-sm " + (className ?? "")}>{children}</td>;
 }
 
 function TableWrap({ children }) {
-return (
-<div className="overflow-x-auto rounded-2xl border border-[#d6e8d0]">
-<table className="w-full">{children}</table>
-</div>
-);
+	return (
+		<div className="overflow-x-auto rounded-2xl border border-[#e5e0c3] bg-white/90">
+			<table className="w-full">{children}</table>
+		</div>
+	);
 }
 
 function isStrongPassword(pw) {
@@ -135,6 +119,7 @@ const { zones } = useZones();
 	const { crops } = useCrops();
 	const zoneIds = zones.map(z => z.id);
 	const { thresholds } = useThresholds(zoneIds);
+	const { alerts } = useAlerts();
 	const [users, setUsers]           = useState([]);
 const [loadingUsers, setLoading]  = useState(true);
 const [userError, setUserError]   = useState("");
@@ -147,6 +132,158 @@ const sortedUsers = useMemo(
 () => [...users].sort((a, b) => Number(b.active) - Number(a.active) || a.id - b.id),
 [users]
 );
+
+const auditEntries = useMemo(() => {
+	const parseDate = (value) => {
+		if (!value) return null;
+		const d = new Date(value);
+		return Number.isNaN(d.getTime()) ? null : d;
+	};
+
+	const isSameMoment = (a, b) => {
+		if (!a || !b) return false;
+		return Math.abs(a.getTime() - b.getTime()) < 1000;
+	};
+
+	const timeline = [];
+
+	users.forEach((u) => {
+		const created = parseDate(u.createdAt);
+		const updated = parseDate(u.updatedAt);
+
+		if (created) {
+			timeline.push({
+				id: `usr-c-${u.id}`,
+				user: u.fullName || "Sistema",
+				action: "Usuario creado",
+				detail: `${u.email} (${u.role})`,
+				ts: created,
+			});
+		}
+
+		if (updated && !isSameMoment(created, updated)) {
+			timeline.push({
+				id: `usr-u-${u.id}`,
+				user: u.fullName || "Sistema",
+				action: "Usuario actualizado",
+				detail: `${u.email} · ${u.active ? "Activo" : "Inactivo"}`,
+				ts: updated,
+			});
+		}
+	});
+
+	zones.forEach((z) => {
+		const created = parseDate(z.createdAt);
+		const updated = parseDate(z.updatedAt);
+
+		if (created) {
+			timeline.push({
+				id: `zon-c-${z.id}`,
+				user: "Sistema",
+				action: "Zona creada",
+				detail: z.name,
+				ts: created,
+			});
+		}
+
+		if (updated && !isSameMoment(created, updated)) {
+			timeline.push({
+				id: `zon-u-${z.id}`,
+				user: "Sistema",
+				action: "Zona actualizada",
+				detail: `${z.name} · ${(z.isActive ?? z.active) ? "Activa" : "Inactiva"}`,
+				ts: updated,
+			});
+		}
+	});
+
+	crops.forEach((c) => {
+		const created = parseDate(c.createdAt);
+		const updated = parseDate(c.updatedAt);
+
+		if (created) {
+			timeline.push({
+				id: `crp-c-${c.id}`,
+				user: "Sistema",
+				action: "Cultivo creado",
+				detail: `${c.name} · ${c.zoneName}`,
+				ts: created,
+			});
+		}
+
+		if (updated && !isSameMoment(created, updated)) {
+			timeline.push({
+				id: `crp-u-${c.id}`,
+				user: "Sistema",
+				action: "Cultivo actualizado",
+				detail: `${c.name} · Estado ${c.status}`,
+				ts: updated,
+			});
+		}
+	});
+
+	thresholds.forEach((t) => {
+		const updated = parseDate(t.updatedAt);
+		if (!updated) return;
+
+		timeline.push({
+			id: `thr-u-${t.id}`,
+			user: "Sistema",
+			action: "Umbral actualizado",
+			detail: `${VAR_NAMES[t.name] ?? t.name} · Zona ${t.zoneId}`,
+			ts: updated,
+		});
+	});
+
+	alerts.forEach((a) => {
+		const created = parseDate(a.createdAt);
+		const attended = parseDate(a.attendedAt);
+
+		if (created) {
+			timeline.push({
+				id: `alt-c-${a.id}`,
+				user: "Motor de alertas",
+				action: "Alerta generada",
+				detail: `${a.variableName} · ${a.severity} · Zona ${a.zoneId}`,
+				ts: created,
+			});
+		}
+
+		if (attended) {
+			timeline.push({
+				id: `alt-a-${a.id}`,
+				user: "Operador",
+				action: "Alerta atendida",
+				detail: `${a.variableName} · Zona ${a.zoneId}`,
+				ts: attended,
+			});
+		}
+	});
+
+	try {
+		const raw = localStorage.getItem(ACTUATOR_HISTORY_KEY);
+		const actuatorHistory = raw ? JSON.parse(raw) : [];
+		if (Array.isArray(actuatorHistory)) {
+			actuatorHistory.forEach((entry, idx) => {
+				const ts = parseDate(entry.sentAt);
+				if (!ts) return;
+				timeline.push({
+					id: `act-${idx}-${entry.sentAt}`,
+					user: auth?.fullName || auth?.email || "Operador",
+					action: entry.ok ? "Comando actuador" : "Error comando actuador",
+					detail: `${entry.actuatorName} · ${entry.action} · ${entry.zoneName}`,
+					ts: ts,
+				});
+			});
+		}
+	} catch {
+		// Ignore invalid local history cache.
+	}
+
+	return timeline
+		.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+		.slice(0, 120);
+}, [users, zones, crops, thresholds, alerts, auth?.fullName, auth?.email]);
 
 const loadUsers = async () => {
 setLoading(true);
@@ -229,12 +366,12 @@ setSaving(false);
 		const lowStock     = 0;
 
 // ── input style shared ──
-const inp = "w-full rounded-lg border border-[#d6e8d0] bg-white px-3 py-2 text-sm text-[#1b4f2f] outline-none focus:border-[#2f7f3c] focus:ring-1 focus:ring-[#2f7f3c]";
+const inp = "w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-emerald-900 text-sm outline-none transition focus:border-emerald-600 focus:ring-1 focus:ring-emerald-200/40";
 
 return (
 <div className="space-y-6">
 {/* ── tabs horizontales ── */}
-<div className="flex flex-wrap gap-1 border-b border-[#d6e8d0] pb-1">
+<div className="flex flex-wrap gap-1 border-b border-[#e5e0c3] pb-1">
 {SECTIONS.map((s) => (
 <button
 key={s.key}
@@ -242,8 +379,8 @@ onClick={() => setActive(s.key)}
 className={
 "rounded-lg px-4 py-2 text-sm font-medium transition " +
 (active === s.key
-? "bg-[#2f7f3c] text-white"
-: "text-[#3a5745] hover:bg-[#e9f5e6]")
+? "bg-emerald-600 text-white hover:bg-emerald-700"
+: "text-emerald-900 hover:bg-[#f5eedc] hover:text-emerald-700")
 }
 >
 {s.label}
@@ -260,22 +397,22 @@ className={
 <SectionTitle title="Resumen general" sub="Vista consolidada del estado del sistema" />
 
 <div className="grid grid-cols-2 gap-4 lg:grid-cols-2">
-<StatCard label="Zonas activas"     value={activeZones}  sub={zones.length + " totales"} valueColor="text-[#2f7f3c]" />
-<StatCard label="Cultivos activos"  value={activeCrops}  sub={crops.length + " totales"} valueColor="text-[#1b4f2f]" />
+<StatCard label="Zonas activas"     value={activeZones}  sub={zones.length + " totales"} valueColor="text-emerald-700 dark:text-emerald-300" />
+<StatCard label="Cultivos activos"  value={activeCrops}  sub={crops.length + " totales"} valueColor="text-emerald-700 dark:text-emerald-300" />
 </div>
 
 {/* Zonas resumen */}
 <div>
-<h3 className="mb-3 font-heading text-sm font-bold text-[#1b4f2f]">Estado de zonas</h3>
+<h3 className="mb-3 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Estado de zonas</h3>
 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 {zones.map((z) => (
-<div key={z.id} className="rounded-xl border border-[#d6e8d0] bg-[#f9fcf8] p-4">
+<div key={z.id} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900">
 <div className="flex items-center gap-2 mb-1">
-<span className={"h-2 w-2 rounded-full " + ((z.isActive ?? z.active) ? "bg-[#2f7f3c]" : "bg-[#ccc]")} />
-<p className="text-xs font-semibold text-[#1b4f2f] truncate">{z.name}</p>
+<span className={"h-2 w-2 rounded-full " + ((z.isActive ?? z.active) ? "bg-emerald-700" : "bg-zinc-400 dark:bg-zinc-500")} />
+<p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">{z.name}</p>
 </div>
-<p className="text-[10px] text-[#9dbaa5] truncate">{z.description}</p>
-<Badge cls={(z.isActive ?? z.active) ? "bg-[#e9f5e6] text-[#2f7f3c] mt-2" : "bg-[#f0f0f0] text-[#999] mt-2"}>
+<p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">{z.description}</p>
+<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700 mt-2 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-zinc-100 text-zinc-600 mt-2 dark:bg-zinc-800 dark:text-zinc-400"}>
 {(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
 </Badge>
 </div>
@@ -285,14 +422,14 @@ className={
 
 {/* Cultivos por estado */}
 <div>
-<h3 className="mb-3 font-heading text-sm font-bold text-[#1b4f2f]">Cultivos por estado</h3>
+<h3 className="mb-3 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Cultivos por estado</h3>
 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 {Object.entries(STATUS_CROP).map(([key, cfg]) => {
 const count = crops.filter((c) => c.status === key).length;
 return (
-<div key={key} className="rounded-xl border border-[#d6e8d0] bg-[#f9fcf8] p-4 text-center">
+<div key={key} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-center dark:border-zinc-700 dark:bg-zinc-900">
 <p className={"font-heading text-2xl font-bold " + cfg.cls.split(" ")[1]}>{count}</p>
-<p className="mt-1 text-xs text-[#9dbaa5]">{cfg.label}</p>
+<p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{cfg.label}</p>
 </div>
 );
 })}
@@ -306,20 +443,20 @@ return (
 <>
 <SectionTitle title="Gestión de zonas" sub={"Total: " + zones.length + " zonas registradas"} />
 <TableWrap>
-<thead className="border-b border-[#d6e8d0] bg-[#f9fcf8]">
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 <tr><Th>Nombre</Th><Th>Descripción</Th><Th>Estado</Th><Th>Creada</Th></tr>
 </thead>
 <tbody>
 {zones.map((z, i) => (
-<tr key={z.id} className={"border-b border-[#e9f5e6] " + (i % 2 === 0 ? "bg-white" : "bg-[#fafaf9]")}>
-<Td><span className="font-semibold text-[#1b4f2f]">{z.name}</span></Td>
-<Td className="text-[#6b8f72]">{z.description}</Td>
+<tr key={z.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td><span className="font-semibold text-zinc-900 dark:text-zinc-100">{z.name}</span></Td>
+<Td className="text-zinc-600 dark:text-zinc-400">{z.description}</Td>
 <Td>
-<Badge cls={(z.isActive ?? z.active) ? "bg-[#e9f5e6] text-[#2f7f3c]" : "bg-[#f0f0f0] text-[#999]"}>
+<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"}>
 {(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
 </Badge>
 </Td>
-<Td className="text-[#9dbaa5]">{new Date(z.createdAt).toLocaleDateString("es")}</Td>
+<Td className="text-zinc-500 dark:text-zinc-400">{new Date(z.createdAt).toLocaleDateString("es")}</Td>
 </tr>
 ))}
 </tbody>
@@ -332,19 +469,19 @@ return (
 <>
 <SectionTitle title="Cultivos y estado" sub={"Total: " + crops.length + " cultivos registrados"} />
 <TableWrap>
-<thead className="border-b border-[#d6e8d0] bg-[#f9fcf8]">
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 <tr><Th>Cultivo</Th><Th>Variedad</Th><Th>Zona</Th><Th>Plantas</Th><Th>Siembra</Th><Th>Estado</Th></tr>
 </thead>
 <tbody>
 {crops.map((c, i) => {
 const st = STATUS_CROP[c.status] ?? { label: c.status, cls: "bg-gray-100 text-gray-600" };
 return (
-<tr key={c.id} className={"border-b border-[#e9f5e6] " + (i % 2 === 0 ? "bg-white" : "bg-[#fafaf9]")}>
-<Td><span className="font-semibold text-[#1b4f2f]">{c.name}</span></Td>
-<Td className="text-[#6b8f72]">{c.variety}</Td>
-<Td className="text-[#6b8f72]">{c.zoneName}</Td>
+<tr key={c.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td><span className="font-semibold text-zinc-900 dark:text-zinc-100">{c.name}</span></Td>
+<Td className="text-zinc-600 dark:text-zinc-400">{c.variety}</Td>
+<Td className="text-zinc-600 dark:text-zinc-400">{c.zoneName}</Td>
 <Td>{c.plantCount}</Td>
-<Td className="text-[#9dbaa5]">{new Date(c.sowingDate).toLocaleDateString("es")}</Td>
+<Td className="text-zinc-500 dark:text-zinc-400">{new Date(c.sowingDate).toLocaleDateString("es")}</Td>
 <Td><Badge cls={st.cls}>{st.label}</Badge></Td>
 </tr>
 );
@@ -359,21 +496,21 @@ return (
 <>
 <SectionTitle title="Umbrales configurados" sub={"Total: " + thresholds.length + " umbrales activos"} />
 <TableWrap>
-<thead className="border-b border-[#d6e8d0] bg-[#f9fcf8]">
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 <tr><Th>Zona</Th><Th>Variable</Th><Th>Min</Th><Th>Max</Th><Th>Unidad</Th></tr>
 </thead>
 <tbody>
 {thresholds.map((t, i) => (
-<tr key={t.id} className={"border-b border-[#e9f5e6] " + (i % 2 === 0 ? "bg-white" : "bg-[#fafaf9]")}>
-<Td className="font-semibold text-[#1b4f2f]">{zones.find(z => z.id === t.zoneId)?.name ?? `Zona ${t.zoneId}`}</Td>
+<tr key={t.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td className="font-semibold text-zinc-900 dark:text-zinc-100">{zones.find(z => z.id === t.zoneId)?.name ?? `Zona ${t.zoneId}`}</Td>
 <Td>
-<Badge cls="bg-[#e9f5e6] text-[#2f7f3c]">
+<Badge cls="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
 {VAR_NAMES[t.name] ?? t.name}
 </Badge>
 </Td>
 <Td>{t.minValue}</Td>
 <Td>{t.maxValue}</Td>
-<Td className="text-[#9dbaa5]">{t.unit}</Td>
+<Td className="text-zinc-500 dark:text-zinc-400">{t.unit}</Td>
 </tr>
 ))}
 </tbody>
@@ -387,8 +524,8 @@ return (
 <SectionTitle title="Gestión de usuarios" sub="Crear, editar y administrar cuentas del sistema" />
 
 {/* Formulario crear */}
-<div className="rounded-2xl border border-[#d6e8d0] bg-[#f9fcf8] p-5">
-<h3 className="mb-4 font-heading text-sm font-bold text-[#1b4f2f]">Nuevo usuario</h3>
+<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-5">
+<h3 className="mb-4 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Nuevo usuario</h3>
 <form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5" onSubmit={handleCreate}>
 <input className={inp} placeholder="Nombre completo" required value={createForm.fullName}
 onChange={(e) => setCreate((p) => ({ ...p, fullName: e.target.value }))} />
@@ -401,21 +538,21 @@ onChange={(e) => setCreate((p) => ({ ...p, role: e.target.value }))}>
 {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
 </select>
 <button type="submit" disabled={saving}
-className="rounded-lg bg-[#2f7f3c] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1b4f2f] disabled:opacity-50">
+className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50">
 {saving ? "..." : "Crear"}
 </button>
 </form>
 {userError && (
-<p className="mt-3 text-xs font-semibold text-[#b43a2f]">{userError}</p>
+<p className="mt-3 text-xs font-semibold text-rose-700 dark:text-rose-300">{userError}</p>
 )}
 </div>
 
 {/* Tabla */}
 {loadingUsers ? (
-<p className="text-sm text-[#9dbaa5]">Cargando usuarios...</p>
+<p className="text-sm text-zinc-500 dark:text-zinc-400">Cargando usuarios...</p>
 ) : (
 <TableWrap>
-<thead className="border-b border-[#d6e8d0] bg-[#f9fcf8]">
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 <tr><Th>Nombre</Th><Th>Email</Th><Th>Rol</Th><Th>Estado</Th><Th>Acciones</Th></tr>
 </thead>
 <tbody>
@@ -423,16 +560,16 @@ className="rounded-lg bg-[#2f7f3c] px-4 py-2 text-sm font-semibold text-white tr
 const isEditing = editingId === u.id;
 const isSelf = Number(u.id) === Number(auth.userId);
 return (
-<tr key={u.id} className={"border-b border-[#e9f5e6] " + (i % 2 === 0 ? "bg-white" : "bg-[#fafaf9]")}>
+<tr key={u.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
 <Td>
 {isEditing
 ? <input className={inp} value={editForm.fullName} onChange={(e) => setEditForm((p) => ({ ...p, fullName: e.target.value }))} />
-: <span className="font-semibold text-[#1b4f2f]">{u.fullName}</span>}
+: <span className="font-semibold text-zinc-900 dark:text-zinc-100">{u.fullName}</span>}
 </Td>
 <Td>
 {isEditing
 ? <input className={inp} type="email" value={editForm.email} onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))} />
-: <span className="text-[#6b8f72]">{u.email}</span>}
+: <span className="text-zinc-600 dark:text-zinc-400">{u.email}</span>}
 </Td>
 <Td>
 {isEditing
@@ -448,7 +585,7 @@ onChange={(e) => setEditForm((p) => ({ ...p, role: e.target.value }))}>
 <button disabled={isSelf || saving}
 onClick={() => toggleStatus(u)}
 className={"rounded-full px-3 py-1 text-xs font-bold transition " +
-(u.active ? "bg-[#e9f5e6] text-[#2f7f3c] hover:bg-[#d0e5c9]" : "bg-[#fbe8e5] text-[#b43a2f] hover:bg-[#f5d9d5]") +
+(u.active ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:hover:bg-emerald-800/60" : "bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-200 dark:hover:bg-rose-800/40") +
 (isSelf || saving ? " opacity-50 cursor-not-allowed" : "")}>
 {u.active ? "Activo" : "Inactivo"}
 </button>
@@ -458,17 +595,17 @@ className={"rounded-full px-3 py-1 text-xs font-bold transition " +
 {isEditing ? (
 <>
 <button onClick={saveEdit} disabled={saving}
-className="rounded-lg bg-[#2f7f3c] px-3 py-1 text-xs font-semibold text-white transition hover:bg-[#1b4f2f] disabled:opacity-50">
+className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50">
 Guardar
 </button>
 <button onClick={cancelEdit}
-className="rounded-lg border border-[#d6e8d0] px-3 py-1 text-xs font-semibold text-[#6b8f72] transition hover:bg-[#f0f7f0]">
+className="rounded-lg border border-[#e5e0c3] px-3 py-1 text-xs font-semibold text-emerald-900 transition hover:bg-[#f5f3e7]">
 Cancelar
 </button>
 </>
 ) : (
 <button onClick={() => startEdit(u)}
-className="rounded-lg border border-[#d6e8d0] px-3 py-1 text-xs font-semibold text-[#3a5745] transition hover:bg-[#e9f5e6]">
+className="rounded-lg border border-[#e5e0c3] px-3 py-1 text-xs font-semibold text-emerald-900 transition hover:bg-emerald-100">
 Editar
 </button>
 )}
@@ -486,20 +623,26 @@ Editar
 {/* ══ AUDITORIA ══════════════════════════════════════════════════ */}
 {active === "auditoria" && (
 <>
-<SectionTitle title="Registro de auditoria" sub="Historial de acciones realizadas en el sistema" />
+<SectionTitle title="Registro de auditoria" sub="Eventos construidos con datos reales del backend y comandos de actuadores" />
+) : (
+{auditEntries.length === 0 ? (
+<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 text-sm text-emerald-700/60">
+No hay eventos de auditoría disponibles todavía.
+</div>
+) : (
 <TableWrap>
-<thead className="border-b border-[#d6e8d0] bg-[#f9fcf8]">
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
 <tr><Th>Usuario</Th><Th>Accion</Th><Th>Detalle</Th><Th>Fecha</Th></tr>
 </thead>
 <tbody>
-{MOCK_AUDIT.map((entry, i) => (
-<tr key={entry.id} className={"border-b border-[#e9f5e6] " + (i % 2 === 0 ? "bg-white" : "bg-[#fafaf9]")}>
-<Td className="font-semibold text-[#1b4f2f]">{entry.user}</Td>
+{auditEntries.map((entry, i) => (
+<tr key={entry.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td className="font-semibold text-zinc-900 dark:text-zinc-100">{entry.user}</Td>
 <Td>
-<Badge cls="bg-[#f0f4ff] text-[#3d5f9f]">{entry.action}</Badge>
+<Badge cls="bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-200">{entry.action}</Badge>
 </Td>
-<Td className="text-[#6b8f72]">{entry.detail}</Td>
-<Td className="text-[#9dbaa5]">
+<Td className="text-zinc-600 dark:text-zinc-400">{entry.detail}</Td>
+<Td className="text-zinc-500 dark:text-zinc-400">
 {entry.ts.toLocaleDateString("es", { day: "2-digit", month: "short" })}
 {" "}
 {entry.ts.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" })}
@@ -508,6 +651,7 @@ Editar
 ))}
 </tbody>
 </TableWrap>
+)}
 </>
 )}
 
