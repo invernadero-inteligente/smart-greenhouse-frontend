@@ -1,655 +1,661 @@
-import { useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+﻿import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { userService } from "../../services/user.service";
-import { getApiErrorMessage } from "../../services/api";
+import { useZones } from "../../hooks/useZones";
+import { useCrops } from "../../hooks/useCrops";
+import { useThresholds } from "../../hooks/useThresholds";
+import { useAlerts } from "../../hooks/useAlerts";
+const ROLES = ["ADMIN", "MANAGER", "TECHNICIAN", "VIEWER"];
 
-const ROLES = ["ADMIN", "OPERATOR", "VIEWER"];
-
-const MAIN_SECTIONS = [
-  { key: "overview", label: "Dashboard" },
-  { key: "users", label: "Usuarios" }
-];
-
-const FUTURE_MODULES = [
-  { label: "Zonas del invernadero" },
-  { label: "Cultivos y estados" },
-  { label: "Sensores IoT" },
-  { label: "Umbrales y auditoría" },
-  { label: "Alertas inteligentes" },
-  { label: "Inventario operativo" },
-  { label: "Resultados de IA" }
-];
-
-const EMPTY_CREATE_FORM = {
-  fullName: "",
-  email: "",
-  password: "",
-  role: "VIEWER"
+const ROLE_LABELS = {
+ADMIN: "Administrador",
+MANAGER: "Gestor",
+TECHNICIAN: "Técnico",
+VIEWER: "Visualizador",
 };
 
-function isStrongPassword(password) {
-  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
+const ROLE_COLORS = {
+	ADMIN:      "bg-[#fff7e0] text-[#b5a16a]", // dorado premium
+	MANAGER:    "bg-[#f5f3e7] text-emerald-700", // beige premium
+	TECHNICIAN: "bg-emerald-100 text-emerald-700",
+	VIEWER:     "bg-[#f5f3e7] text-emerald-700", // beige premium
+};
+
+const STATUS_CROP = {
+	ACTIVE:   { label: "Activo",      cls: "bg-emerald-100 text-emerald-700" },
+	HARVEST:  { label: "Cosechando",  cls: "bg-[#fff7e0] text-[#b5a16a]" },
+	FINISHED: { label: "Finalizado",  cls: "bg-[#f5f3e7] text-[#b5a16a]" },
+};
+
+const SEVERITY_COLORS = {
+	CRITICAL: "bg-[#fff7e0] text-[#b5a16a]",
+	WARNING:  "bg-[#f5f3e7] text-emerald-700",
+	INFO:     "bg-[#f5f3e7] text-emerald-700",
+};
+
+const VAR_NAMES = {
+TEMPERATURE:  "Temperatura",
+AIR_HUMIDITY: "Humedad aire",
+SOIL_MOISTURE:"Humedad suelo",
+PH:           "pH",
+LUMINOSITY:   "Luminosidad",
+};
+
+const CATEGORY_LABELS = {
+FERTILIZER: "Fertilizante",
+PESTICIDE:  "Pesticida",
+SEEDS:      "Semillas",
+TOOLS:      "Herramientas",
+OTHER:      "Otro",
+};
+
+const ACTUATOR_HISTORY_KEY = "invernadero_actuator_history";
+
+const SECTIONS = [
+{ key: "resumen",    label: "Resumen general" },
+{ key: "zonas",      label: "Zonas" },
+{ key: "cultivos",   label: "Cultivos" },
+{ key: "umbrales",   label: "Umbrales" },
+{ key: "usuarios",   label: "Usuarios" },
+{ key: "auditoria",  label: "Auditoria" },
+];
+
+// ─── helpers ─────────────────────────────────────────────────────────────────
+
+function Badge({ cls, children }) {
+return (
+<span className={"rounded-full px-2.5 py-0.5 text-xs font-bold " + cls}>
+{children}
+</span>
+);
 }
 
-function Backoffice() {
-  const navigate = useNavigate();
-  const { auth, logout } = useAuth();
-
-  const [activeSection, setActiveSection] = useState("overview");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const [users, setUsers] = useState([]);
-  const [loadingUsers, setLoadingUsers] = useState(true);
-  const [error, setError] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  const [createForm, setCreateForm] = useState(EMPTY_CREATE_FORM);
-  const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ fullName: "", email: "", role: "VIEWER" });
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [loadingSelectedUser, setLoadingSelectedUser] = useState(false);
-
-  const sortedUsers = useMemo(
-    () => [...users].sort((a, b) => Number(b.active) - Number(a.active) || a.id - b.id),
-    [users]
-  );
-
-  const loadUsers = async () => {
-    setLoadingUsers(true);
-    setError("");
-    try {
-      const response = await userService.listUsers();
-      setUsers(response);
-    } catch (requestError) {
-      setError(getApiErrorMessage(requestError));
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const handleCreate = async (event) => {
-    event.preventDefault();
-    setSaving(true);
-    setError("");
-
-    if (!isStrongPassword(createForm.password)) {
-      setSaving(false);
-      setError("La contraseña debe tener mínimo 8 caracteres, mayúsculas, minúsculas y números.");
-      return;
-    }
-
-    try {
-      await userService.createUser(createForm);
-      setCreateForm(EMPTY_CREATE_FORM);
-      await loadUsers();
-      setActiveSection("users");
-    } catch (requestError) {
-      setError(getApiErrorMessage(requestError));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const startEdit = (user) => {
-    setEditingId(user.id);
-    setEditForm({ fullName: user.fullName, email: user.email, role: user.role });
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditForm({ fullName: "", email: "", role: "VIEWER" });
-  };
-
-  const handleSaveEdit = async () => {
-    if (!editingId) return;
-
-    if (Number(editingId) === Number(auth.userId) && editForm.role !== auth.role) {
-      setError("No puedes cambiar tu propio rol.");
-      return;
-    }
-
-    setSaving(true);
-    setError("");
-
-    try {
-      await userService.updateUser(editingId, editForm);
-      cancelEdit();
-      await loadUsers();
-    } catch (requestError) {
-      setError(getApiErrorMessage(requestError));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleToggleStatus = async (user) => {
-    if (Number(user.id) === Number(auth.userId)) {
-      setError("No puedes cambiar el estado de tu propia cuenta.");
-      return;
-    }
-
-    setSaving(true);
-    setError("");
-
-    try {
-      await userService.updateUserStatus(user.id, !user.active);
-      await loadUsers();
-    } catch (requestError) {
-      setError(getApiErrorMessage(requestError));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleViewUser = async (id) => {
-    setLoadingSelectedUser(true);
-    setError("");
-    try {
-      const response = await userService.getUser(id);
-      setSelectedUser(response);
-    } catch (requestError) {
-      setError(getApiErrorMessage(requestError));
-    } finally {
-      setLoadingSelectedUser(false);
-    }
-  };
-
-  // COLORES
-  const colors = isDarkMode ? {
-    bg: "#0f1419",
-    bgSecondary: "#1a2438",
-    bgTertiary: "#252f42",
-    border: "#2a3853",
-    text: "#dbe4f0",
-    textSecondary: "#a9bbd8",
-    textTertiary: "#8ba0c3",
-    input: "#121a2c",
-    hover: "#1a2438",
-    accent: "#3a4da8",
-    success: "#184f43",
-    successText: "#9df2da",
-  } : {
-    bg: "#f9f7f4",
-    bgSecondary: "#ffffff",
-    bgTertiary: "#f3efe6",
-    border: "#e8ddd0",
-    text: "#143321",
-    textSecondary: "#4d6b5a",
-    textTertiary: "#7a8f80",
-    input: "#ffffff",
-    hover: "#f3efe6",
-    accent: "#2f7f3c",
-    success: "#88bf86",
-    successText: "#143321",
-  };
-
-  return (
-    <div className="flex h-screen flex-col" style={{ backgroundColor: colors.bg, color: colors.text }}>
-      {/* HEADER */}
-      <header className="border-b" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-        <div className="flex items-center justify-between px-8 py-6">
-          <h1 className="text-4xl font-bold">Invernadero Inteligente</h1>
-          
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-semibold">Hola {auth.email?.split("@")[0]}</p>
-              <p className="mt-1 inline-block rounded-lg px-2.5 py-1 text-xs font-bold" 
-                 style={{ backgroundColor: colors.accent, color: "white" }}>
-                {auth.role}
-              </p>
-            </div>
-
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="rounded-lg p-2 transition hover:opacity-70"
-              style={{ backgroundColor: colors.bgTertiary }}
-            >
-              {isDarkMode ? "☀️" : "🌙"}
-            </button>
-
-            <button
-              onClick={() => navigate("/")}
-              className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition"
-              style={{ backgroundColor: colors.accent }}
-            >
-              Volver al Home
-            </button>
-
-            <button
-              onClick={() => {
-                logout();
-                navigate("/login");
-              }}
-              className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition"
-              style={{ backgroundColor: "#b43a2f" }}
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* MAIN CONTENT */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* SIDEBAR */}
-        <aside className="w-56 border-r overflow-y-auto" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-          <div className="p-6">
-          </div>
-
-          {/* SECCIONES */}
-          <nav className="px-4 pb-6">
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: colors.textTertiary }}>
-              Principal
-            </p>
-            <div className="space-y-2">
-              {MAIN_SECTIONS.map((section) => (
-                <button
-                  key={section.key}
-                  onClick={() => setActiveSection(section.key)}
-                  className="w-full rounded-lg px-4 py-3 text-left text-sm font-semibold transition"
-                  style={{
-                    backgroundColor: activeSection === section.key ? colors.accent : "transparent",
-                    color: activeSection === section.key ? "white" : colors.text,
-                  }}
-                >
-                  {section.label}
-                </button>
-              ))}
-            </div>
-          </nav>
-
-          {/* MÓDULOS FUTUROS */}
-          <nav className="border-t px-4 py-6" style={{ borderColor: colors.border }}>
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: colors.textTertiary }}>
-              Próximamente
-            </p>
-            <div className="space-y-2">
-              {FUTURE_MODULES.map((module, idx) => (
-                <button
-                  key={idx}
-                  disabled
-                  className="w-full cursor-not-allowed rounded-lg px-4 py-3 text-left text-sm font-semibold transition"
-                  style={{ color: colors.textTertiary }}
-                >
-                  {module.label}
-                </button>
-              ))}
-            </div>
-          </nav>
-        </aside>
-
-        {/* CONTENIDO */}
-        <main className="flex-1 overflow-y-auto p-8">
-          {/* DASHBOARD */}
-          {activeSection === "overview" && (
-            <section className="space-y-8">
-              <div>
-                <h2 className="text-4xl font-bold">Dashboard</h2>
-                <p className="mt-2" style={{ color: colors.textSecondary }}>
-                  Monitoreo en tiempo real de sensores y variables ambientales.
-                </p>
-              </div>
-
-              {/* TARJETAS DE SENSORES */}
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-bold mb-4">Sensores Activos</h3>
-                  <p className="mb-4 text-sm" style={{ color: colors.textSecondary }}>
-                    Nota: estos valores se alimentarán automáticamente cuando lleguen lecturas reales de los sensores.
-                  </p>
-                  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    <article className="rounded-xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                      <p className="text-xs font-semibold uppercase" style={{ color: colors.textTertiary }}>Temperatura</p>
-                      <p className="mt-3 text-4xl font-bold">-- °C</p>
-                      <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>Variación 7 días: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Promedio semanal: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Rango objetivo (threshold): --</p>
-                    </article>
-
-                    <article className="rounded-xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                      <p className="text-xs font-semibold uppercase" style={{ color: colors.textTertiary }}>Humedad</p>
-                      <p className="mt-3 text-4xl font-bold">-- %</p>
-                      <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>Variación 7 días: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Promedio semanal: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Rango objetivo (threshold): --</p>
-                    </article>
-
-                    <article className="rounded-xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                      <p className="text-xs font-semibold uppercase" style={{ color: colors.textTertiary }}>Humedad del suelo</p>
-                      <p className="mt-3 text-4xl font-bold">-- %</p>
-                      <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>Variación 7 días: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Promedio semanal: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Rango objetivo (threshold): --</p>
-                    </article>
-
-                    <article className="rounded-xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                      <p className="text-xs font-semibold uppercase" style={{ color: colors.textTertiary }}>Nivel de luz</p>
-                      <p className="mt-3 text-4xl font-bold">-- lux</p>
-                      <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>Variación 7 días: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Promedio semanal: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Rango objetivo (threshold): --</p>
-                    </article>
-
-                    <article className="rounded-xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                      <p className="text-xs font-semibold uppercase" style={{ color: colors.textTertiary }}>CO2</p>
-                      <p className="mt-3 text-4xl font-bold">-- ppm</p>
-                      <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>Variación 7 días: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Promedio semanal: --</p>
-                      <p className="mt-1 text-xs" style={{ color: colors.textTertiary }}>Rango objetivo (threshold): --</p>
-                    </article>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-bold mb-4">Gráficas (próximamente)</h3>
-                  <div className="grid gap-4 lg:grid-cols-2">
-                    <article className="rounded-xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                      <div className="mb-3">
-                        <p className="text-xs font-semibold uppercase" style={{ color: colors.textTertiary }}>
-                          Tendencia semanal de temperatura
-                        </p>
-                      </div>
-                      <div
-                        className="grid h-56 place-items-center rounded-lg border border-dashed"
-                        style={{ borderColor: colors.border, backgroundColor: colors.bgTertiary }}
-                      >
-                        <p className="text-sm" style={{ color: colors.textSecondary }}>
-                          Espacio reservado para gráfica de línea
-                        </p>
-                      </div>
-                    </article>
-
-                    <article className="rounded-xl border p-5" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                      <div className="mb-3">
-                        <p className="text-xs font-semibold uppercase" style={{ color: colors.textTertiary }}>
-                          Promedios por día (humedad y CO2)
-                        </p>
-                      </div>
-                      <div
-                        className="grid h-56 place-items-center rounded-lg border border-dashed"
-                        style={{ borderColor: colors.border, backgroundColor: colors.bgTertiary }}
-                      >
-                        <p className="text-sm" style={{ color: colors.textSecondary }}>
-                          Espacio reservado para gráfica de barras
-                        </p>
-                      </div>
-                    </article>
-
-                    <article className="rounded-xl border p-5 lg:col-span-2" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                      <div className="mb-3">
-                        <p className="text-xs font-semibold uppercase" style={{ color: colors.textTertiary }}>
-                          Comparativa de periodos
-                        </p>
-                      </div>
-                      <div
-                        className="grid h-64 place-items-center rounded-lg border border-dashed"
-                        style={{ borderColor: colors.border, backgroundColor: colors.bgTertiary }}
-                      >
-                        <p className="text-sm" style={{ color: colors.textSecondary }}>
-                          Espacio reservado para gráfica combinada (semana vs mes)
-                        </p>
-                      </div>
-                    </article>
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* USUARIOS */}
-          {activeSection === "users" && (
-            <section className="space-y-6">
-              <div>
-                <h2 className="text-3xl font-bold">Gestión de Usuarios</h2>
-                <p className="mt-2" style={{ color: colors.textSecondary }}>
-                  Crea, edita y administra usuarios. Controla roles y estados de cuentas.
-                </p>
-              </div>
-
-              {/* FORMULARIO */}
-              <div className="rounded-xl border p-6" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                <h3 className="mb-4 text-lg font-bold">Crear nuevo usuario</h3>
-                <form className="grid gap-3 sm:grid-cols-6" onSubmit={handleCreate}>
-                  <input
-                    placeholder="Nombre"
-                    value={createForm.fullName}
-                    onChange={(e) => setCreateForm((prev) => ({ ...prev, fullName: e.target.value }))}
-                    required
-                    className="rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={{
-                      borderColor: colors.border,
-                      backgroundColor: colors.input,
-                      color: colors.text,
-                      focusRingColor: colors.accent,
-                    }}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={createForm.email}
-                    onChange={(e) => setCreateForm((prev) => ({ ...prev, email: e.target.value }))}
-                    required
-                    className="rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={{
-                      borderColor: colors.border,
-                      backgroundColor: colors.input,
-                      color: colors.text,
-                    }}
-                  />
-                  <input
-                    type="password"
-                    placeholder="Contraseña"
-                    value={createForm.password}
-                    onChange={(e) => setCreateForm((prev) => ({ ...prev, password: e.target.value }))}
-                    required
-                    className="rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={{
-                      borderColor: colors.border,
-                      backgroundColor: colors.input,
-                      color: colors.text,
-                    }}
-                  />
-                  <select
-                    value={createForm.role}
-                    onChange={(e) => setCreateForm((prev) => ({ ...prev, role: e.target.value }))}
-                    className="rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2"
-                    style={{
-                      borderColor: colors.border,
-                      backgroundColor: colors.input,
-                      color: colors.text,
-                    }}
-                  >
-                    {ROLES.map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
-                    style={{ backgroundColor: colors.accent }}
-                  >
-                    {saving ? "..." : "Crear"}
-                  </button>
-                </form>
-                {error && <p className="mt-3 text-sm font-semibold text-red-500">{error}</p>}
-              </div>
-
-              {/* TABLA */}
-              {loadingUsers ? (
-                <p style={{ color: colors.textSecondary }}>Cargando usuarios...</p>
-              ) : (
-                <div className="overflow-x-auto rounded-xl border" style={{ borderColor: colors.border }}>
-                  <table className="w-full text-sm">
-                    <thead style={{ backgroundColor: colors.bgTertiary }}>
-                      <tr>
-                        <th className="px-4 py-3 text-left font-semibold">ID</th>
-                        <th className="px-4 py-3 text-left font-semibold">Nombre</th>
-                        <th className="px-4 py-3 text-left font-semibold">Email</th>
-                        <th className="px-4 py-3 text-left font-semibold">Rol</th>
-                        <th className="px-4 py-3 text-left font-semibold">Estado</th>
-                        <th className="px-4 py-3 text-left font-semibold">Acciones</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedUsers.map((user) => {
-                        const isEditing = editingId === user.id;
-                        return (
-                          <tr
-                            key={user.id}
-                            style={{ borderTopColor: colors.border, borderTop: `1px solid ${colors.border}` }}
-                          >
-                            <td className="px-4 py-3">{user.id}</td>
-                            <td className="px-4 py-3">
-                              {isEditing ? (
-                                <input
-                                  value={editForm.fullName}
-                                  onChange={(e) => setEditForm((prev) => ({ ...prev, fullName: e.target.value }))}
-                                  className="w-full rounded-lg border px-2 py-1 text-sm"
-                                  style={{
-                                    borderColor: colors.border,
-                                    backgroundColor: colors.input,
-                                    color: colors.text,
-                                  }}
-                                />
-                              ) : (
-                                user.fullName
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              {isEditing ? (
-                                <input
-                                  type="email"
-                                  value={editForm.email}
-                                  onChange={(e) => setEditForm((prev) => ({ ...prev, email: e.target.value }))}
-                                  className="w-full rounded-lg border px-2 py-1 text-sm"
-                                  style={{
-                                    borderColor: colors.border,
-                                    backgroundColor: colors.input,
-                                    color: colors.text,
-                                  }}
-                                />
-                              ) : (
-                                user.email
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              {isEditing ? (
-                                <select
-                                  value={editForm.role}
-                                  onChange={(e) => setEditForm((prev) => ({ ...prev, role: e.target.value }))}
-                                  disabled={Number(user.id) === Number(auth.userId)}
-                                  className="rounded-lg border px-2 py-1 text-sm"
-                                  style={{
-                                    borderColor: colors.border,
-                                    backgroundColor: colors.input,
-                                    color: colors.text,
-                                  }}
-                                >
-                                  {ROLES.map((role) => (
-                                    <option key={role} value={role}>
-                                      {role}
-                                    </option>
-                                  ))}
-                                </select>
-                              ) : (
-                                user.role
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              <button
-                                type="button"
-                                onClick={() => handleToggleStatus(user)}
-                                disabled={saving || Number(user.id) === Number(auth.userId)}
-                                className="rounded-full px-3 py-1 text-xs font-semibold text-white transition"
-                                style={{
-                                  backgroundColor: user.active ? colors.success : "#b43a2f",
-                                  opacity: saving || Number(user.id) === Number(auth.userId) ? 0.5 : 1,
-                                  cursor: saving || Number(user.id) === Number(auth.userId) ? "not-allowed" : "pointer",
-                                }}
-                              >
-                                {user.active ? "Activo" : "Inactivo"}
-                              </button>
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => handleViewUser(user.id)}
-                                  className="rounded-lg px-2 py-1 text-xs font-semibold text-white transition hover:opacity-80"
-                                  style={{ backgroundColor: colors.accent }}
-                                >
-                                  Ver
-                                </button>
-                                {isEditing ? (
-                                  <>
-                                    <button
-                                      type="button"
-                                      onClick={handleSaveEdit}
-                                      className="rounded-lg px-2 py-1 text-xs font-semibold text-white transition hover:opacity-80"
-                                      style={{ backgroundColor: colors.success }}
-                                    >
-                                      Guardar
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={cancelEdit}
-                                      className="rounded-lg px-2 py-1 text-xs font-semibold transition"
-                                      style={{ backgroundColor: colors.bgTertiary, color: colors.text }}
-                                    >
-                                      Cancelar
-                                    </button>
-                                  </>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => startEdit(user)}
-                                    className="rounded-lg px-2 py-1 text-xs font-semibold transition"
-                                    style={{ backgroundColor: colors.bgTertiary, color: colors.text }}
-                                  >
-                                    Editar
-                                  </button>
-                                )}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* DETALLE */}
-              <div className="rounded-xl border p-4" style={{ borderColor: colors.border, backgroundColor: colors.bgSecondary }}>
-                <p className="text-xs font-bold uppercase" style={{ color: colors.textTertiary }}>Detalle por ID</p>
-                {loadingSelectedUser ? (
-                  <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>Consultando...</p>
-                ) : selectedUser ? (
-                  <div className="mt-3 grid gap-2 text-sm">
-                    <p><span style={{ color: colors.textTertiary }}>ID:</span> {selectedUser.id}</p>
-                    <p><span style={{ color: colors.textTertiary }}>Nombre:</span> {selectedUser.fullName}</p>
-                    <p><span style={{ color: colors.textTertiary }}>Email:</span> {selectedUser.email}</p>
-                    <p><span style={{ color: colors.textTertiary }}>Rol:</span> {selectedUser.role}</p>
-                    <p><span style={{ color: colors.textTertiary }}>Activo:</span> {selectedUser.active ? "Sí" : "No"}</p>
-                  </div>
-                ) : (
-                  <p className="mt-2 text-sm" style={{ color: colors.textSecondary }}>Haz clic en "Ver" para consultar detalles</p>
-                )}
-              </div>
-            </section>
-          )}
-        </main>
-      </div>
-    </div>
-  );
+function SectionTitle({ title, sub }) {
+	return (
+		<div>
+			<h2 className="font-heading text-2xl font-bold text-emerald-900">{title}</h2>
+			{sub && <p className="mt-1 text-base text-emerald-700/80">{sub}</p>}
+		</div>
+	);
 }
 
-export default Backoffice;
+function StatCard({ label, value, sub, valueColor }) {
+	return (
+			<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-5">
+			<p className="text-[10px] font-bold uppercase tracking-widest text-emerald-700/70">{label}</p>
+			<p className={"mt-1 font-heading text-3xl font-bold " + (valueColor ?? "text-emerald-700")}>{value}</p>
+			{sub && <p className="mt-0.5 text-xs text-emerald-700/60">{sub}</p>}
+		</div>
+	);
+}
+
+function Th({ children }) {
+	return <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-emerald-700/70">{children}</th>;
+}
+
+function Td({ children, className }) {
+return <td className={"px-4 py-3 text-sm " + (className ?? "")}>{children}</td>;
+}
+
+function TableWrap({ children }) {
+	return (
+		<div className="overflow-x-auto rounded-2xl border border-[#e5e0c3] bg-white/90">
+			<table className="w-full">{children}</table>
+		</div>
+	);
+}
+
+function isStrongPassword(pw) {
+return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pw);
+}
+
+const EMPTY_FORM = { fullName: "", email: "", password: "", role: "VIEWER" };
+
+// ─── componente principal ─────────────────────────────────────────────────────
+
+export default function Backoffice() {
+const { auth } = useAuth();
+const [active, setActive]   = useState("resumen");
+const { zones } = useZones();
+	const { crops } = useCrops();
+	const zoneIds = zones.map(z => z.id);
+	const { thresholds } = useThresholds(zoneIds);
+	const { alerts } = useAlerts();
+	const [users, setUsers]           = useState([]);
+const [loadingUsers, setLoading]  = useState(true);
+const [userError, setUserError]   = useState("");
+const [saving, setSaving]         = useState(false);
+const [createForm, setCreate]     = useState(EMPTY_FORM);
+const [editingId, setEditingId]   = useState(null);
+const [editForm, setEditForm]     = useState({ fullName: "", email: "", role: "VIEWER" });
+
+const sortedUsers = useMemo(
+() => [...users].sort((a, b) => Number(b.active) - Number(a.active) || a.id - b.id),
+[users]
+);
+
+const auditEntries = useMemo(() => {
+	const parseDate = (value) => {
+		if (!value) return null;
+		const d = new Date(value);
+		return Number.isNaN(d.getTime()) ? null : d;
+	};
+
+	const isSameMoment = (a, b) => {
+		if (!a || !b) return false;
+		return Math.abs(a.getTime() - b.getTime()) < 1000;
+	};
+
+	const timeline = [];
+
+	users.forEach((u) => {
+		const created = parseDate(u.createdAt);
+		const updated = parseDate(u.updatedAt);
+
+		if (created) {
+			timeline.push({
+				id: `usr-c-${u.id}`,
+				user: u.fullName || "Sistema",
+				action: "Usuario creado",
+				detail: `${u.email} (${u.role})`,
+				ts: created,
+			});
+		}
+
+		if (updated && !isSameMoment(created, updated)) {
+			timeline.push({
+				id: `usr-u-${u.id}`,
+				user: u.fullName || "Sistema",
+				action: "Usuario actualizado",
+				detail: `${u.email} · ${u.active ? "Activo" : "Inactivo"}`,
+				ts: updated,
+			});
+		}
+	});
+
+	zones.forEach((z) => {
+		const created = parseDate(z.createdAt);
+		const updated = parseDate(z.updatedAt);
+
+		if (created) {
+			timeline.push({
+				id: `zon-c-${z.id}`,
+				user: "Sistema",
+				action: "Zona creada",
+				detail: z.name,
+				ts: created,
+			});
+		}
+
+		if (updated && !isSameMoment(created, updated)) {
+			timeline.push({
+				id: `zon-u-${z.id}`,
+				user: "Sistema",
+				action: "Zona actualizada",
+				detail: `${z.name} · ${(z.isActive ?? z.active) ? "Activa" : "Inactiva"}`,
+				ts: updated,
+			});
+		}
+	});
+
+	crops.forEach((c) => {
+		const created = parseDate(c.createdAt);
+		const updated = parseDate(c.updatedAt);
+
+		if (created) {
+			timeline.push({
+				id: `crp-c-${c.id}`,
+				user: "Sistema",
+				action: "Cultivo creado",
+				detail: `${c.name} · ${c.zoneName}`,
+				ts: created,
+			});
+		}
+
+		if (updated && !isSameMoment(created, updated)) {
+			timeline.push({
+				id: `crp-u-${c.id}`,
+				user: "Sistema",
+				action: "Cultivo actualizado",
+				detail: `${c.name} · Estado ${c.status}`,
+				ts: updated,
+			});
+		}
+	});
+
+	thresholds.forEach((t) => {
+		const updated = parseDate(t.updatedAt);
+		if (!updated) return;
+
+		timeline.push({
+			id: `thr-u-${t.id}`,
+			user: "Sistema",
+			action: "Umbral actualizado",
+			detail: `${VAR_NAMES[t.name] ?? t.name} · Zona ${t.zoneId}`,
+			ts: updated,
+		});
+	});
+
+	alerts.forEach((a) => {
+		const created = parseDate(a.createdAt);
+		const attended = parseDate(a.attendedAt);
+
+		if (created) {
+			timeline.push({
+				id: `alt-c-${a.id}`,
+				user: "Motor de alertas",
+				action: "Alerta generada",
+				detail: `${a.variableName} · ${a.severity} · Zona ${a.zoneId}`,
+				ts: created,
+			});
+		}
+
+		if (attended) {
+			timeline.push({
+				id: `alt-a-${a.id}`,
+				user: "Operador",
+				action: "Alerta atendida",
+				detail: `${a.variableName} · Zona ${a.zoneId}`,
+				ts: attended,
+			});
+		}
+	});
+
+	try {
+		const raw = localStorage.getItem(ACTUATOR_HISTORY_KEY);
+		const actuatorHistory = raw ? JSON.parse(raw) : [];
+		if (Array.isArray(actuatorHistory)) {
+			actuatorHistory.forEach((entry, idx) => {
+				const ts = parseDate(entry.sentAt);
+				if (!ts) return;
+				timeline.push({
+					id: `act-${idx}-${entry.sentAt}`,
+					user: auth?.fullName || auth?.email || "Operador",
+					action: entry.ok ? "Comando actuador" : "Error comando actuador",
+					detail: `${entry.actuatorName} · ${entry.action} · ${entry.zoneName}`,
+					ts: ts,
+				});
+			});
+		}
+	} catch {
+		// Ignore invalid local history cache.
+	}
+
+	return timeline
+		.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+		.slice(0, 120);
+}, [users, zones, crops, thresholds, alerts, auth?.fullName, auth?.email]);
+
+const loadUsers = async () => {
+setLoading(true);
+setUserError("");
+try {
+const res = await userService.listUsers();
+setUsers(Array.isArray(res) ? res : (res.content ?? []));
+} catch (err) {
+		if (!err.response) setUserError("Sin conexión con el servidor");
+		else setUserError(err.message ?? "Error al cargar usuarios");
+} finally {
+setLoading(false);
+}
+};
+
+useEffect(() => { loadUsers(); }, []);
+
+const handleCreate = async (e) => {
+e.preventDefault();
+if (!isStrongPassword(createForm.password)) {
+setUserError("Contraseña: mínimo 8 caracteres, mayúsculas, minúsculas y números.");
+return;
+}
+setSaving(true); setUserError("");
+try {
+await userService.createUser(createForm);
+setCreate(EMPTY_FORM);
+await loadUsers();
+} catch (err) {
+if (!err.response) {
+const newU = { ...createForm, id: Date.now(), active: true };
+setUsers((prev) => [...prev, newU]);
+setCreate(EMPTY_FORM);
+} else {
+setUserError(err.message ?? "Error al crear usuario");
+}
+} finally {
+setSaving(false);
+}
+};
+
+const startEdit = (u) => { setEditingId(u.id); setEditForm({ fullName: u.fullName, email: u.email, role: u.role }); };
+const cancelEdit = () => { setEditingId(null); };
+
+const saveEdit = async () => {
+if (Number(editingId) === Number(auth.userId) && editForm.role !== auth.role) {
+setUserError("No puedes cambiar tu propio rol."); return;
+}
+setSaving(true); setUserError("");
+try {
+await userService.updateUser(editingId, editForm);
+setUsers((prev) => prev.map((u) => u.id === editingId ? { ...u, ...editForm } : u));
+cancelEdit();
+} catch (err) {
+if (!err.response) { setUsers((prev) => prev.map((u) => u.id === editingId ? { ...u, ...editForm } : u)); cancelEdit(); }
+else setUserError(err.message ?? "Error al guardar");
+} finally {
+setSaving(false);
+}
+};
+
+const toggleStatus = async (user) => {
+if (Number(user.id) === Number(auth.userId)) { setUserError("No puedes desactivar tu propia cuenta."); return; }
+setSaving(true);
+try {
+await userService.updateUserStatus(user.id, !user.active);
+setUsers((prev) => prev.map((u) => u.id === user.id ? { ...u, active: !u.active } : u));
+} catch (err) {
+if (!err.response) setUsers((prev) => prev.map((u) => u.id === user.id ? { ...u, active: !u.active } : u));
+else setUserError(err.message ?? "Error");
+} finally {
+setSaving(false);
+}
+};
+
+// ── stats ──
+		const activeZones  = zones.filter((z) => z.isActive ?? z.active).length;
+		const activeCrops  = crops.filter((c) => c.status !== "HARVESTED").length;
+		const critAlerts   = 0;
+		const lowStock     = 0;
+
+// ── input style shared ──
+const inp = "w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-emerald-900 text-sm outline-none transition focus:border-emerald-600 focus:ring-1 focus:ring-emerald-200/40";
+
+return (
+<div className="space-y-6">
+{/* ── tabs horizontales ── */}
+<div className="flex flex-wrap gap-1 border-b border-[#e5e0c3] pb-1">
+{SECTIONS.map((s) => (
+<button
+key={s.key}
+onClick={() => setActive(s.key)}
+className={
+"rounded-lg px-4 py-2 text-sm font-medium transition " +
+(active === s.key
+? "bg-emerald-600 text-white hover:bg-emerald-700"
+: "text-emerald-900 hover:bg-[#f5eedc] hover:text-emerald-700")
+}
+>
+{s.label}
+</button>
+))}
+</div>
+
+{/* ── contenido ── */}
+<div className="space-y-6">
+
+{/* ══ RESUMEN ══════════════════════════════════════════════════ */}
+{active === "resumen" && (
+<>
+<SectionTitle title="Resumen general" sub="Vista consolidada del estado del sistema" />
+
+<div className="grid grid-cols-2 gap-4 lg:grid-cols-2">
+<StatCard label="Zonas activas"     value={activeZones}  sub={zones.length + " totales"} valueColor="text-emerald-700 dark:text-emerald-300" />
+<StatCard label="Cultivos activos"  value={activeCrops}  sub={crops.length + " totales"} valueColor="text-emerald-700 dark:text-emerald-300" />
+</div>
+
+{/* Zonas resumen */}
+<div>
+<h3 className="mb-3 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Estado de zonas</h3>
+<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+{zones.map((z) => (
+<div key={z.id} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-900">
+<div className="flex items-center gap-2 mb-1">
+<span className={"h-2 w-2 rounded-full " + ((z.isActive ?? z.active) ? "bg-emerald-700" : "bg-zinc-400 dark:bg-zinc-500")} />
+<p className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">{z.name}</p>
+</div>
+<p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">{z.description}</p>
+<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700 mt-2 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-zinc-100 text-zinc-600 mt-2 dark:bg-zinc-800 dark:text-zinc-400"}>
+{(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
+</Badge>
+</div>
+))}
+</div>
+</div>
+
+{/* Cultivos por estado */}
+<div>
+<h3 className="mb-3 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Cultivos por estado</h3>
+<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+{Object.entries(STATUS_CROP).map(([key, cfg]) => {
+const count = crops.filter((c) => c.status === key).length;
+return (
+<div key={key} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-center dark:border-zinc-700 dark:bg-zinc-900">
+<p className={"font-heading text-2xl font-bold " + cfg.cls.split(" ")[1]}>{count}</p>
+<p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{cfg.label}</p>
+</div>
+);
+})}
+</div>
+</div>
+</>
+)}
+
+{/* ══ ZONAS ═════════════════════════════════════════════════════ */}
+{active === "zonas" && (
+<>
+<SectionTitle title="Gestión de zonas" sub={"Total: " + zones.length + " zonas registradas"} />
+<TableWrap>
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<tr><Th>Nombre</Th><Th>Descripción</Th><Th>Estado</Th><Th>Creada</Th></tr>
+</thead>
+<tbody>
+{zones.map((z, i) => (
+<tr key={z.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td><span className="font-semibold text-zinc-900 dark:text-zinc-100">{z.name}</span></Td>
+<Td className="text-zinc-600 dark:text-zinc-400">{z.description}</Td>
+<Td>
+<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"}>
+{(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
+</Badge>
+</Td>
+<Td className="text-zinc-500 dark:text-zinc-400">{new Date(z.createdAt).toLocaleDateString("es")}</Td>
+</tr>
+))}
+</tbody>
+</TableWrap>
+</>
+)}
+
+{/* ══ CULTIVOS ══════════════════════════════════════════════════ */}
+{active === "cultivos" && (
+<>
+<SectionTitle title="Cultivos y estado" sub={"Total: " + crops.length + " cultivos registrados"} />
+<TableWrap>
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<tr><Th>Cultivo</Th><Th>Variedad</Th><Th>Zona</Th><Th>Plantas</Th><Th>Siembra</Th><Th>Estado</Th></tr>
+</thead>
+<tbody>
+{crops.map((c, i) => {
+const st = STATUS_CROP[c.status] ?? { label: c.status, cls: "bg-gray-100 text-gray-600" };
+return (
+<tr key={c.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td><span className="font-semibold text-zinc-900 dark:text-zinc-100">{c.name}</span></Td>
+<Td className="text-zinc-600 dark:text-zinc-400">{c.variety}</Td>
+<Td className="text-zinc-600 dark:text-zinc-400">{c.zoneName}</Td>
+<Td>{c.plantCount}</Td>
+<Td className="text-zinc-500 dark:text-zinc-400">{new Date(c.sowingDate).toLocaleDateString("es")}</Td>
+<Td><Badge cls={st.cls}>{st.label}</Badge></Td>
+</tr>
+);
+})}
+</tbody>
+</TableWrap>
+</>
+)}
+
+{/* ══ UMBRALES ══════════════════════════════════════════════════ */}
+{active === "umbrales" && (
+<>
+<SectionTitle title="Umbrales configurados" sub={"Total: " + thresholds.length + " umbrales activos"} />
+<TableWrap>
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<tr><Th>Zona</Th><Th>Variable</Th><Th>Min</Th><Th>Max</Th><Th>Unidad</Th></tr>
+</thead>
+<tbody>
+{thresholds.map((t, i) => (
+<tr key={t.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td className="font-semibold text-zinc-900 dark:text-zinc-100">{zones.find(z => z.id === t.zoneId)?.name ?? `Zona ${t.zoneId}`}</Td>
+<Td>
+<Badge cls="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+{VAR_NAMES[t.name] ?? t.name}
+</Badge>
+</Td>
+<Td>{t.minValue}</Td>
+<Td>{t.maxValue}</Td>
+<Td className="text-zinc-500 dark:text-zinc-400">{t.unit}</Td>
+</tr>
+))}
+</tbody>
+</TableWrap>
+</>
+)}
+
+{/* ══ USUARIOS ══════════════════════════════════════════════════ */}
+{active === "usuarios" && (
+<>
+<SectionTitle title="Gestión de usuarios" sub="Crear, editar y administrar cuentas del sistema" />
+
+{/* Formulario crear */}
+<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-5">
+<h3 className="mb-4 font-heading text-sm font-bold text-zinc-900 dark:text-zinc-100">Nuevo usuario</h3>
+<form className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5" onSubmit={handleCreate}>
+<input className={inp} placeholder="Nombre completo" required value={createForm.fullName}
+onChange={(e) => setCreate((p) => ({ ...p, fullName: e.target.value }))} />
+<input className={inp} type="email" placeholder="Email" required value={createForm.email}
+onChange={(e) => setCreate((p) => ({ ...p, email: e.target.value }))} />
+<input className={inp} type="password" placeholder="Contraseña" required value={createForm.password}
+onChange={(e) => setCreate((p) => ({ ...p, password: e.target.value }))} />
+<select className={inp} value={createForm.role}
+onChange={(e) => setCreate((p) => ({ ...p, role: e.target.value }))}>
+{ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
+</select>
+<button type="submit" disabled={saving}
+className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50">
+{saving ? "..." : "Crear"}
+</button>
+</form>
+{userError && (
+<p className="mt-3 text-xs font-semibold text-rose-700 dark:text-rose-300">{userError}</p>
+)}
+</div>
+
+{/* Tabla */}
+{loadingUsers ? (
+<p className="text-sm text-zinc-500 dark:text-zinc-400">Cargando usuarios...</p>
+) : (
+<TableWrap>
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<tr><Th>Nombre</Th><Th>Email</Th><Th>Rol</Th><Th>Estado</Th><Th>Acciones</Th></tr>
+</thead>
+<tbody>
+{sortedUsers.map((u, i) => {
+const isEditing = editingId === u.id;
+const isSelf = Number(u.id) === Number(auth.userId);
+return (
+<tr key={u.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td>
+{isEditing
+? <input className={inp} value={editForm.fullName} onChange={(e) => setEditForm((p) => ({ ...p, fullName: e.target.value }))} />
+: <span className="font-semibold text-zinc-900 dark:text-zinc-100">{u.fullName}</span>}
+</Td>
+<Td>
+{isEditing
+? <input className={inp} type="email" value={editForm.email} onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))} />
+: <span className="text-zinc-600 dark:text-zinc-400">{u.email}</span>}
+</Td>
+<Td>
+{isEditing
+? (
+<select className={inp} value={editForm.role} disabled={isSelf}
+onChange={(e) => setEditForm((p) => ({ ...p, role: e.target.value }))}>
+{ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
+</select>
+)
+: <Badge cls={ROLE_COLORS[u.role] ?? "bg-gray-100 text-gray-600"}>{ROLE_LABELS[u.role] ?? u.role}</Badge>}
+</Td>
+<Td>
+<button disabled={isSelf || saving}
+onClick={() => toggleStatus(u)}
+className={"rounded-full px-3 py-1 text-xs font-bold transition " +
+(u.active ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:hover:bg-emerald-800/60" : "bg-rose-100 text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-200 dark:hover:bg-rose-800/40") +
+(isSelf || saving ? " opacity-50 cursor-not-allowed" : "")}>
+{u.active ? "Activo" : "Inactivo"}
+</button>
+</Td>
+<Td>
+<div className="flex gap-2">
+{isEditing ? (
+<>
+<button onClick={saveEdit} disabled={saving}
+className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50">
+Guardar
+</button>
+<button onClick={cancelEdit}
+className="rounded-lg border border-[#e5e0c3] px-3 py-1 text-xs font-semibold text-emerald-900 transition hover:bg-[#f5f3e7]">
+Cancelar
+</button>
+</>
+) : (
+<button onClick={() => startEdit(u)}
+className="rounded-lg border border-[#e5e0c3] px-3 py-1 text-xs font-semibold text-emerald-900 transition hover:bg-emerald-100">
+Editar
+</button>
+)}
+</div>
+</Td>
+</tr>
+);
+})}
+</tbody>
+</TableWrap>
+)}
+</>
+)}
+
+{/* ══ AUDITORIA ══════════════════════════════════════════════════ */}
+{active === "auditoria" && (
+<>
+<SectionTitle title="Registro de auditoria" sub="Eventos construidos con datos reales del backend y comandos de actuadores" />
+) : (
+{auditEntries.length === 0 ? (
+<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 text-sm text-emerald-700/60">
+No hay eventos de auditoría disponibles todavía.
+</div>
+) : (
+<TableWrap>
+<thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+<tr><Th>Usuario</Th><Th>Accion</Th><Th>Detalle</Th><Th>Fecha</Th></tr>
+</thead>
+<tbody>
+{auditEntries.map((entry, i) => (
+<tr key={entry.id} className={"border-b border-zinc-200 dark:border-zinc-700 " + (i % 2 === 0 ? "bg-white dark:bg-zinc-950" : "bg-zinc-50 dark:bg-zinc-900")}>
+<Td className="font-semibold text-zinc-900 dark:text-zinc-100">{entry.user}</Td>
+<Td>
+<Badge cls="bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-200">{entry.action}</Badge>
+</Td>
+<Td className="text-zinc-600 dark:text-zinc-400">{entry.detail}</Td>
+<Td className="text-zinc-500 dark:text-zinc-400">
+{entry.ts.toLocaleDateString("es", { day: "2-digit", month: "short" })}
+{" "}
+{entry.ts.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" })}
+</Td>
+</tr>
+))}
+</tbody>
+</TableWrap>
+)}
+</>
+)}
+
+</div>
+</div>
+);
+}
