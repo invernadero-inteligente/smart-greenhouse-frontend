@@ -1,6 +1,6 @@
 function UserCard({ user, onEdit, onToggleStatus }) {
 	const roleConfig = {
-		ADMIN: { cls: "bg-emerald-500/10 text-emerald-400", label: "Administrador" },
+		ADMIN: { cls: "bg-primary-500/10 text-primary-400", label: "Administrador" },
 		MANAGER: { cls: "bg-amber-500/10 text-amber-400", label: "Gestor" },
 		TECHNICIAN: { cls: "bg-blue-500/10 text-blue-400", label: "Técnico" },
 		VIEWER: { cls: "bg-zinc-200 text-zinc-700", label: "Visualizador" },
@@ -21,7 +21,7 @@ function UserCard({ user, onEdit, onToggleStatus }) {
 				<div className="flex items-center gap-2">
 					<span
 						className={`inline-block h-3 w-3 rounded-full ${
-							user.active ? "bg-emerald-500" : "bg-zinc-500"
+							user.active ? "bg-primary-500" : "bg-zinc-500"
 						}`}
 					/>
 					<span className="text-xs font-semibold text-zinc-500">
@@ -38,7 +38,7 @@ function UserCard({ user, onEdit, onToggleStatus }) {
 				{onEdit && (
 					<button
 						onClick={() => onEdit(user)}
-						className="flex-1 rounded-lg bg-emerald-500 px-3 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
+						className="flex-1 rounded-lg bg-primary-500 px-3 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-primary-400"
 					>
 						Editar
 					</button>
@@ -49,7 +49,7 @@ function UserCard({ user, onEdit, onToggleStatus }) {
 						className={`flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition ${
 							user.active
 								? "bg-red-500/10 text-red-400 hover:bg-red-500/20"
-								: "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+								: "bg-primary-500/10 text-primary-400 hover:bg-primary-500/20"
 						}`}
 					>
 						{user.active ? "Desactivar" : "Activar"}
@@ -61,3 +61,4 @@ function UserCard({ user, onEdit, onToggleStatus }) {
 }
 
 export default UserCard;
+

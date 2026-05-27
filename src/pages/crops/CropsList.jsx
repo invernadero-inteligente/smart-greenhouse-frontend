@@ -55,7 +55,7 @@ function CropsList() {
 	if (loading && crops.length === 0) {
 		return (
 			<div className="flex h-96 items-center justify-center">
-				<p className="text-emerald-600">Cargando cultivos...</p>
+				<p className="text-primary-600">Cargando cultivos...</p>
 			</div>
 		);
 	}
@@ -64,10 +64,10 @@ function CropsList() {
 		<div className="space-y-6 rounded-3xl border border-[#e5e0c3] bg-white/90 p-7">
 			   <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#e5e0c3] bg-[#f5f3e7] px-7 py-5">
 				<div>
-					<h1 className="font-heading text-3xl font-bold text-emerald-700">
+					<h1 className="font-heading text-3xl font-bold text-primary-700">
 						Gestión de Cultivos
 					</h1>
-					<p className="mt-1 text-base text-emerald-700/80">Seguimiento de estado, zona y ciclo de los cultivos.</p>
+					<p className="mt-1 text-base text-primary-700/80">Seguimiento de estado, zona y ciclo de los cultivos.</p>
 				</div>
 				{allowEdit && (
 					<button
@@ -75,7 +75,7 @@ function CropsList() {
 							setEditingCrop(null);
 							setShowForm(!showForm);
 						}}
-						   className="rounded-2xl bg-emerald-500 px-5 py-2.5 text-base font-semibold text-white transition hover:bg-emerald-600"
+						   className="rounded-2xl bg-primary-500 px-5 py-2.5 text-base font-semibold text-white transition hover:bg-primary-600"
 					>
 						{showForm ? "Cancelar" : "+ Nuevo Cultivo"}
 					</button>
@@ -90,7 +90,7 @@ function CropsList() {
 
 			   {allowEdit && showForm && (
 				   <div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6">
-					   <h2 className="mb-4 font-heading text-lg font-bold text-emerald-900">
+					   <h2 className="mb-4 font-heading text-lg font-bold text-primary-900">
 						{editingCrop ? "Editar Cultivo" : "Nuevo Cultivo"}
 					</h2>
 					<CropForm
@@ -110,8 +110,8 @@ function CropsList() {
 					}}
 					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterStatus === null && filterZone === null
-							   ? "border-transparent bg-emerald-500 text-white"
-							   : "border-[#e5e0c3] bg-white/90 text-emerald-900 hover:bg-[#f5f3e7]"
+							   ? "border-transparent bg-primary-500 text-white"
+							   : "border-[#e5e0c3] bg-white/90 text-primary-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Todos ({crops.length})
@@ -120,8 +120,8 @@ function CropsList() {
 					onClick={() => setFilterStatus("ACTIVE")}
 					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterStatus === "ACTIVE"
-							? "border-transparent bg-emerald-500 text-white"
-							: "border-[#e5e0c3] bg-white text-emerald-900 hover:bg-[#f5f3e7]"
+							? "border-transparent bg-primary-500 text-white"
+							: "border-[#e5e0c3] bg-white text-primary-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Activos ({crops.filter(c => c.status === "ACTIVE").length})
@@ -130,7 +130,7 @@ function CropsList() {
 					onClick={() => setFilterStatus("HARVEST")}
 					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterStatus === "HARVEST"
-							? "border-transparent bg-emerald-500 text-zinc-950"
+							? "border-transparent bg-primary-500 text-zinc-950"
 							: "border-zinc-700 bg-zinc-950 text-zinc-200 hover:bg-zinc-800"
 					}`}
 				>
@@ -140,15 +140,15 @@ function CropsList() {
 
 			{zones.length > 0 && (
 				<div className="flex flex-wrap gap-2 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3">
-					<span className="py-2 text-sm font-semibold text-emerald-700/60">Filtrar por zona:</span>
+					<span className="py-2 text-sm font-semibold text-primary-700/60">Filtrar por zona:</span>
 					{zones.map(zone => (
 						<button
 							key={zone.id}
 							onClick={() => setFilterZone(filterZone === zone.id ? null : zone.id)}
 							className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 								filterZone === zone.id
-									? "border-transparent bg-emerald-500 text-white"
-									: "border-[#e5e0c3] bg-white text-emerald-900 hover:bg-[#f5f3e7]"
+									? "border-transparent bg-primary-500 text-white"
+									: "border-[#e5e0c3] bg-white text-primary-900 hover:bg-[#f5f3e7]"
 							}`}
 						>
 							{zone.name}
@@ -181,3 +181,4 @@ function CropsList() {
 }
 
 export default CropsList;
+

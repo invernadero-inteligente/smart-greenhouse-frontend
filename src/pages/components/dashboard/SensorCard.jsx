@@ -20,7 +20,7 @@ const STATUS_STYLES = {
 	UNKNOWN: {
 		border: "border-[#e5e0c3]",
 		bg: "bg-[#f5f3e7]",
-		text: "text-emerald-700/60",
+		text: "text-primary-700/60",
 		label: "Sin dato",
 	},
 };
@@ -51,7 +51,7 @@ export default function SensorCard({ sensor }) {
 			}
 		>
 			<header className="mb-2 flex items-center justify-between gap-2">
-				<h3 className="font-heading text-sm font-bold capitalize text-emerald-900">
+				<h3 className="font-heading text-sm font-bold capitalize text-primary-900">
 					{formatVariable(sensor?.variable)}
 				</h3>
 				<span
@@ -63,12 +63,12 @@ export default function SensorCard({ sensor }) {
 				</span>
 			</header>
 
-			<p className="font-heading text-2xl font-bold text-emerald-900">
+			<p className="font-heading text-2xl font-bold text-primary-900">
 				{sensor?.value ?? "--"}
-				<span className="ml-1 text-sm font-semibold text-emerald-700/60">{sensor?.unit ?? ""}</span>
+				<span className="ml-1 text-sm font-semibold text-primary-700/60">{sensor?.unit ?? ""}</span>
 			</p>
 
-			<div className="mt-2 space-y-1 text-xs text-emerald-700/60">
+			<div className="mt-2 space-y-1 text-xs text-primary-700/60">
 				<p>Zona: {sensor?.zoneName ?? "Sin zona"}</p>
 				<p>Estado nodo: {sensor?.zoneOnline ? "En línea" : "Fuera de línea"}</p>
 				<p>Actualizado: {formatTimestamp(sensor?.timestamp)}</p>
@@ -76,3 +76,4 @@ export default function SensorCard({ sensor }) {
 		</article>
 	);
 }
+

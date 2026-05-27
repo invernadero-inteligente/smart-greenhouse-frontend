@@ -47,13 +47,13 @@ function NavItem({ to, label, icon: Icon, badge, onClick, alertCount }) {
 				cn(
 					"group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-base font-medium transition-all duration-200 ease-in-out border border-transparent",
 					isActive
-						? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-						: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
+						? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+						: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-border"
 				)
 			}
 			style={{ boxShadow: '0 2px 8px 0 rgba(44,79,61,0.04)' }}
 		>
-			<Icon className="h-5 w-5 shrink-0 text-emerald-600 group-hover:text-emerald-700 transition" />
+			<Icon className="h-5 w-5 shrink-0 text-primary-600 group-hover:text-primary-700 transition" />
 			<span className="flex-1 tracking-tight">{label}</span>
 			{badge === "alerts" && alertCount > 0 && (
 				<span className="inline-flex min-w-5 items-center justify-center rounded-full border border-rose-300 bg-rose-100 px-1.5 text-[10px] font-semibold text-rose-600 animate-pulse">
@@ -99,23 +99,23 @@ export default function Sidebar({ open, onClose }) {
 		>
 			{/* Branding */}
 			<div className="mb-6 flex items-center gap-3 rounded-3xl border border-[#e5e0c3] bg-white/90 p-4 shadow-sm">
-				<div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-100 text-emerald-700">
+				<div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary-100 text-primary-700">
 					<Gauge className="h-6 w-6" />
 				</div>
 				<div>
-					<p className="text-xs uppercase tracking-[0.2em] text-emerald-600 font-semibold">Smart IoT</p>
+					<p className="text-xs uppercase tracking-[0.2em] text-primary-600 font-semibold">Smart IoT</p>
 					<p className="text-base font-bold text-zinc-900 leading-tight">Greenhouse Control</p>
 				</div>
 			</div>
 
 			{/* User */}
 			<div className="mb-6 rounded-3xl border border-[#e5e0c3] bg-white/90 p-4 flex items-center gap-3 shadow-sm">
-				<div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-200 text-emerald-700 text-lg font-bold">
+				<div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary-200 text-primary-700 text-lg font-bold">
 					{initial}
 				</div>
 				<div className="min-w-0">
 					<p className="truncate text-base font-semibold text-zinc-900">{displayName}</p>
-					<p className="text-xs text-emerald-600 font-medium">{ROLE_LABELS[auth.role] || auth.role}</p>
+					<p className="text-xs text-primary-600 font-medium">{ROLE_LABELS[auth.role] || auth.role}</p>
 				</div>
 			</div>
 
@@ -127,7 +127,7 @@ export default function Sidebar({ open, onClose }) {
 
 				{isAdmin && (
 				<div className="mt-6 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3 shadow-sm">
-					<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-emerald-600 font-semibold">Admin</p>
+					<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-primary-600 font-semibold">Admin</p>
 					<NavLink
 						to="/admin/usuarios"
 						onClick={onClose}
@@ -135,12 +135,12 @@ export default function Sidebar({ open, onClose }) {
 							cn(
 								"mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
 								isActive
-									? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-									: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
+									? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+									: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-border"
 							)
 						}
 					>
-						<Users className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
+						<Users className="h-5 w-5 text-primary-600 group-hover:text-primary-700 transition" />
 						Usuarios
 					</NavLink>
 					<NavLink
@@ -150,12 +150,12 @@ export default function Sidebar({ open, onClose }) {
 							cn(
 								"flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
 								isActive
-									? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-									: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
+									? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+									: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-border"
 							)
 						}
 					>
-						<Settings className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
+						<Settings className="h-5 w-5 text-primary-600 group-hover:text-primary-700 transition" />
 						Backoffice
 					</NavLink>
 				</div>
@@ -173,9 +173,10 @@ export default function Sidebar({ open, onClose }) {
 						<LogOut className="h-5 w-5" />
 						Cerrar sesión
 					</span>
-					<span className="text-[11px] text-emerald-600">ESC</span>
+					<span className="text-[11px] text-primary-600">ESC</span>
 				</button>
 			</div>
 		</motion.aside>
 	);
 }
+

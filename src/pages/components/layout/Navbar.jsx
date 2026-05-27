@@ -6,8 +6,8 @@ import { useState } from "react";
 function linkClass({ isActive }) {
 	return `rounded-2xl px-4 py-2 text-base font-medium transition-all duration-200 ease-in-out border border-transparent ${
 		isActive
-			? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-			: "bg-white/80 text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-[#e5e0c3]"
+			? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+			: "bg-white/80 text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-[#e5e0c3]"
 	}`;
 }
 
@@ -76,8 +76,8 @@ function Navbar() {
 												<header className="sticky top-0 z-30 border-b border-[#e5e0c3] bg-white/80 backdrop-blur-xl shadow-sm">
 													<div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
 														<div className="flex flex-col">
-															<p className="font-heading text-xl font-bold text-emerald-700 tracking-tight leading-tight">Invernadero Inteligente</p>
-															<p className="text-xs text-emerald-600 font-medium">{auth.email}</p>
+															<p className="font-heading text-xl font-bold text-primary-700 tracking-tight leading-tight">Invernadero Inteligente</p>
+															<p className="text-xs text-primary-600 font-medium">{auth.email}</p>
 														</div>
 
 														<nav className="flex flex-wrap items-center gap-2">
@@ -119,8 +119,8 @@ function Navbar() {
 																				className={({ isActive }) =>
 																					`block rounded-xl px-4 py-2 text-base font-medium transition-all border border-transparent ${
 																						isActive
-																							? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-																							: "bg-white/80 text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-[#e5e0c3]"
+																							? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+																							: "bg-white/80 text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-[#e5e0c3]"
 																					}`
 																				}
 																				onClick={() => setShowMenu(false)}
@@ -132,8 +132,8 @@ function Navbar() {
 																				className={({ isActive }) =>
 																					`block rounded-xl px-4 py-2 text-base font-medium transition-all border border-transparent ${
 																						isActive
-																							? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-																							: "bg-white/80 text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-[#e5e0c3]"
+																							? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+																							: "bg-white/80 text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-[#e5e0c3]"
 																					}`
 																				}
 																				onClick={() => setShowMenu(false)}
@@ -160,3 +160,4 @@ function Navbar() {
 												</header>
 											);
 										}
+

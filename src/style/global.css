@@ -8,9 +8,33 @@
 	--fg: #222222; /* negro para texto */
 	--card: #ffffff; /* blanco puro */
 	--card-muted: #f5eedc; /* beige más oscuro */
-	--muted: #2f7f3c; /* verde para detalles */
-	--accent: #2f7f3c; /* verde principal */
-	--primary: #2f7f3c; /* verde principal */
+	--primary: #0E544B; /* verde principal */
+	--primary-50: #eaf6f3;
+	--primary-100: #d1efe9;
+	--primary-200: #a6e2d8;
+	--primary-300: #7acdbf;
+	--primary-400: #4fbda8;
+	--primary-600: #0b4139;
+	--primary-700: #08352d;
+	--primary-900: #05221b;
+
+	/* secondary light for golden accents */
+	--secondary-50: #fff7e0;
+
+	/* utility alias colors used throughout code (map hex literals to variables) */
+	--beige-100: #f5f3e7;
+	--beige-200: #f5eedc;
+	--beige-300: #efe7d7;
+	--beige-400: #faf7f2;
+	--danger-50: #fbe8e5;
+	--danger-600: #b43a2f;
+	--green-900: #1b4f2f;
+	--muted-green: #6b8f72;
+	--table-row-odd: #fafaf9;
+	--table-bg-1: #f9fcf8;
+	--table-border-1: #e9f5e6;
+	--accent: var(--primary); /* alias para verde principal */
+	--muted: var(--primary); /* alias para verde principal */
 	--secondary: #d4af37; /* dorado */
 	--destructive: #b43a2f; /* rojo para errores */
 	--border: #e5e0c3; /* beige para bordes */
@@ -143,5 +167,190 @@
 		border: 1px solid var(--border);
 	}
 
+	/* Remap literal hex Tailwind classes to our variables so existing markup follows palette */
+
+	.bg-\[\#f5f3e7\], .hover\:bg-\[\#f5f3e7\]:hover {
+		background-color: var(--beige-100) !important;
+	}
+
+	.bg-\[\#f5eedc\], .hover\:bg-\[\#f5eedc\]:hover {
+		background-color: var(--beige-200) !important;
+	}
+
+	.bg-\[\#EFE7D7\], .hover\:bg-\[\#EFE7D7\]:hover {
+		background-color: var(--beige-300) !important;
+	}
+
+	.bg-\[\#FAF7F2\], .hover\:bg-\[\#FAF7F2\]:hover {
+		background-color: var(--beige-400) !important;
+	}
+
+	.bg-\[\#fff7e0\], .hover\:bg-\[\#fff7e0\]:hover {
+		background-color: var(--secondary-50) !important;
+	}
+
+	.border-\[\#e5e0c3\] {
+		border-color: var(--border) !important;
+	}
+
+	.hover\:bg-\[\#f9fcf8\]:hover,
+	.bg-\[\#f9fcf8\] {
+		background-color: var(--table-bg-1) !important;
+	}
+
+	.border-\[\#e9f5e6\], .hover\:border-\[\#e9f5e6\]:hover {
+		border-color: var(--table-border-1) !important;
+	}
+
+	.bg-\[\#fafaf9\] {
+		background-color: var(--table-row-odd) !important;
+	}
+
+	.text-\[\#b5a16a\], .text-\[\#b45309\], .text-\[\#b43a2f\] {
+		color: var(--secondary) !important;
+	}
+
+	.text-\[\#1b4f2f\] {
+		color: var(--green-900) !important;
+	}
+
+	.bg-\[\#fbe8e5\], .hover\:bg-\[\#fbe8e5\]:hover {
+		background-color: var(--danger-50) !important;
+	}
+
+	.text-\[\#b43a2f\] {
+		color: var(--danger-600) !important;
+	}
+
+	.bg-\[\#f0f4ff\], .hover\:bg-\[\#f0f4ff\]:hover {
+		background-color: color-mix(in srgb, var(--card) 80%, #f0f4ff 20%) !important;
+	}
+
+	/* Generic fallbacks: any bracketed hex utility classes will adopt our palette */
+	[class*="bg-["] {
+		background-color: var(--card-muted) !important;
+	}
+
+	[class*="border-["] {
+		border-color: var(--border) !important;
+	}
+
+	[class*="text-["] {
+		color: var(--fg) !important;
+	}
+
+	[class*="hover:bg-["]:hover {
+		background-color: var(--beige-100) !important;
+	}
+
+	[class*="hover:text-["]:hover {
+		color: var(--fg) !important;
+	}
+
+	/* Explicit remap for Tailwind emerald utilities to use our primary palette */
+
+	.text-emerald-50 { color: var(--primary-50) !important; }
+	.text-emerald-100 { color: var(--primary-100) !important; }
+	.text-emerald-200 { color: var(--primary-200) !important; }
+	.text-emerald-300 { color: var(--primary-300) !important; }
+	.text-emerald-400 { color: var(--primary-400) !important; }
+	.text-emerald-500 { color: var(--primary) !important; }
+	.text-emerald-600 { color: var(--primary-600) !important; }
+	.text-emerald-700 { color: var(--primary-700) !important; }
+	.text-emerald-900 { color: var(--primary-900) !important; }
+
+	.bg-emerald-50 { background-color: var(--primary-50) !important; }
+	.bg-emerald-100 { background-color: var(--primary-100) !important; }
+	.bg-emerald-200 { background-color: var(--primary-200) !important; }
+	.bg-emerald-300 { background-color: var(--primary-300) !important; }
+	.bg-emerald-400 { background-color: var(--primary-400) !important; }
+	.bg-emerald-500 { background-color: var(--primary) !important; }
+	.bg-emerald-600 { background-color: var(--primary-600) !important; }
+	.bg-emerald-700 { background-color: var(--primary-700) !important; }
+	.bg-emerald-900 { background-color: var(--primary-900) !important; }
+
+	.border-emerald-50 { border-color: var(--primary-50) !important; }
+	.border-emerald-100 { border-color: var(--primary-100) !important; }
+	.border-emerald-200 { border-color: var(--primary-200) !important; }
+	.border-emerald-300 { border-color: var(--primary-300) !important; }
+	.border-emerald-400 { border-color: var(--primary-400) !important; }
+	.border-emerald-500 { border-color: var(--primary) !important; }
+	.border-emerald-600 { border-color: var(--primary-600) !important; }
+	.border-emerald-700 { border-color: var(--primary-700) !important; }
+	.border-emerald-900 { border-color: var(--primary-900) !important; }
+
+	/* hover variants */
+	.hover\:bg-emerald-50:hover { background-color: var(--primary-50) !important; }
+	.hover\:bg-emerald-100:hover { background-color: var(--primary-100) !important; }
+	.hover\:bg-emerald-200:hover { background-color: var(--primary-200) !important; }
+	.hover\:bg-emerald-300:hover { background-color: var(--primary-300) !important; }
+	.hover\:bg-emerald-400:hover { background-color: var(--primary-400) !important; }
+	.hover\:bg-emerald-500:hover { background-color: var(--primary) !important; }
+	.hover\:bg-emerald-600:hover { background-color: var(--primary-600) !important; }
+	.hover\:bg-emerald-700:hover { background-color: var(--primary-700) !important; }
+
+	.hover\:text-emerald-50:hover { color: var(--primary-50) !important; }
+	.hover\:text-emerald-100:hover { color: var(--primary-100) !important; }
+	.hover\:text-emerald-200:hover { color: var(--primary-200) !important; }
+	.hover\:text-emerald-300:hover { color: var(--primary-300) !important; }
+	.hover\:text-emerald-400:hover { color: var(--primary-400) !important; }
+	.hover\:text-emerald-500:hover { color: var(--primary) !important; }
+	.hover\:text-emerald-600:hover { color: var(--primary-600) !important; }
+	.hover\:text-emerald-700:hover { color: var(--primary-700) !important; }
+
+
+}
+
+/* Alias semantic tokens: primary-* as explicit utility classes so files can be
+   migrated from `emerald-*` to `primary-*` without visual changes. */
+
+@layer components {
+	.text-primary-50 { color: var(--primary-50) !important; }
+	.text-primary-100 { color: var(--primary-100) !important; }
+	.text-primary-200 { color: var(--primary-200) !important; }
+	.text-primary-300 { color: var(--primary-300) !important; }
+	.text-primary-400 { color: var(--primary-400) !important; }
+	.text-primary-500 { color: var(--primary) !important; }
+	.text-primary-600 { color: var(--primary-600) !important; }
+	.text-primary-700 { color: var(--primary-700) !important; }
+	.text-primary-900 { color: var(--primary-900) !important; }
+
+	.bg-primary-50 { background-color: var(--primary-50) !important; }
+	.bg-primary-100 { background-color: var(--primary-100) !important; }
+	.bg-primary-200 { background-color: var(--primary-200) !important; }
+	.bg-primary-300 { background-color: var(--primary-300) !important; }
+	.bg-primary-400 { background-color: var(--primary-400) !important; }
+	.bg-primary-500 { background-color: var(--primary) !important; }
+	.bg-primary-600 { background-color: var(--primary-600) !important; }
+	.bg-primary-700 { background-color: var(--primary-700) !important; }
+	.bg-primary-900 { background-color: var(--primary-900) !important; }
+
+	.border-primary-50 { border-color: var(--primary-50) !important; }
+	.border-primary-100 { border-color: var(--primary-100) !important; }
+	.border-primary-200 { border-color: var(--primary-200) !important; }
+	.border-primary-300 { border-color: var(--primary-300) !important; }
+	.border-primary-400 { border-color: var(--primary-400) !important; }
+	.border-primary-500 { border-color: var(--primary) !important; }
+	.border-primary-600 { border-color: var(--primary-600) !important; }
+	.border-primary-700 { border-color: var(--primary-700) !important; }
+	.border-primary-900 { border-color: var(--primary-900) !important; }
+
+	.hover\:bg-primary-50:hover { background-color: var(--primary-50) !important; }
+	.hover\:bg-primary-100:hover { background-color: var(--primary-100) !important; }
+	.hover\:bg-primary-200:hover { background-color: var(--primary-200) !important; }
+	.hover\:bg-primary-300:hover { background-color: var(--primary-300) !important; }
+	.hover\:bg-primary-400:hover { background-color: var(--primary-400) !important; }
+	.hover\:bg-primary-500:hover { background-color: var(--primary) !important; }
+	.hover\:bg-primary-600:hover { background-color: var(--primary-600) !important; }
+	.hover\:bg-primary-700:hover { background-color: var(--primary-700) !important; }
+
+	.hover\:text-primary-50:hover { color: var(--primary-50) !important; }
+	.hover\:text-primary-100:hover { color: var(--primary-100) !important; }
+	.hover\:text-primary-200:hover { color: var(--primary-200) !important; }
+	.hover\:text-primary-300:hover { color: var(--primary-300) !important; }
+	.hover\:text-primary-400:hover { color: var(--primary-400) !important; }
+	.hover\:text-primary-500:hover { color: var(--primary) !important; }
+	.hover\:text-primary-600:hover { color: var(--primary-600) !important; }
+	.hover\:text-primary-700:hover { color: var(--primary-700) !important; }
 }
 

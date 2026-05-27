@@ -14,7 +14,7 @@ function ZoneCard({ zone, onEdit, onDeactivate, onActivate }) {
 					<div className="mt-4 flex items-center gap-2">
 						<span
 							className={`inline-block h-3 w-3 rounded-full ${
-								isActive ? "bg-emerald-500" : "bg-zinc-500"
+								isActive ? "bg-primary-500" : "bg-zinc-500"
 							}`}
 						/>
 						<span className="text-xs font-semibold text-zinc-500">
@@ -27,7 +27,7 @@ function ZoneCard({ zone, onEdit, onDeactivate, onActivate }) {
 				{onEdit && (
 					<button
 						onClick={() => onEdit(zone)}
-						className="flex-1 rounded-lg bg-emerald-500 px-3 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
+						className="flex-1 rounded-lg bg-primary-500 px-3 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-primary-400"
 					>
 						Editar
 					</button>
@@ -43,7 +43,7 @@ function ZoneCard({ zone, onEdit, onDeactivate, onActivate }) {
 				{!isActive && onActivate && (
 					<button
 						onClick={() => onActivate(zone.id)}
-						className="flex-1 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm font-semibold text-emerald-400 transition hover:bg-emerald-500/20"
+						className="flex-1 rounded-lg bg-primary-500/10 px-3 py-2 text-sm font-semibold text-primary-400 transition hover:bg-primary-500/20"
 					>
 						Reactivar
 					</button>
@@ -54,3 +54,4 @@ function ZoneCard({ zone, onEdit, onDeactivate, onActivate }) {
 }
 
 export default ZoneCard;
+

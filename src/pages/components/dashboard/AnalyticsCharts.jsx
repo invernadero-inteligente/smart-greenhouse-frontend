@@ -25,8 +25,8 @@ export default function AnalyticsCharts({ charts, expectedVariables }) {
             key={chart.variable || i}
             className="w-full min-w-[320px] max-w-[600px] mx-auto rounded-3xl border border-[#e5e0c3] bg-white/80 p-12 flex flex-col items-center justify-center min-h-[340px] shadow"
           >
-            <span className="text-2xl font-bold text-emerald-700/60 mb-2">{getChartTitle(chart.variable)}</span>
-            <span className="text-base text-emerald-700/40">Sin datos para mostrar</span>
+            <span className="text-2xl font-bold text-primary-700/60 mb-2">{getChartTitle(chart.variable)}</span>
+            <span className="text-base text-primary-700/40">Sin datos para mostrar</span>
           </div>
         ) : (
           <div className="w-full min-w-[320px] max-w-[600px] mx-auto">
@@ -49,3 +49,4 @@ function getChartTitle(variable) {
   };
   return variableTitles[variable] || variable || "Gráfica";
 }
+

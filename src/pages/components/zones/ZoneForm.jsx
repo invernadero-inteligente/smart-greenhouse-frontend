@@ -39,7 +39,7 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 	return (
 		<form onSubmit={handleSubmit} className="space-y-4">
 			<div>
-				<label className="mb-2 block text-sm font-semibold text-emerald-900">
+				<label className="mb-2 block text-sm font-semibold text-primary-900">
 					Nombre de la Zona
 				</label>
 				<input
@@ -47,10 +47,10 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 					name="name"
 					value={formData.name}
 					onChange={handleChange}
-					className={`w-full rounded-lg border bg-white px-4 py-2 font-body text-sm text-emerald-900 transition ${
+					className={`w-full rounded-lg border bg-white px-4 py-2 font-body text-sm text-primary-900 transition ${
 						errors.name
 							? "border-red-500/50 bg-red-50"
-							: "border-[#e5e0c3] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
+							: "border-[#e5e0c3] focus:border-primary-500 focus:ring-2 focus:ring-primary-200/40"
 					}`}
 					placeholder="Ej: Zona 1 - Tomates"
 				/>
@@ -60,7 +60,7 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 			</div>
 
 			<div>
-				<label className="mb-2 block text-sm font-semibold text-emerald-900">
+				<label className="mb-2 block text-sm font-semibold text-primary-900">
 					Descripción
 				</label>
 				<textarea
@@ -68,7 +68,7 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 					value={formData.description}
 					onChange={handleChange}
 					rows="3"
-					className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
+					className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-primary-900 transition focus:border-primary-500 focus:ring-2 focus:ring-primary-200/40"
 					placeholder="Describe la zona..."
 				/>
 			</div>
@@ -80,9 +80,9 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 					name="isActive"
 					checked={formData.isActive}
 					onChange={handleChange}
-					className="h-4 w-4 accent-emerald-500"
+					className="h-4 w-4 accent-primary-500"
 				/>
-				<label htmlFor="isActive" className="text-sm font-semibold text-emerald-900">
+				<label htmlFor="isActive" className="text-sm font-semibold text-primary-900">
 					Zona activa
 				</label>
 			</div>
@@ -91,7 +91,7 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 				<button
 					type="submit"
 					disabled={isLoading}
-					className="flex-1 rounded-lg bg-emerald-500 px-4 py-2 font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+					className="flex-1 rounded-lg bg-primary-500 px-4 py-2 font-semibold text-white transition hover:bg-primary-600 disabled:opacity-50"
 				>
 					{isLoading ? "Guardando..." : zone ? "Actualizar" : "Crear"}
 				</button>
@@ -99,7 +99,7 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 					<button
 						type="button"
 						onClick={onCancel}
-						className="flex-1 rounded-lg border border-[#e5e0c3] px-4 py-2 font-semibold text-emerald-900 transition hover:bg-[#f5f3e7]"
+						className="flex-1 rounded-lg border border-[#e5e0c3] px-4 py-2 font-semibold text-primary-900 transition hover:bg-[#f5f3e7]"
 					>
 						Cancelar
 					</button>
@@ -110,3 +110,4 @@ function ZoneForm({ zone, onSubmit, isLoading = false, onCancel }) {
 }
 
 export default ZoneForm;
+

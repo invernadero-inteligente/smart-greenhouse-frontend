@@ -66,10 +66,10 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="name"
 						value={formData.name}
 						onChange={handleChange}
-						className={`w-full rounded-lg border bg-white px-4 py-2 font-body text-sm text-emerald-900 transition ${
+						className={`w-full rounded-lg border bg-white px-4 py-2 font-body text-sm text-primary-900 transition ${
 							errors.name
 								? "border-red-500/50 bg-red-50"
-								: "border-[#e5e0c3] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
+								: "border-[#e5e0c3] focus:border-primary-500 focus:ring-2 focus:ring-primary-200/40"
 						}`}
 						placeholder="Ej: Tomate"
 					/>
@@ -87,7 +87,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="variety"
 						value={formData.variety}
 						onChange={handleChange}
-						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
+						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-primary-900 transition focus:border-primary-500 focus:ring-2 focus:ring-primary-200/40"
 						placeholder="Ej: Cherry"
 					/>
 				</div>
@@ -102,10 +102,10 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="zoneId"
 						value={formData.zoneId}
 						onChange={handleChange}
-						className={`w-full rounded-lg border bg-white px-4 py-2 font-body text-sm text-emerald-900 transition ${
+						className={`w-full rounded-lg border bg-white px-4 py-2 font-body text-sm text-primary-900 transition ${
 							errors.zoneId
 								? "border-red-500/50 bg-red-50"
-								: "border-[#e5e0c3] focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
+								: "border-[#e5e0c3] focus:border-primary-500 focus:ring-2 focus:ring-primary-200/40"
 						}`}
 					>
 						<option value="">Seleccionar zona</option>
@@ -129,7 +129,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="plantCount"
 						value={formData.plantCount}
 						onChange={handleChange}
-						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
+						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-primary-900 transition focus:border-primary-500 focus:ring-2 focus:ring-primary-200/40"
 						placeholder="0"
 					/>
 				</div>
@@ -145,7 +145,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="sowingDate"
 						value={formData.sowingDate}
 						onChange={handleChange}
-						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
+						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-primary-900 transition focus:border-primary-500 focus:ring-2 focus:ring-primary-200/40"
 					/>
 				</div>
 
@@ -157,7 +157,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 						name="status"
 						value={formData.status}
 						onChange={handleChange}
-						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-emerald-900 transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200/40"
+						className="w-full rounded-lg border border-[#e5e0c3] bg-white px-4 py-2 font-body text-sm text-primary-900 transition focus:border-primary-500 focus:ring-2 focus:ring-primary-200/40"
 					>
 						<option value="ACTIVE">Activo</option>
 						<option value="HARVEST">Cosechando</option>
@@ -170,7 +170,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 				<button
 					type="submit"
 					disabled={isLoading}
-					className="flex-1 rounded-lg bg-emerald-500 px-4 py-2 font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+					className="flex-1 rounded-lg bg-primary-500 px-4 py-2 font-semibold text-white transition hover:bg-primary-600 disabled:opacity-50"
 				>
 					{isLoading ? "Guardando..." : crop ? "Actualizar" : "Crear"}
 				</button>
@@ -178,7 +178,7 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 					<button
 						type="button"
 						onClick={onCancel}
-						className="flex-1 rounded-lg border border-[#e5e0c3] px-4 py-2 font-semibold text-emerald-900 transition hover:bg-[#f5f3e7]"
+						className="flex-1 rounded-lg border border-[#e5e0c3] px-4 py-2 font-semibold text-primary-900 transition hover:bg-[#f5f3e7]"
 					>
 						Cancelar
 					</button>
@@ -189,3 +189,4 @@ function CropForm({ crop, onSubmit, isLoading = false, onCancel }) {
 }
 
 export default CropForm;
+

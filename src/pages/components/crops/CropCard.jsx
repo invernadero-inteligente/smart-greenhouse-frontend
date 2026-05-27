@@ -1,6 +1,6 @@
 function CropCard({ crop, onEdit, onDelete }) {
 	const statusConfig = {
-		ACTIVE:   { cls: "bg-emerald-100 text-emerald-700", label: "Activo" },
+		ACTIVE:   { cls: "bg-primary-100 text-primary-700", label: "Activo" },
 		HARVEST:  { cls: "bg-[#fff7e0] text-[#b45309]", label: "Cosechando" },
 		FINISHED: { cls: "bg-[#f5f3e7] text-[#b5a16a]", label: "Finalizado" }
 	};
@@ -11,27 +11,27 @@ function CropCard({ crop, onEdit, onDelete }) {
 		<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6 shadow-sm transition hover:shadow-md">
 			<div className="space-y-3">
 				<div>
-					<h3 className="font-heading text-lg font-bold text-emerald-900">
+					<h3 className="font-heading text-lg font-bold text-primary-900">
 						{crop.name}
 					</h3>
-					<p className="text-xs text-emerald-700/70">
+					<p className="text-xs text-primary-700/70">
 						Variedad: {crop.variety || "No especificada"}
 					</p>
 				</div>
 
 				<div className="grid grid-cols-2 gap-3 text-xs">
 					<div>
-						<p className="text-emerald-700/70">Plantas</p>
-						<p className="font-bold text-emerald-900">{crop.plantCount || 0}</p>
+						<p className="text-primary-700/70">Plantas</p>
+						<p className="font-bold text-primary-900">{crop.plantCount || 0}</p>
 					</div>
 					<div>
-						<p className="text-emerald-700/70">Zona</p>
-						<p className="font-bold text-emerald-900">#{crop.zoneId || "-"}</p>
+						<p className="text-primary-700/70">Zona</p>
+						<p className="font-bold text-primary-900">#{crop.zoneId || "-"}</p>
 					</div>
 					{crop.sowingDate && (
 						<div>
-							<p className="text-emerald-700/70">Fecha siembra</p>
-							<p className="font-bold text-emerald-900">
+							<p className="text-primary-700/70">Fecha siembra</p>
+							<p className="font-bold text-primary-900">
 								{new Date(crop.sowingDate).toLocaleDateString()}
 							</p>
 						</div>
@@ -47,7 +47,7 @@ function CropCard({ crop, onEdit, onDelete }) {
 				{onEdit && (
 					<button
 						onClick={() => onEdit(crop)}
-						className="flex-1 rounded-lg bg-emerald-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600"
+						className="flex-1 rounded-lg bg-primary-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-primary-600"
 					>
 						Editar
 					</button>
@@ -66,3 +66,4 @@ function CropCard({ crop, onEdit, onDelete }) {
 }
 
 export default CropCard;
+
