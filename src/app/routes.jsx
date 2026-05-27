@@ -14,6 +14,7 @@ import Inventory from "../pages/inventory/Inventory";
 import ActuatorsList from "../pages/actuators/ActuatorsList";
 import NotFound from "../pages/NotFound";
 import ActuatorAdmin from "../pages/actuators/ActuatorAdmin";
+import Reports from "../pages/reports/Reports";
 import { useAuth } from "../hooks/useAuth";
 
 function ProtectedRoute() {
@@ -100,6 +101,10 @@ const routes = [
 							{
 								path: "/admin/actuadores",
 								element: <ActuatorAdmin />
+							},
+							{
+								path: "/reports",
+								element: <Reports />
 							}
 						]
 					}

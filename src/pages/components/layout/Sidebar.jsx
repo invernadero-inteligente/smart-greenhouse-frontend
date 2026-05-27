@@ -33,7 +33,7 @@ const NAV_ITEMS = [
 	{ to: "/umbrales", label: "Umbrales", icon: SlidersHorizontal },
 	{ to: "/alertas", label: "Alertas", icon: AlertTriangle, badge: "alerts" },
 	{ to: "/actuadores", label: "Actuadores", icon: Cpu },
-	{ to: "/inventario", label: "Inventario", icon: Package }
+	{ to: "/inventario", label: "Inventario", icon: Package },
 ];
 
 
@@ -120,47 +120,64 @@ export default function Sidebar({ open, onClose }) {
 			</div>
 
 			{/* Navigation */}
-			<nav className="flex-1 space-y-1 overflow-y-auto pr-1 custom-scrollbar">
-				{NAV_ITEMS.map((item) => (
-					<NavItem key={item.to} {...item} alertCount={criticalAlerts} onClick={onClose} />
-				))}
+						<nav className="flex-1 space-y-1 overflow-y-auto pr-1 custom-scrollbar">
+								{NAV_ITEMS.map((item) => (
+										<NavItem key={item.to} {...item} alertCount={criticalAlerts} onClick={onClose} />
+								))}
 
-				{isAdmin && (
-				<div className="mt-6 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3 shadow-sm">
-					<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-emerald-600 font-semibold">Admin</p>
-					<NavLink
-						to="/admin/usuarios"
-						onClick={onClose}
-						className={({ isActive }) =>
-							cn(
-								"mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
-								isActive
-									? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-									: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
-							)
-						}
-					>
-						<Users className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
-						Usuarios
-					</NavLink>
-					<NavLink
-						to="/backoffice"
-						onClick={onClose}
-						className={({ isActive }) =>
-							cn(
-								"flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
-								isActive
-									? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-									: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
-							)
-						}
-					>
-						<Settings className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
-						Backoffice
-					</NavLink>
-				</div>
-				)}
-			</nav>
+								{isAdmin && (
+									<>
+										<NavLink
+											to="/reports"
+											onClick={onClose}
+											className={({ isActive }) =>
+												cn(
+													"mt-6 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent bg-white/90 border-[#e5e0c3] shadow-sm",
+													isActive
+														? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
+														: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
+												)
+											}
+										>
+											<Package className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
+											Reportes
+										</NavLink>
+										<div className="mt-4 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3 shadow-sm">
+											<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-emerald-600 font-semibold">Admin</p>
+											<NavLink
+												to="/admin/usuarios"
+												onClick={onClose}
+												className={({ isActive }) =>
+													cn(
+														"mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
+														isActive
+															? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
+															: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
+													)
+												}
+											>
+												<Users className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
+												Usuarios
+											</NavLink>
+											<NavLink
+												to="/backoffice"
+												onClick={onClose}
+												className={({ isActive }) =>
+													cn(
+														"flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
+														isActive
+															? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
+															: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
+													)
+												}
+											>
+												<Settings className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
+												Backoffice
+											</NavLink>
+										</div>
+									</>
+								)}
+						</nav>
 
 			{/* Logout */}
 			<div className="mt-6 rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 shadow-sm">
