@@ -1,7 +1,7 @@
 ﻿import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Lock, Mail } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { getApiErrorMessage } from "../../services/api";
 
@@ -10,8 +10,10 @@ function Login() {
 const navigate = useNavigate();
 const { login, loading } = useAuth();
 
+
 const [form, setForm] = useState({ email: "", password: "" });
 const [error, setError] = useState("");
+const [showPassword, setShowPassword] = useState(false);
 
 const onChange = (event) => {
 setForm((prev) => ({ ...prev, [event.target.name]: event.target.value }));
@@ -52,51 +54,71 @@ onSubmit={onSubmit}
 <label className="grid gap-1.5 text-sm font-medium text-emerald-900">
 Correo
 <div className="relative">
-<Mail className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-emerald-300" />
+<Mail className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-[var(--secondary)]" />
 <input
-name="email"
-type="email"
-required
-value={form.email}
-onChange={onChange}
-placeholder="admin1@invernadero.com"
-className="w-full rounded-xl border border-[#e5e0c3] bg-white px-9 py-2.5 text-emerald-900 outline-none focus:border-emerald-400/40 focus:ring-2 focus:ring-emerald-200/25"
+	name="email"
+	type="email"
+	required
+	value={form.email}
+	onChange={onChange}
+	placeholder="admin1@invernadero.com"
+	className="w-full rounded-xl border bg-white px-9 py-2.5 text-emerald-900 outline-none focus:ring-2"
+	style={{ borderColor: '#0e544b', '--tw-ring-color': '#0e544b' }}
 />
 </div>
 </label>
 
+
 <label className="grid gap-1.5 text-sm font-medium text-emerald-900">
-Contrasena
-<div className="relative">
-<Lock className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-emerald-300" />
-<input
-name="password"
-type="password"
-required
-value={form.password}
-onChange={onChange}
-placeholder="********"
-className="w-full rounded-xl border border-[#e5e0c3] bg-white px-9 py-2.5 text-emerald-900 outline-none focus:border-emerald-400/40 focus:ring-2 focus:ring-emerald-200/25"
-/>
-</div>
+	Contrasena
+	<div className="relative">
+		<Lock className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-[var(--secondary)]" />
+		<input
+			name="password"
+			type={showPassword ? "text" : "password"}
+			required
+			value={form.password}
+			onChange={onChange}
+			placeholder="********"
+			className="w-full rounded-xl border bg-white px-9 py-2.5 text-emerald-900 outline-none focus:ring-2 pr-10"
+			style={{ borderColor: '#0e544b', '--tw-ring-color': '#0e544b' }}
+		/>
+		<button
+			type="button"
+			aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+			onClick={() => setShowPassword((v) => !v)}
+			className="absolute right-2 top-2.5 p-1 text-[var(--secondary)] focus:outline-none"
+			tabIndex={-1}
+		>
+			{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+		</button>
+	</div>
 </label>
 
 {error ? <p className="m-0 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p> : null}
 
-<button
-className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70"
-type="submit"
-disabled={loading}
->
-{loading ? "Ingresando..." : "Entrar"}
-</button>
 
 <p className="m-0 text-center text-sm text-emerald-700/70">
-No tienes cuenta?{" "}
-<Link to="/register" className="font-semibold text-emerald-400">
-Registrate
-</Link>
+  No tienes cuenta?{" "}
+  <Link
+    to="/register"
+    className="font-semibold text-[#0e544b] hover:underline"
+  >
+    Regístrate
+  </Link>
 </p>
+
+<button
+  className="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-70 w-full mt-2"
+  style={{ background: '#0e544b' }}
+  type="submit"
+  disabled={loading}
+  onMouseOver={e => e.currentTarget.style.background = '#09332e'}
+  onMouseOut={e => e.currentTarget.style.background = '#0e544b'}
+>
+  {loading ? "Ingresando..." : "Entrar"}
+</button>
+
 </motion.form>
 </main>
 );

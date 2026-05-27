@@ -4,7 +4,7 @@ import { useZones } from "../../hooks/useZones";
 import { useAuth } from "../../hooks/useAuth";
 import { canEdit } from "../../utils/permissions";
 import CropCard from "../components/crops/CropCard";
-import CropForm from "../components/crops/CropForm";
+import CropForm from "./CropForm";
 
 function CropsList() {
 	const { auth } = useAuth();

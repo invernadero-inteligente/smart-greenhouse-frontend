@@ -127,7 +127,7 @@ function ZonesList() {
 					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterActive === true
 							? "border-transparent bg-emerald-500 text-zinc-950"
-							: "border-zinc-700 bg-zinc-950 text-zinc-200 hover:bg-zinc-800"
+							: "border-[#e5e0c3] bg-white/90 text-emerald-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Activas ({zones.filter(z => (z.isActive ?? z.active)).length})
@@ -137,7 +137,7 @@ function ZonesList() {
 					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterActive === false
 							? "border-transparent bg-emerald-500 text-zinc-950"
-							: "border-zinc-700 bg-zinc-950 text-zinc-200 hover:bg-zinc-800"
+							: "border-[#e5e0c3] bg-white/90 text-emerald-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Inactivas ({zones.filter(z => !(z.isActive ?? z.active)).length})
@@ -145,7 +145,7 @@ function ZonesList() {
 			</div>
 
 			{filteredZones.length === 0 ? (
-				<div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-10 text-center shadow-sm">
+				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-10 text-center shadow-sm">
 					<p className="text-zinc-400">
 						{filterActive !== null
 							? "No hay zonas con ese estado"

@@ -3,19 +3,19 @@ function UserCard({ user, onEdit, onToggleStatus }) {
 		ADMIN: { cls: "bg-emerald-500/10 text-emerald-400", label: "Administrador" },
 		MANAGER: { cls: "bg-amber-500/10 text-amber-400", label: "Gestor" },
 		TECHNICIAN: { cls: "bg-blue-500/10 text-blue-400", label: "Técnico" },
-		VIEWER: { cls: "bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300", label: "Visualizador" }
+		VIEWER: { cls: "bg-zinc-200 text-zinc-700", label: "Visualizador" },
 	};
 
-	const config = roleConfig[user.role] || roleConfig.VIEWER;
+	const config = roleConfig[user?.role] || roleConfig.VIEWER;
 
 	return (
-		<div className="rounded-2xl border border-zinc-300 bg-white p-6 shadow-soft transition hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+		<div className="rounded-2xl border border-zinc-300 bg-white p-6 shadow-soft transition hover:shadow-lg">
 			<div className="space-y-3">
 				<div>
-					<h3 className="font-heading text-lg font-bold text-zinc-900 dark:text-zinc-100">
+					<h3 className="font-heading text-lg font-bold text-zinc-900">
 						{user.fullName}
 					</h3>
-					<p className="text-xs text-zinc-500 dark:text-zinc-400">{user.email}</p>
+					<p className="text-xs text-zinc-500">{user.email}</p>
 				</div>
 
 				<div className="flex items-center gap-2">
@@ -24,7 +24,7 @@ function UserCard({ user, onEdit, onToggleStatus }) {
 							user.active ? "bg-emerald-500" : "bg-zinc-500"
 						}`}
 					/>
-					<span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+					<span className="text-xs font-semibold text-zinc-500">
 						{user.active ? "Activo" : "Inactivo"}
 					</span>
 				</div>
