@@ -13,7 +13,7 @@ import {
     Settings,
     SlidersHorizontal,
     Users,
-    FileText // <-- Agregado para el ícono de reportes
+    FileText
 } from "lucide-react";
 import { useAuth } from "../../../hooks/useAuth";
 import { useAlerts } from "../../../hooks/useAlerts";
