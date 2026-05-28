@@ -47,13 +47,13 @@ function NavItem({ to, label, icon: Icon, badge, onClick, alertCount }) {
 				cn(
 					"group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-base font-medium transition-all duration-200 ease-in-out border border-transparent",
 					isActive
-						? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-						: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
+						? "bg-[#0e544b] text-white border-[#09332e] shadow-md"
+						: "bg-[#0e544b] text-white hover:bg-[#09332e] hover:text-white border-[#09332e] shadow"
 				)
 			}
 			style={{ boxShadow: '0 2px 8px 0 rgba(44,79,61,0.04)' }}
 		>
-			<Icon className="h-5 w-5 shrink-0 text-emerald-600 group-hover:text-emerald-700 transition" />
+			<Icon className="h-5 w-5 shrink-0 text-white transition" />
 			<span className="flex-1 tracking-tight">{label}</span>
 			{badge === "alerts" && alertCount > 0 && (
 				<span className="inline-flex min-w-5 items-center justify-center rounded-full border border-rose-300 bg-rose-100 px-1.5 text-[10px] font-semibold text-rose-600 animate-pulse">
@@ -127,72 +127,72 @@ export default function Sidebar({ open, onClose }) {
 
 								{isAdmin && (
 									<>
-										<NavLink
-											to="/reports"
-											onClick={onClose}
-											className={({ isActive }) =>
-												cn(
-													"mt-6 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent bg-white/90 border-[#e5e0c3] shadow-sm",
-													isActive
-														? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-														: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
-												)
-											}
-										>
-											<Package className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
-											Reportes
-										</NavLink>
+										   <NavLink
+											   to="/reports"
+											   onClick={onClose}
+											   className={({ isActive }) =>
+												   cn(
+													   "mt-6 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
+													   isActive
+														   ? "bg-[#0e544b] text-white border-[#09332e] shadow-md"
+														   : "bg-[#0e544b] text-white hover:bg-[#09332e] hover:text-white border-[#09332e] shadow"
+												   )
+											   }
+										   >
+											   <Package className="h-5 w-5 text-white transition" />
+											   Reportes
+										   </NavLink>
 										<div className="mt-4 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3 shadow-sm">
 											<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-emerald-600 font-semibold">Admin</p>
-											<NavLink
-												to="/admin/usuarios"
-												onClick={onClose}
-												className={({ isActive }) =>
-													cn(
-														"mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
-														isActive
-															? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-															: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
-													)
-												}
-											>
-												<Users className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
-												Usuarios
-											</NavLink>
-											<NavLink
-												to="/backoffice"
-												onClick={onClose}
-												className={({ isActive }) =>
-													cn(
-														"flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
-														isActive
-															? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 shadow-sm"
-															: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-emerald-700 border-border"
-													)
-												}
-											>
-												<Settings className="h-5 w-5 text-emerald-600 group-hover:text-emerald-700 transition" />
-												Backoffice
-											</NavLink>
+											   <NavLink
+												   to="/admin/usuarios"
+												   onClick={onClose}
+												   className={({ isActive }) =>
+													   cn(
+														   "mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
+														   isActive
+															   ? "bg-[#0e544b] text-white border-[#09332e] shadow-md"
+															   : "bg-[#0e544b] text-white hover:bg-[#09332e] hover:text-white border-[#09332e] shadow"
+													   )
+												   }
+											   >
+												   <Users className="h-5 w-5 text-white transition" />
+												   Usuarios
+											   </NavLink>
+											   <NavLink
+												   to="/backoffice"
+												   onClick={onClose}
+												   className={({ isActive }) =>
+													   cn(
+														   "flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
+														   isActive
+															   ? "bg-[#0e544b] text-white border-[#09332e] shadow-md"
+															   : "bg-[#0e544b] text-white hover:bg-[#09332e] hover:text-white border-[#09332e] shadow"
+													   )
+												   }
+											   >
+												   <Settings className="h-5 w-5 text-white transition" />
+												   Backoffice
+											   </NavLink>
 										</div>
 									</>
 								)}
 						</nav>
 
 			{/* Logout */}
-			<div className="mt-6 rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 shadow-sm">
-				<button
-					onClick={handleLogout}
-					className="flex w-full items-center justify-between rounded-xl border border-transparent bg-white px-3 py-2 text-base text-rose-600 font-semibold transition hover:border-rose-300 hover:bg-rose-100 hover:text-rose-700"
-					style={{ boxShadow: '0 1px 4px 0 rgba(180,58,47,0.04)' }}
-				>
-					<span className="flex items-center gap-2">
-						<LogOut className="h-5 w-5" />
-						Cerrar sesión
-					</span>
-					<span className="text-[11px] text-emerald-600">ESC</span>
-				</button>
-			</div>
+			   <div className="mt-6 rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 shadow-sm">
+				   <button
+					   onClick={handleLogout}
+					   className="flex w-full items-center justify-between rounded-xl border border-[#09332e] bg-[#0e544b] px-3 py-2 text-base text-white font-semibold transition hover:bg-[#09332e] hover:text-white"
+					   style={{ boxShadow: '0 1px 4px 0 rgba(44,79,61,0.08)' }}
+				   >
+					   <span className="flex items-center gap-2">
+						   <LogOut className="h-5 w-5 text-white" />
+						   Cerrar sesión
+					   </span>
+					   <span className="text-[11px] text-white">ESC</span>
+				   </button>
+			   </div>
 		</motion.aside>
 	);
 }

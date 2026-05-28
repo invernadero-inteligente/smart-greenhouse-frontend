@@ -8,9 +8,9 @@
 	--fg: #222222; /* negro para texto */
 	--card: #ffffff; /* blanco puro */
 	--card-muted: #f5eedc; /* beige más oscuro */
-	--muted: #2f7f3c; /* verde para detalles */
-	--accent: #2f7f3c; /* verde principal */
-	--primary: #2f7f3c; /* verde principal */
+	--muted: #0e544b; /* verde para detalles */
+	--accent: #0e544b; /* verde principal */
+	--primary: #0e544b; /* verde principal */
 	--secondary: #d4af37; /* dorado */
 	--destructive: #b43a2f; /* rojo para errores */
 	--border: #e5e0c3; /* beige para bordes */
