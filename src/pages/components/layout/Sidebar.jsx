@@ -47,13 +47,15 @@ function NavItem({ to, label, icon: Icon, badge, onClick, alertCount }) {
 				cn(
 					"group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-base font-medium transition-all duration-200 ease-in-out border border-transparent",
 					isActive
-						? "bg-[#0e544b] text-white border-[#09332e] shadow-md"
-						: "bg-[#0e544b] text-white hover:bg-[#09332e] hover:text-white border-[#09332e] shadow"
+
+						? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+						: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-border"
 				)
 			}
 			style={{ boxShadow: '0 2px 8px 0 rgba(44,79,61,0.04)' }}
 		>
-			<Icon className="h-5 w-5 shrink-0 text-white transition" />
+
+			<Icon className="h-5 w-5 shrink-0 text-primary-600 group-hover:text-primary-700 transition" />
 			<span className="flex-1 tracking-tight">{label}</span>
 			{badge === "alerts" && alertCount > 0 && (
 				<span className="inline-flex min-w-5 items-center justify-center rounded-full border border-rose-300 bg-rose-100 px-1.5 text-[10px] font-semibold text-rose-600 animate-pulse">
@@ -99,23 +101,23 @@ export default function Sidebar({ open, onClose }) {
 		>
 			{/* Branding */}
 			<div className="mb-6 flex items-center gap-3 rounded-3xl border border-[#e5e0c3] bg-white/90 p-4 shadow-sm">
-				<div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-100 text-emerald-700">
+				<div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary-100 text-primary-700">
 					<Gauge className="h-6 w-6" />
 				</div>
 				<div>
-					<p className="text-xs uppercase tracking-[0.2em] text-emerald-600 font-semibold">Smart IoT</p>
+					<p className="text-xs uppercase tracking-[0.2em] text-primary-600 font-semibold">Smart IoT</p>
 					<p className="text-base font-bold text-zinc-900 leading-tight">Greenhouse Control</p>
 				</div>
 			</div>
 
 			{/* User */}
 			<div className="mb-6 rounded-3xl border border-[#e5e0c3] bg-white/90 p-4 flex items-center gap-3 shadow-sm">
-				<div className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-200 text-emerald-700 text-lg font-bold">
+				<div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary-200 text-primary-700 text-lg font-bold">
 					{initial}
 				</div>
 				<div className="min-w-0">
 					<p className="truncate text-base font-semibold text-zinc-900">{displayName}</p>
-					<p className="text-xs text-emerald-600 font-medium">{ROLE_LABELS[auth.role] || auth.role}</p>
+					<p className="text-xs text-primary-600 font-medium">{ROLE_LABELS[auth.role] || auth.role}</p>
 				</div>
 			</div>
 
@@ -125,74 +127,59 @@ export default function Sidebar({ open, onClose }) {
 										<NavItem key={item.to} {...item} alertCount={criticalAlerts} onClick={onClose} />
 								))}
 
-								{isAdmin && (
-									<>
-										   <NavLink
-											   to="/reports"
-											   onClick={onClose}
-											   className={({ isActive }) =>
-												   cn(
-													   "mt-6 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
-													   isActive
-														   ? "bg-[#0e544b] text-white border-[#09332e] shadow-md"
-														   : "bg-[#0e544b] text-white hover:bg-[#09332e] hover:text-white border-[#09332e] shadow"
-												   )
-											   }
-										   >
-											   <Package className="h-5 w-5 text-white transition" />
-											   Reportes
-										   </NavLink>
-										<div className="mt-4 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3 shadow-sm">
-											<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-emerald-600 font-semibold">Admin</p>
-											   <NavLink
-												   to="/admin/usuarios"
-												   onClick={onClose}
-												   className={({ isActive }) =>
-													   cn(
-														   "mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
-														   isActive
-															   ? "bg-[#0e544b] text-white border-[#09332e] shadow-md"
-															   : "bg-[#0e544b] text-white hover:bg-[#09332e] hover:text-white border-[#09332e] shadow"
-													   )
-												   }
-											   >
-												   <Users className="h-5 w-5 text-white transition" />
-												   Usuarios
-											   </NavLink>
-											   <NavLink
-												   to="/backoffice"
-												   onClick={onClose}
-												   className={({ isActive }) =>
-													   cn(
-														   "flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
-														   isActive
-															   ? "bg-[#0e544b] text-white border-[#09332e] shadow-md"
-															   : "bg-[#0e544b] text-white hover:bg-[#09332e] hover:text-white border-[#09332e] shadow"
-													   )
-												   }
-											   >
-												   <Settings className="h-5 w-5 text-white transition" />
-												   Backoffice
-											   </NavLink>
-										</div>
-									</>
-								)}
-						</nav>
+
+				{isAdmin && (
+				<div className="mt-6 rounded-2xl border border-[#e5e0c3] bg-white/90 p-3 shadow-sm">
+					<p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-primary-600 font-semibold">Admin</p>
+					<NavLink
+						to="/admin/usuarios"
+						onClick={onClose}
+						className={({ isActive }) =>
+							cn(
+								"mb-1 flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
+								isActive
+									? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+									: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-border"
+							)
+						}
+					>
+						<Users className="h-5 w-5 text-primary-600 group-hover:text-primary-700 transition" />
+						Usuarios
+					</NavLink>
+					<NavLink
+						to="/backoffice"
+						onClick={onClose}
+						className={({ isActive }) =>
+							cn(
+								"flex items-center gap-2 rounded-xl px-3 py-2 text-base font-medium transition-all border border-transparent",
+								isActive
+									? "bg-primary-500/10 text-primary-700 border-primary-500/30 shadow-sm"
+									: "bg-card text-zinc-900 hover:bg-[#f5eedc] hover:text-primary-700 border-border"
+							)
+						}
+					>
+						<Settings className="h-5 w-5 text-primary-600 group-hover:text-primary-700 transition" />
+						Backoffice
+					</NavLink>
+				</div>
+				)}
+			</nav>
 
 			{/* Logout */}
-			   <div className="mt-6 rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 shadow-sm">
-				   <button
-					   onClick={handleLogout}
-					   className="flex w-full items-center justify-between rounded-xl border border-[#09332e] bg-[#0e544b] px-3 py-2 text-base text-white font-semibold transition hover:bg-[#09332e] hover:text-white"
-					   style={{ boxShadow: '0 1px 4px 0 rgba(44,79,61,0.08)' }}
-				   >
-					   <span className="flex items-center gap-2">
-						   <LogOut className="h-5 w-5 text-white" />
-						   Cerrar sesión
-					   </span>
-					   <span className="text-[11px] text-white">ESC</span>
-				   </button>
-			   </div>
+			<div className="mt-6 rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 shadow-sm">
+				<button
+					onClick={handleLogout}
+					className="flex w-full items-center justify-between rounded-xl border border-transparent bg-white px-3 py-2 text-base text-rose-600 font-semibold transition hover:border-rose-300 hover:bg-rose-100 hover:text-rose-700"
+					style={{ boxShadow: '0 1px 4px 0 rgba(180,58,47,0.04)' }}
+				>
+					<span className="flex items-center gap-2">
+						<LogOut className="h-5 w-5" />
+						Cerrar sesión
+					</span>
+					<span className="text-[11px] text-primary-600">ESC</span>
+				</button>
+			</div>
 		</motion.aside>
 	);
 }
+

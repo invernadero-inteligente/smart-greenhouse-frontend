@@ -37,9 +37,10 @@ export default function Chart({ data, lines = [], bars = [], areas = [], xKey = 
       </ResponsiveContainer>
       {empty && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-emerald-700/60 text-sm font-semibold">Sin datos disponibles</span>
+          <span className="text-primary-700/60 text-sm font-semibold">Sin datos disponibles</span>
         </div>
       )}
     </div>
   );
 }
+

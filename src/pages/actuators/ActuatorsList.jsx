@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useZones } from "../../hooks/useZones";
 import { canOperate } from "../../utils/permissions";
@@ -82,7 +82,6 @@ export default function ActuatorsList() {
 	const [showTemplateEditor, setShowTemplateEditor] = useState(false);
 
 	const successCount = history.filter((item) => item.ok).length;
-	// Eliminado: zoneActuatorCount
 	const zoneTemplateCount = zoneTemplates.length;
 	const filteredHistory = useMemo(() => {
 		if (historyFilter === "SENT") {
@@ -112,8 +111,6 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 		localStorage.setItem(ACTUATOR_HISTORY_KEY, JSON.stringify(history));
 	}, [history]);
 
-	// Eliminado: useEffect para zoneCatalog
-
 	useEffect(() => {
 		saveOperatorTemplatesStore(templatesStore);
 	}, [templatesStore]);
@@ -121,10 +118,6 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 	useEffect(() => {
 		setAllowCustomActuator(false);
 	}, [targetZoneId]);
-
-	// Eliminado: addCatalogActuator y setZoneCatalog
-
-	// Eliminado: removeCatalogActuator y setZoneCatalog
 
 	const addTemplateStep = () => {
 		setNewTemplateSteps((prev) => [...prev, { actuatorName: "", action: "ON" }]);
@@ -297,46 +290,46 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 
 		return (
 			<div className="space-y-7">
-				<div className="overflow-hidden rounded-3xl border border-[#e5e0c3] bg-white/90 p-7 text-emerald-900 shadow-md">
+				<div className="overflow-hidden rounded-3xl border border-[#e5e0c3] bg-white/90 p-7 text-primary-900 shadow-md">
 					<div className="flex flex-wrap items-start justify-between gap-4">
 						<div>
-							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-600">Centro de control IoT</p>
-							<h1 className="mt-1 font-heading text-2xl font-bold text-emerald-700 md:text-3xl">Control de actuadores</h1>
-							<p className="mt-1 text-sm text-emerald-700/80">
-								Comando MQTT por zona en <span className="font-semibold text-emerald-600">/api/iot/actuator/event/{targetZoneId}</span>
+							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary-600">Centro de control IoT</p>
+							<h1 className="mt-1 font-heading text-2xl font-bold text-primary-700 md:text-3xl">Control de actuadores</h1>
+							<p className="mt-1 text-sm text-primary-700/80">
+								Comando MQTT por zona en <span className="font-semibold text-primary-600">/api/iot/actuator/event/{targetZoneId}</span>
 							</p>
 							{!allowOperate && (
-								<p className="mt-2 inline-flex items-center rounded-full border border-emerald-200 bg-[#EFE7D7] px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Solo lectura - no puedes enviar comandos</p>
+								<p className="mt-2 inline-flex items-center rounded-full border border-primary-200 bg-[#EFE7D7] px-2.5 py-1 text-[11px] font-semibold text-primary-700">Solo lectura - no puedes enviar comandos</p>
 							)}
 						</div>
 
 						<div className="rounded-2xl border border-[#e5e0c3] bg-[#FAF7F2] px-5 py-4 text-right shadow-sm">
-							<p className="text-[10px] uppercase tracking-wide text-emerald-600">Comandos exitosos</p>
-							<p className="font-heading text-2xl font-bold text-emerald-700">{successCount}</p>
+							<p className="text-[10px] uppercase tracking-wide text-primary-600">Comandos exitosos</p>
+							<p className="font-heading text-2xl font-bold text-primary-700">{successCount}</p>
 						</div>
 					</div>
 
 					<div className="mt-5 grid gap-4 md:grid-cols-3">
 						<div className="rounded-2xl border border-[#e5e0c3] bg-[#FAF7F2] p-4 shadow-sm">
-							<p className="text-[10px] uppercase tracking-wide text-emerald-600">Zona seleccionada</p>
-							<p className="mt-1 text-base font-semibold text-emerald-700">{selectedZone?.name ?? "Sin zona"}</p>
+							<p className="text-[10px] uppercase tracking-wide text-primary-600">Zona seleccionada</p>
+							<p className="mt-1 text-base font-semibold text-primary-700">{selectedZone?.name ?? "Sin zona"}</p>
 						</div>
 
 						<div className="rounded-2xl border border-[#e5e0c3] bg-[#FAF7F2] p-4 shadow-sm">
-							<p className="text-[10px] uppercase tracking-wide text-emerald-600">Plantillas disponibles</p>
-							<p className="mt-1 text-base font-semibold text-emerald-700">{zoneTemplateCount}</p>
+							<p className="text-[10px] uppercase tracking-wide text-primary-600">Plantillas disponibles</p>
+							<p className="mt-1 text-base font-semibold text-primary-700">{zoneTemplateCount}</p>
 						</div>
 					</div>
 				</div>
 
 			<div className="grid gap-4 xl:grid-cols-12">
 				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6 xl:col-span-8">
-				<h2 className="font-heading text-lg font-bold text-emerald-900">Enviar comando</h2>
-				<p className="mt-1 text-xs text-emerald-700/70">Selecciona zona, actuador y acción para ejecutar control remoto.</p>
+				<h2 className="font-heading text-lg font-bold text-primary-900">Enviar comando</h2>
+				<p className="mt-1 text-xs text-primary-700/70">Selecciona zona, actuador y acción para ejecutar control remoto.</p>
 
 					<div className="mt-4 grid gap-3 md:grid-cols-3">
 						<label className="space-y-1">
-						<span className="text-xs font-semibold uppercase tracking-wide text-emerald-700/70">Zona</span>
+						<span className="text-xs font-semibold uppercase tracking-wide text-primary-700/70">Zona</span>
 							<select
 								value={targetZoneId}
 								onChange={(e) => setSelectedZoneId(e.target.value)}
@@ -351,7 +344,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 						</label>
 
 						<label className="space-y-1">
-						<span className="text-xs font-semibold uppercase tracking-wide text-emerald-700/70">Actuador</span>
+						<span className="text-xs font-semibold uppercase tracking-wide text-primary-700/70">Actuador</span>
 							<input
 								value={actuatorName}
 								onChange={(e) => setActuatorName(e.target.value)}
@@ -373,7 +366,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 						</label>
 
 						<label className="space-y-1">
-						<span className="text-xs font-semibold uppercase tracking-wide text-emerald-700/70">Acción</span>
+						<span className="text-xs font-semibold uppercase tracking-wide text-primary-700/70">Acción</span>
 							<select
 								value={action}
 								onChange={(e) => setAction(e.target.value)}
@@ -390,14 +383,14 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 						<button
 							onClick={() => sendCommand("ON")}
 							disabled={sending || !allowOperate || !targetZoneId || !actuatorName.trim()}
-							className="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+							className="rounded-xl bg-primary-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
 						>
 							Encender
 
 						</button>
 					</div>
 
-					<label className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#e5e0c3] bg-[#f5f3e7] px-3 py-1.5 text-xs font-semibold text-emerald-900">
+					<label className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#e5e0c3] bg-[#f5f3e7] px-3 py-1.5 text-xs font-semibold text-primary-900">
 						<input
 							type="checkbox"
 							checked={allowCustomActuator}
@@ -416,9 +409,9 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 				</div>
 
 				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6 xl:col-span-4 xl:sticky xl:top-24 self-start">
-				<h2 className="font-heading text-lg font-bold text-emerald-900">Centro operativo</h2>
-				<p className="mt-1 text-xs text-emerald-700/70">Acciones rápidas, catálogo por zona y automatizaciones.</p>
-				<p className="mt-1 text-[11px] font-semibold text-emerald-700">Zona actual: {selectedZone?.name ?? "No seleccionada"}</p>
+				<h2 className="font-heading text-lg font-bold text-primary-900">Centro operativo</h2>
+				<p className="mt-1 text-xs text-primary-700/70">Acciones rápidas, catálogo por zona y automatizaciones.</p>
+				<p className="mt-1 text-[11px] font-semibold text-primary-700">Zona actual: {selectedZone?.name ?? "No seleccionada"}</p>
 
 
 
@@ -446,7 +439,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 								   "border-[#e5e0c3] bg-white/90"
 							}>
 								<div className="flex items-center gap-2">
-									   <p className="text-sm font-semibold text-emerald-900">{name}</p>
+									   <p className="text-sm font-semibold text-primary-900">{name}</p>
 
 								</div>
 								<div className="mt-2 grid grid-cols-2 gap-2">
@@ -459,7 +452,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 										disabled={sending || !allowOperate || !targetZoneId}
 										className={
 											"rounded-xl border px-2 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 " +
-											   "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+											   "border-primary-200 bg-primary-50 text-primary-700 hover:bg-primary-100"
 										}
 									>
 										ON
@@ -520,7 +513,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 									<button
 										onClick={() => runTemplate(template)}
 										disabled={sending || runningTemplateId !== null || !allowOperate || !targetZoneId}
-										className="mt-2 w-full rounded-xl bg-emerald-600 px-2 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+										className="mt-2 w-full rounded-xl bg-primary-600 px-2 py-2 text-xs font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
 									>
 										{runningTemplateId === template.id ? "Ejecutando..." : "Ejecutar plantilla"}
 									</button>
@@ -528,7 +521,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 							))}
 						</div>
 						{templateFeedback && (
-							<p className="mt-2 text-[11px] font-semibold text-emerald-700">{templateFeedback}</p>
+							<p className="mt-2 text-[11px] font-semibold text-primary-700">{templateFeedback}</p>
 						)}
 
 						<div className="mt-3 rounded-xl border border-zinc-200 bg-white p-2.5">
@@ -590,7 +583,7 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 								<button
 									onClick={createTemplate}
 									disabled={!allowOperate || !targetZoneId}
-									className="rounded-lg bg-emerald-600 px-2 py-1.5 text-[10px] font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+									className="rounded-lg bg-primary-600 px-2 py-1.5 text-[10px] font-semibold text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									Guardar plantilla
 								</button>
@@ -612,13 +605,13 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 						<div className="flex items-center gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-1 text-xs">
 						<button
 							onClick={() => setHistoryFilter("ALL")}
-							className={(historyFilter === "ALL" ? "bg-emerald-600 text-white " : "text-zinc-700 ") + "rounded-lg px-2.5 py-1.5 font-semibold transition"}
+							className={(historyFilter === "ALL" ? "bg-primary-600 text-white " : "text-zinc-700 ") + "rounded-lg px-2.5 py-1.5 font-semibold transition"}
 						>
 							Todos
 						</button>
 						<button
 							onClick={() => setHistoryFilter("SENT")}
-							className={(historyFilter === "SENT" ? "bg-emerald-600 text-white " : "text-zinc-700 ") + "rounded-lg px-2.5 py-1.5 font-semibold transition"}
+							className={(historyFilter === "SENT" ? "bg-primary-600 text-white " : "text-zinc-700 ") + "rounded-lg px-2.5 py-1.5 font-semibold transition"}
 						>
 							Enviados
 						</button>
@@ -682,10 +675,10 @@ const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item
 										<td className="px-2 py-2">{item.zoneName}</td>
 										<td className="px-2 py-2">{item.actuatorName}</td>
 										<td className="px-2 py-2">
-											<span className={"rounded-full px-2 py-0.5 text-[11px] font-bold " + (item.action === "ON" ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700")}>{item.action}</span>
+											<span className={"rounded-full px-2 py-0.5 text-[11px] font-bold " + (item.action === "ON" ? "bg-primary-50 text-primary-700" : "bg-rose-50 text-rose-700")}>{item.action}</span>
 										</td>
 										<td className="px-2 py-2">
-											<span className={"rounded px-2 py-0.5 text-xs font-semibold " + (item.ok ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700")}>
+											<span className={"rounded px-2 py-0.5 text-xs font-semibold " + (item.ok ? "bg-primary-50 text-primary-700" : "bg-rose-50 text-rose-700")}>
 												{item.ok ? "Enviado" : "Error"}
 											</span>
 										</td>

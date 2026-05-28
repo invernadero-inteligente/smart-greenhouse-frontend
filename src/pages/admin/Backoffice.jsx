@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useZones } from "../../hooks/useZones";
 import { useCrops } from "../../hooks/useCrops";
@@ -15,21 +15,21 @@ VIEWER: "Visualizador",
 
 const ROLE_COLORS = {
 	ADMIN:      "bg-[#fff7e0] text-[#b5a16a]", // dorado premium
-	MANAGER:    "bg-[#f5f3e7] text-emerald-700", // beige premium
-	TECHNICIAN: "bg-emerald-100 text-emerald-700",
-	VIEWER:     "bg-[#f5f3e7] text-emerald-700", // beige premium
+	MANAGER:    "bg-[#f5f3e7] text-primary-700", // beige premium
+	TECHNICIAN: "bg-primary-100 text-primary-700",
+	VIEWER:     "bg-[#f5f3e7] text-primary-700", // beige premium
 };
 
 const STATUS_CROP = {
-	ACTIVE:   { label: "Activo",      cls: "bg-emerald-100 text-emerald-700" },
+	ACTIVE:   { label: "Activo",      cls: "bg-primary-100 text-primary-700" },
 	HARVEST:  { label: "Cosechando",  cls: "bg-[#fff7e0] text-[#b5a16a]" },
 	FINISHED: { label: "Finalizado",  cls: "bg-[#f5f3e7] text-[#b5a16a]" },
 };
 
 const SEVERITY_COLORS = {
 	CRITICAL: "bg-[#fff7e0] text-[#b5a16a]",
-	WARNING:  "bg-[#f5f3e7] text-emerald-700",
-	INFO:     "bg-[#f5f3e7] text-emerald-700",
+	WARNING:  "bg-[#f5f3e7] text-primary-700",
+	INFO:     "bg-[#f5f3e7] text-primary-700",
 };
 
 const VAR_NAMES = {
@@ -59,7 +59,7 @@ const SECTIONS = [
 { key: "auditoria",  label: "Auditoria" },
 ];
 
-// ─── helpers ─────────────────────────────────────────────────────────────────
+// --- helpers -----------------------------------------------------------------
 
 function Badge({ cls, children }) {
 return (
@@ -72,8 +72,8 @@ return (
 function SectionTitle({ title, sub }) {
 	return (
 		<div>
-			<h2 className="font-heading text-2xl font-bold text-emerald-900">{title}</h2>
-			{sub && <p className="mt-1 text-base text-emerald-700/80">{sub}</p>}
+			<h2 className="font-heading text-2xl font-bold text-primary-900">{title}</h2>
+			{sub && <p className="mt-1 text-base text-primary-700/80">{sub}</p>}
 		</div>
 	);
 }
@@ -81,15 +81,15 @@ function SectionTitle({ title, sub }) {
 function StatCard({ label, value, sub, valueColor }) {
 	return (
 			<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-5">
-			<p className="text-[10px] font-bold uppercase tracking-widest text-emerald-700/70">{label}</p>
-			<p className={"mt-1 font-heading text-3xl font-bold " + (valueColor ?? "text-emerald-700")}>{value}</p>
-			{sub && <p className="mt-0.5 text-xs text-emerald-700/60">{sub}</p>}
+			<p className="text-[10px] font-bold uppercase tracking-widest text-primary-700/70">{label}</p>
+			<p className={"mt-1 font-heading text-3xl font-bold " + (valueColor ?? "text-primary-700")}>{value}</p>
+			{sub && <p className="mt-0.5 text-xs text-primary-700/60">{sub}</p>}
 		</div>
 	);
 }
 
 function Th({ children }) {
-	return <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-emerald-700/70">{children}</th>;
+	return <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-primary-700/70">{children}</th>;
 }
 
 function Td({ children, className }) {
@@ -110,7 +110,7 @@ return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pw);
 
 const EMPTY_FORM = { fullName: "", email: "", password: "", role: "VIEWER" };
 
-// ─── componente principal ─────────────────────────────────────────────────────
+// --- componente principal -----------------------------------------------------
 
 export default function Backoffice() {
 const { auth } = useAuth();
@@ -359,18 +359,18 @@ setSaving(false);
 }
 };
 
-// ── stats ──
+// -- stats --
 		const activeZones  = zones.filter((z) => z.isActive ?? z.active).length;
 		const activeCrops  = crops.filter((c) => c.status !== "HARVESTED").length;
 		const critAlerts   = 0;
 		const lowStock     = 0;
 
-// ── input style shared ──
-const inp = "w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-emerald-900 text-sm outline-none transition focus:border-emerald-600 focus:ring-1 focus:ring-emerald-200/40";
+// -- input style shared --
+const inp = "w-full rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-primary-900 text-sm outline-none transition focus:border-primary-600 focus:ring-1 focus:ring-primary-200/40";
 
 return (
 <div className="space-y-6">
-{/* ── tabs horizontales ── */}
+{/* -- tabs horizontales -- */}
 <div className="flex flex-wrap gap-1 border-b border-[#e5e0c3] pb-1">
 {SECTIONS.map((s) => (
 <button
@@ -379,8 +379,8 @@ onClick={() => setActive(s.key)}
 className={
 "rounded-lg px-4 py-2 text-sm font-medium transition " +
 (active === s.key
-? "bg-emerald-600 text-white hover:bg-emerald-700"
-: "text-emerald-900 hover:bg-[#f5eedc] hover:text-emerald-700")
+? "bg-primary-600 text-white hover:bg-primary-700"
+: "text-primary-900 hover:bg-[#f5eedc] hover:text-primary-700")
 }
 >
 {s.label}
@@ -388,17 +388,17 @@ className={
 ))}
 </div>
 
-{/* ── contenido ── */}
+{/* -- contenido -- */}
 <div className="space-y-6">
 
-{/* ══ RESUMEN ══════════════════════════════════════════════════ */}
+{/* -- RESUMEN -------------------------------------------------- */}
 {active === "resumen" && (
 <>
 <SectionTitle title="Resumen general" sub="Vista consolidada del estado del sistema" />
 
 <div className="grid grid-cols-2 gap-4 lg:grid-cols-2">
-<StatCard label="Zonas activas"     value={activeZones}  sub={zones.length + " totales"} valueColor="text-emerald-700" />
-<StatCard label="Cultivos activos"  value={activeCrops}  sub={crops.length + " totales"} valueColor="text-emerald-700" />
+<StatCard label="Zonas activas"     value={activeZones}  sub={zones.length + " totales"} valueColor="text-primary-700" />
+<StatCard label="Cultivos activos"  value={activeCrops}  sub={crops.length + " totales"} valueColor="text-primary-700" />
 </div>
 
 {/* Zonas resumen */}
@@ -408,11 +408,11 @@ className={
 {zones.map((z) => (
 <div key={z.id} className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
 <div className="flex items-center gap-2 mb-1">
-<span className={"h-2 w-2 rounded-full " + ((z.isActive ?? z.active) ? "bg-emerald-700" : "bg-zinc-400")} />
+<span className={"h-2 w-2 rounded-full " + ((z.isActive ?? z.active) ? "bg-primary-700" : "bg-zinc-400")} />
 <p className="text-xs font-semibold text-zinc-900 truncate">{z.name}</p>
 </div>
 <p className="text-[10px] text-zinc-500 truncate">{z.description}</p>
-<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700 mt-2" : "bg-zinc-100 text-zinc-600 mt-2"}>
+<Badge cls={(z.isActive ?? z.active) ? "bg-primary-100 text-primary-700 mt-2" : "bg-zinc-100 text-zinc-600 mt-2"}>
 {(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
 </Badge>
 </div>
@@ -438,7 +438,7 @@ return (
 </>
 )}
 
-{/* ══ ZONAS ═════════════════════════════════════════════════════ */}
+{/* -- ZONAS ----------------------------------------------------- */}
 {active === "zonas" && (
 <>
 <SectionTitle title="Gestión de zonas" sub={"Total: " + zones.length + " zonas registradas"} />
@@ -452,7 +452,7 @@ return (
 <Td><span className="font-semibold text-zinc-900">{z.name}</span></Td>
 <Td className="text-zinc-600">{z.description}</Td>
 <Td>
-<Badge cls={(z.isActive ?? z.active) ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-600"}>
+<Badge cls={(z.isActive ?? z.active) ? "bg-primary-100 text-primary-700" : "bg-zinc-100 text-zinc-600"}>
 {(z.isActive ?? z.active) ? "Activa" : "Inactiva"}
 </Badge>
 </Td>
@@ -464,7 +464,7 @@ return (
 </>
 )}
 
-{/* ══ CULTIVOS ══════════════════════════════════════════════════ */}
+{/* -- CULTIVOS -------------------------------------------------- */}
 {active === "cultivos" && (
 <>
 <SectionTitle title="Cultivos y estado" sub={"Total: " + crops.length + " cultivos registrados"} />
@@ -491,7 +491,7 @@ return (
 </>
 )}
 
-{/* ══ UMBRALES ══════════════════════════════════════════════════ */}
+{/* -- UMBRALES -------------------------------------------------- */}
 {active === "umbrales" && (
 <>
 <SectionTitle title="Umbrales configurados" sub={"Total: " + thresholds.length + " umbrales activos"} />
@@ -504,7 +504,7 @@ return (
 <tr key={t.id} className={"border-b border-zinc-200 " + (i % 2 === 0 ? "bg-white" : "bg-zinc-50")}>
 <Td className="font-semibold text-zinc-900">{zones.find(z => z.id === t.zoneId)?.name ?? `Zona ${t.zoneId}`}</Td>
 <Td>
-<Badge cls="bg-emerald-100 text-emerald-700">
+<Badge cls="bg-primary-100 text-primary-700">
 {VAR_NAMES[t.name] ?? t.name}
 </Badge>
 </Td>
@@ -518,7 +518,7 @@ return (
 </>
 )}
 
-{/* ══ USUARIOS ══════════════════════════════════════════════════ */}
+{/* -- USUARIOS -------------------------------------------------- */}
 {active === "usuarios" && (
 <>
 <SectionTitle title="Gestión de usuarios" sub="Crear, editar y administrar cuentas del sistema" />
@@ -538,7 +538,7 @@ onChange={(e) => setCreate((p) => ({ ...p, role: e.target.value }))}>
 {ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
 </select>
 <button type="submit" disabled={saving}
-className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50">
+className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:opacity-50">
 {saving ? "..." : "Crear"}
 </button>
 </form>
@@ -585,7 +585,7 @@ onChange={(e) => setEditForm((p) => ({ ...p, role: e.target.value }))}>
 <button disabled={isSelf || saving}
 onClick={() => toggleStatus(u)}
 className={"rounded-full px-3 py-1 text-xs font-bold transition " +
-(u.active ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-rose-100 text-rose-700 hover:bg-rose-200") +
+(u.active ? "bg-primary-100 text-primary-700 hover:bg-primary-200" : "bg-rose-100 text-rose-700 hover:bg-rose-200") +
 (isSelf || saving ? " opacity-50 cursor-not-allowed" : "")}>
 {u.active ? "Activo" : "Inactivo"}
 </button>
@@ -595,17 +595,17 @@ className={"rounded-full px-3 py-1 text-xs font-bold transition " +
 {isEditing ? (
 <>
 <button onClick={saveEdit} disabled={saving}
-className="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50">
+className="rounded-lg bg-primary-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-primary-700 disabled:opacity-50">
 Guardar
 </button>
 <button onClick={cancelEdit}
-className="rounded-lg border border-[#e5e0c3] px-3 py-1 text-xs font-semibold text-emerald-900 transition hover:bg-[#f5f3e7]">
+className="rounded-lg border border-[#e5e0c3] px-3 py-1 text-xs font-semibold text-primary-900 transition hover:bg-[#f5f3e7]">
 Cancelar
 </button>
 </>
 ) : (
 <button onClick={() => startEdit(u)}
-className="rounded-lg border border-[#e5e0c3] px-3 py-1 text-xs font-semibold text-emerald-900 transition hover:bg-emerald-100">
+className="rounded-lg border border-[#e5e0c3] px-3 py-1 text-xs font-semibold text-primary-900 transition hover:bg-primary-100">
 Editar
 </button>
 )}
@@ -620,13 +620,13 @@ Editar
 </>
 )}
 
-{/* ══ AUDITORIA ══════════════════════════════════════════════════ */}
+{/* -- AUDITORIA -------------------------------------------------- */}
 {active === "auditoria" && (
 <>
 <SectionTitle title="Registro de auditoria" sub="Eventos construidos con datos reales del backend y comandos de actuadores" />
 ) : (
 {auditEntries.length === 0 ? (
-<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 text-sm text-emerald-700/60">
+<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-4 text-sm text-primary-700/60">
 No hay eventos de auditoría disponibles todavía.
 </div>
 ) : (
@@ -659,3 +659,4 @@ No hay eventos de auditoría disponibles todavía.
 </div>
 );
 }
+

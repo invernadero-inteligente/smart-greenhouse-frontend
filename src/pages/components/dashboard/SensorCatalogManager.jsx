@@ -44,13 +44,13 @@ export default function SensorCatalogManager() {
 
   return (
     <section className="rounded-3xl bg-gradient-to-br from-[#f5f3e7]/80 to-white/90 border border-[#e5e0c3] shadow-xl p-6 mt-4">
-      <h3 className="font-heading text-lg font-bold text-emerald-900 mb-2">Catálogo manual de sensores</h3>
+      <h3 className="font-heading text-lg font-bold text-primary-900 mb-2">Catálogo manual de sensores</h3>
       <form onSubmit={handleRegisterSensor} className="grid gap-3 md:grid-cols-5 mb-4">
         <select
           name="zoneId"
           value={sensorForm.zoneId}
           onChange={handleSensorFormChange}
-          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900"
+          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-primary-900"
         >
           <option value="">Selecciona zona</option>
           {zones.map((zone) => (
@@ -62,25 +62,25 @@ export default function SensorCatalogManager() {
           value={sensorForm.alias}
           onChange={handleSensorFormChange}
           placeholder="Alias (ej: Sensor Camellón A)"
-          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900"
+          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-primary-900"
         />
         <input
           name="variable"
           value={sensorForm.variable}
           onChange={handleSensorFormChange}
           placeholder="Variable (ej: TEMPERATURE)"
-          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900"
+          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-primary-900"
         />
         <input
           name="unit"
           value={sensorForm.unit}
           onChange={handleSensorFormChange}
           placeholder="Unidad (ej: C)"
-          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-emerald-900"
+          className="rounded-lg border border-[#e5e0c3] bg-white px-3 py-2 text-sm text-primary-900"
         />
         <button
           type="submit"
-          className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-400"
+          className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-400"
         >
           Registrar sensor
         </button>
@@ -96,9 +96,9 @@ export default function SensorCatalogManager() {
         </div>
       )}
       <div className="mt-4">
-        <h4 className="font-semibold text-emerald-900 mb-2 text-sm">Sensores registrados</h4>
+        <h4 className="font-semibold text-primary-900 mb-2 text-sm">Sensores registrados</h4>
         {registeredSensors.length === 0 ? (
-          <p className="text-sm text-emerald-700/60">Aún no hay sensores registrados manualmente.</p>
+          <p className="text-sm text-primary-700/60">Aún no hay sensores registrados manualmente.</p>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {registeredSensors.map((sensor) => (
@@ -113,7 +113,7 @@ export default function SensorCatalogManager() {
                   timestamp: sensor.updatedAt
                 }} />
                 <div className="mt-2 flex items-center justify-between px-1">
-                  <p className="text-xs text-emerald-700/60">
+                  <p className="text-xs text-primary-700/60">
                     {zones.find(z => z.id === sensor.zoneId)?.name || "Zona"} · {sensor.alias || sensor.variable}
                   </p>
                   {sensor.isActive ? (
@@ -126,7 +126,7 @@ export default function SensorCatalogManager() {
                   ) : (
                     <button
                       onClick={() => handleSensorStatus(sensor.id, true)}
-                      className="rounded-lg bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/25"
+                      className="rounded-lg bg-primary-500/15 px-3 py-1.5 text-xs font-semibold text-primary-400 hover:bg-primary-500/25"
                     >
                       Reactivar
                     </button>
@@ -140,3 +140,4 @@ export default function SensorCatalogManager() {
     </section>
   );
 }
+

@@ -64,7 +64,7 @@ function ZonesList() {
 	if (loading && zones.length === 0) {
 		return (
 			<div className="flex h-96 items-center justify-center">
-				<p className="text-emerald-600">Cargando zonas...</p>
+				<p className="text-primary-600">Cargando zonas...</p>
 			</div>
 		);
 	}
@@ -73,10 +73,10 @@ function ZonesList() {
 		<div className="space-y-6 rounded-3xl border border-[#e5e0c3] bg-white/90 p-7">
 			   <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#e5e0c3] bg-[#f5f3e7] px-7 py-5">
 				<div>
-					<h1 className="font-heading text-3xl font-bold text-emerald-700">
+					<h1 className="font-heading text-3xl font-bold text-primary-700">
 						Gestión de Zonas
 					</h1>
-					<p className="mt-1 text-base text-emerald-700/80">Administra zonas operativas y su estado lógico.</p>
+					<p className="mt-1 text-base text-primary-700/80">Administra zonas operativas y su estado lógico.</p>
 				</div>
 				{allowEdit && (
 					<button
@@ -84,7 +84,7 @@ function ZonesList() {
 							setEditingZone(null);
 							setShowForm(!showForm);
 						}}
-						   className="rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-400"
+						className="rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-400"
 					>
 						{showForm ? "Cancelar" : "+ Nueva Zona"}
 					</button>
@@ -99,7 +99,7 @@ function ZonesList() {
 
 			   {showForm && (
 				   <div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6">
-					   <h2 className="mb-4 font-heading text-lg font-bold text-emerald-900">
+					   <h2 className="mb-4 font-heading text-lg font-bold text-primary-900">
 						{editingZone ? "Editar Zona" : "Nueva Zona"}
 					</h2>
 					<ZoneForm
@@ -116,8 +116,8 @@ function ZonesList() {
 					onClick={() => setFilterActive(null)}
 					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterActive === null
-							   ? "border-transparent bg-emerald-500 text-white"
-							   : "border-[#e5e0c3] bg-white/90 text-emerald-900 hover:bg-[#f5f3e7]"
+							? "border-transparent bg-primary-500 text-white"
+							: "border-[#e5e0c3] bg-white/90 text-primary-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Todas ({zones.length})
@@ -126,8 +126,8 @@ function ZonesList() {
 					onClick={() => setFilterActive(true)}
 					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterActive === true
-							? "border-transparent bg-emerald-500 text-zinc-950"
-							: "border-[#e5e0c3] bg-white/90 text-emerald-900 hover:bg-[#f5f3e7]"
+							? "border-transparent bg-primary-500 text-zinc-950"
+							: "border-[#e5e0c3] bg-white/90 text-primary-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Activas ({zones.filter(z => (z.isActive ?? z.active)).length})
@@ -136,8 +136,8 @@ function ZonesList() {
 					onClick={() => setFilterActive(false)}
 					className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 						filterActive === false
-							? "border-transparent bg-emerald-500 text-zinc-950"
-							: "border-[#e5e0c3] bg-white/90 text-emerald-900 hover:bg-[#f5f3e7]"
+							? "border-transparent bg-primary-500 text-zinc-950"
+							: "border-[#e5e0c3] bg-white/90 text-primary-900 hover:bg-[#f5f3e7]"
 					}`}
 				>
 					Inactivas ({zones.filter(z => !(z.isActive ?? z.active)).length})
@@ -170,3 +170,4 @@ function ZonesList() {
 }
 
 export default ZonesList;
+

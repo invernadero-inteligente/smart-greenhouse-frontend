@@ -98,7 +98,7 @@ export default function Layout() {
 								title="Ir a alertas"
 							>
 								<Bell className="h-5 w-5" />
-								{openAlerts.length > 0 && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-emerald-500" />}
+								{openAlerts.length > 0 && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary-500" />}
 							</button>
 						</div>
 					</div>
@@ -116,3 +116,4 @@ export default function Layout() {
 		</div>
 	);
 }
+

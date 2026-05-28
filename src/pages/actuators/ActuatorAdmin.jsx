@@ -71,10 +71,10 @@ export default function ActuatorAdmin() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl border border-[#e5e0c3] shadow">
-      <h2 className="font-heading text-xl font-bold text-emerald-900 mb-4">Gestión de Actuadores</h2>
+      <h2 className="font-heading text-xl font-bold text-primary-900 mb-4">Gestión de Actuadores</h2>
       <form onSubmit={handleSubmit} className="space-y-3 mb-6">
         <div>
-          <label className="block text-xs font-semibold text-emerald-700 mb-1">Zona</label>
+          <label className="block text-xs font-semibold text-primary-700 mb-1">Zona</label>
           <select
             value={zoneId}
             onChange={e => setZoneId(e.target.value)}
@@ -89,7 +89,7 @@ export default function ActuatorAdmin() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-emerald-700 mb-1">Nombre del actuador</label>
+          <label className="block text-xs font-semibold text-primary-700 mb-1">Nombre del actuador</label>
           <input
             value={name}
             onChange={e => setName(e.target.value)}
@@ -100,21 +100,21 @@ export default function ActuatorAdmin() {
         </div>
         <button
           type="submit"
-          className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+          className="rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700"
           disabled={loadingZones || !zoneId || !name.trim()}
         >
           {editId ? "Actualizar" : "Crear"}
         </button>
         {editId && (
-          <button type="button" onClick={() => { setEditId(null); setName(""); setZoneId(""); }} className="ml-2 text-xs text-emerald-700 underline">Cancelar edición</button>
+          <button type="button" onClick={() => { setEditId(null); setName(""); setZoneId(""); }} className="ml-2 text-xs text-primary-700 underline">Cancelar edición</button>
         )}
       </form>
       {error && <div className="mb-3 rounded bg-rose-100 text-rose-700 px-3 py-2 text-sm">{error}</div>}
-      {success && <div className="mb-3 rounded bg-emerald-100 text-emerald-700 px-3 py-2 text-sm">{success}</div>}
-      <h3 className="font-heading text-lg font-bold text-emerald-900 mb-2">Lista de actuadores</h3>
+      {success && <div className="mb-3 rounded bg-primary-100 text-primary-700 px-3 py-2 text-sm">{success}</div>}
+      <h3 className="font-heading text-lg font-bold text-primary-900 mb-2">Lista de actuadores</h3>
       <table className="min-w-full text-sm border border-[#e5e0c3] rounded-xl bg-white">
         <thead>
-          <tr className="bg-[#FAF7F2] text-emerald-700">
+          <tr className="bg-[#FAF7F2] text-primary-700">
             <th className="px-2 py-2">Zona</th>
             <th className="px-2 py-2">Nombre</th>
             <th className="px-2 py-2">Acciones</th>
@@ -130,7 +130,7 @@ export default function ActuatorAdmin() {
               <td className="px-2 py-2">{act.zone?.name}</td>
               <td className="px-2 py-2">{act.name}</td>
               <td className="px-2 py-2">
-                <button onClick={() => handleEdit(act)} className="text-xs text-emerald-700 underline mr-2">Editar</button>
+                <button onClick={() => handleEdit(act)} className="text-xs text-primary-700 underline mr-2">Editar</button>
                 <button onClick={() => handleDelete(act.id)} className="text-xs text-rose-700 underline">Eliminar</button>
               </td>
             </tr>
@@ -140,3 +140,4 @@ export default function ActuatorAdmin() {
     </div>
   );
 }
+

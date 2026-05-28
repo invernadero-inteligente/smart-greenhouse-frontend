@@ -7,8 +7,8 @@ const statsMock = [
     value: 4,
     icon: MapPinned,
     trend: "+1",
-    color: "text-emerald-500",
-    bg: "bg-emerald-100"
+    color: "text-primary-500",
+    bg: "bg-primary-100"
   },
   {
     label: "Cultivos activos",
@@ -53,12 +53,13 @@ export default function StatsCards({ stats = statsMock }) {
             transition={{ duration: 0.4, delay: i * 0.05 }}
           >
             <Icon className={`w-8 h-8 mb-2 ${stat.color}`} />
-            <span className="text-3xl font-bold text-emerald-900">{stat.value}</span>
-            <span className="text-xs text-emerald-700/60 uppercase tracking-widest">{stat.label}</span>
-            <span className="text-xs mt-1 font-semibold text-emerald-500">{stat.trend} hoy</span>
+            <span className="text-3xl font-bold text-primary-900">{stat.value}</span>
+            <span className="text-xs text-primary-700/60 uppercase tracking-widest">{stat.label}</span>
+            <span className="text-xs mt-1 font-semibold text-primary-500">{stat.trend} hoy</span>
           </motion.div>
         );
       })}
     </motion.section>
   );
 }
+

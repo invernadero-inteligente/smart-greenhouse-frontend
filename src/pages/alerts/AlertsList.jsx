@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { canOperate } from "../../utils/permissions";
 import { useAlerts } from "../../hooks/useAlerts";
@@ -7,7 +7,7 @@ import { useZones } from "../../hooks/useZones";
 const SEVERITY_CONFIG = {
   HIGH:   { badge: "bg-rose-100 text-rose-700", label: "Alta", border: "border-rose-200" },
   MEDIUM: { badge: "bg-amber-100 text-amber-700", label: "Media", border: "border-amber-200" },
-  LOW:    { badge: "bg-emerald-100 text-emerald-700", label: "Baja", border: "border-emerald-200" },
+  LOW:    { badge: "bg-primary-100 text-primary-700", label: "Baja", border: "border-primary-200" },
 };
 
 const ORIGIN_LABELS = {
@@ -48,10 +48,10 @@ export default function AlertsList() {
 			{/* Header */}
 	 		<div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-[#e5e0c3] bg-[#f5eedc] px-7 py-5">
 				<div>
-					<h1 className="font-heading text-3xl font-bold text-emerald-700 tracking-tight">Alertas del sistema</h1>
-					<p className="mt-1 text-base text-emerald-700/80">Monitoreo operativo de eventos críticos y su atención.</p>
+					<h1 className="font-heading text-3xl font-bold text-primary-700 tracking-tight">Alertas del sistema</h1>
+					<p className="mt-1 text-base text-primary-700/80">Monitoreo operativo de eventos críticos y su atención.</p>
 					{!allowOperate && (
-						<p className="mt-1 text-xs text-amber-700/80">Solo lectura — no puedes atender alertas</p>
+						<p className="mt-1 text-xs text-amber-700/80">Solo lectura no puedes atender alertas</p>
 					)}
 				</div>
 				<div className="flex flex-wrap items-center gap-2">
@@ -66,7 +66,7 @@ export default function AlertsList() {
 						</span>
 					)}
 					{openAlerts.length === 0 && (
-						<span className="rounded-full bg-emerald-100 px-3 py-1 text-base font-bold text-emerald-700">
+						<span className="rounded-full bg-primary-100 px-3 py-1 text-base font-bold text-primary-700">
 							Sin alertas activas
 						</span>
 					)}
@@ -195,3 +195,4 @@ export default function AlertsList() {
 		</div>
 	);
 }
+

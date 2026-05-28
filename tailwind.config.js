@@ -13,6 +13,29 @@ export default {
 				accent: 'var(--accent)', // verde
 				primary: 'var(--primary)', // verde
 				secondary: 'var(--secondary)', // dorado
+				// Remap built-in Tailwind emerald/lime palettes to our CSS variables
+				emerald: {
+					50: 'var(--primary-50, #eaf6f3)',
+					100: 'var(--primary-100, #d1efe9)',
+					200: 'var(--primary-200, #a6e2d8)',
+					300: 'var(--primary-300, #7acdbf)',
+					400: 'var(--primary-400, #4fbda8)',
+					500: 'var(--primary, #0E544B)',
+					600: 'var(--primary-600, #0b4139)',
+					700: 'var(--primary-700, #08352d)',
+					900: 'var(--primary-900, #05221b)'
+				},
+				lime: {
+					50: 'var(--primary-50, #eaf6f3)',
+					100: 'var(--primary-100, #d1efe9)',
+					200: 'var(--primary-200, #a6e2d8)',
+					300: 'var(--primary-300, #7acdbf)',
+					400: 'var(--primary-400, #4fbda8)',
+					500: 'var(--primary, #0E544B)',
+					600: 'var(--primary-600, #0b4139)',
+					700: 'var(--primary-700, #08352d)',
+					900: 'var(--primary-900, #05221b)'
+				},
 				gold: '#d4af37',
 				destructive: 'var(--destructive)',
 				border: 'var(--border)',

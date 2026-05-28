@@ -21,11 +21,11 @@ export default function DashboardHeader({ systemStatus, sensorsActive, lastUpdat
       transition={{ duration: 0.5 }}
     >
       <div className="flex flex-col gap-1">
-        <span className="text-xs font-bold uppercase tracking-widest text-emerald-700/60">Panel principal</span>
-        <h1 className="font-heading text-2xl md:text-3xl font-bold text-emerald-900">
+        <span className="text-xs font-bold uppercase tracking-widest text-primary-700/60">Panel principal</span>
+        <h1 className="font-heading text-2xl md:text-3xl font-bold text-primary-900">
           {greeting()}, {auth.fullName || auth.email}
         </h1>
-        <div className="flex items-center gap-3 mt-1 text-xs text-emerald-700/70">
+        <div className="flex items-center gap-3 mt-1 text-xs text-primary-700/70">
           <CalendarDays className="w-4 h-4" />
           <span>{now.toLocaleDateString("es", { dateStyle: "full" })}</span>
           <span className="mx-2">·</span>
@@ -34,19 +34,20 @@ export default function DashboardHeader({ systemStatus, sensorsActive, lastUpdat
       </div>
       <div className="flex flex-col md:flex-row gap-3 items-center">
         <div className="flex items-center gap-2 bg-white/80 rounded-xl px-4 py-2 shadow border border-[#e5e0c3]">
-          <CircleDot className={systemStatus === "online" ? "text-emerald-500" : "text-red-400"} />
-          <span className="font-semibold text-emerald-900">{systemStatus === "online" ? "Sistema online" : "Sin conexión"}</span>
+          <CircleDot className={systemStatus === "online" ? "text-primary-500" : "text-red-400"} />
+          <span className="font-semibold text-primary-900">{systemStatus === "online" ? "Sistema online" : "Sin conexión"}</span>
         </div>
         <div className="flex items-center gap-2 bg-white/80 rounded-xl px-4 py-2 shadow border border-[#e5e0c3]">
-          <Gauge className="text-emerald-500" />
-          <span className="font-semibold text-emerald-900">{sensorsActive} sensores activos</span>
+          <Gauge className="text-primary-500" />
+          <span className="font-semibold text-primary-900">{sensorsActive} sensores activos</span>
         </div>
         <div className="flex items-center gap-2 bg-white/80 rounded-xl px-4 py-2 shadow border border-[#e5e0c3]">
-          <CalendarDays className="text-emerald-500" />
-          <span className="font-semibold text-emerald-900">Última actualización: {lastUpdate}</span>
+          <CalendarDays className="text-primary-500" />
+          <span className="font-semibold text-primary-900">Última actualización: {lastUpdate}</span>
         </div>
       </div>
       {/* Barra de búsqueda eliminada por requerimiento UX */}
     </motion.header>
   );
 }
+

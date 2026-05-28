@@ -86,7 +86,7 @@ function ThresholdsList() {
 	if (loading && thresholds.length === 0) {
 		return (
 			<div className="flex h-96 items-center justify-center">
-				<p className="text-emerald-600">Cargando umbrales...</p>
+				<p className="text-primary-600">Cargando umbrales...</p>
 			</div>
 		);
 	}
@@ -95,10 +95,10 @@ function ThresholdsList() {
 		<div className="space-y-6 rounded-3xl border border-[#e5e0c3] bg-white/90 p-7">
 			<div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#e5e0c3] bg-[#f5f3e7] px-7 py-5">
 				<div>
-					<h1 className="font-heading text-3xl font-bold text-emerald-700">
+					<h1 className="font-heading text-3xl font-bold text-primary-700">
 						Gestión de Umbrales
 					</h1>
-					<p className="mt-1 text-base text-emerald-700/80">Control de rangos por zona y variable.</p>
+					<p className="mt-1 text-base text-primary-700/80">Control de rangos por zona y variable.</p>
 				</div>
 				{allowEdit && (
 					<button
@@ -106,7 +106,7 @@ function ThresholdsList() {
 							setEditingThreshold(null);
 							setShowForm(!showForm);
 						}}
-						className="rounded-2xl bg-emerald-500 px-5 py-2.5 text-base font-semibold text-white transition hover:bg-emerald-600"
+						className="rounded-2xl bg-primary-500 px-5 py-2.5 text-base font-semibold text-white transition hover:bg-primary-600"
 					>
 						{showForm ? "Cancelar" : "+ Nuevo Umbral"}
 					</button>
@@ -121,7 +121,7 @@ function ThresholdsList() {
 
 			{allowEdit && showForm && (
 				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6">
-					<h2 className="mb-4 font-heading text-lg font-bold text-emerald-900">
+					<h2 className="mb-4 font-heading text-lg font-bold text-primary-900">
 						{editingThreshold ? "Editar Umbral" : "Nuevo Umbral"}
 					</h2>
 					<ThresholdForm
@@ -135,14 +135,14 @@ function ThresholdsList() {
 
 			{zones.length > 0 && (
 				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-4">
-					<p className="mb-3 text-sm font-semibold text-emerald-700/60">Filtrar por zona:</p>
+					<p className="mb-3 text-sm font-semibold text-primary-700/60">Filtrar por zona:</p>
 					<div className="flex flex-wrap gap-2">
 						<button
 							onClick={() => setSelectedZones([])}
 							className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 								selectedZones.length === 0
-									? "border-transparent bg-emerald-500 text-white"
-									: "border-[#e5e0c3] bg-white text-emerald-900 hover:bg-[#f5f3e7]"
+									? "border-transparent bg-primary-500 text-white"
+									: "border-[#e5e0c3] bg-white text-primary-900 hover:bg-[#f5f3e7]"
 							}`}
 						>
 							Todas ({zones.length})
@@ -153,8 +153,8 @@ function ThresholdsList() {
 								onClick={() => handleZoneToggle(zone.id)}
 								className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 									selectedZones.includes(zone.id)
-										   ? "border-transparent bg-emerald-500 text-white hover:bg-emerald-400"
-										   : "border-[#e5e0c3] bg-white/90 text-emerald-900 hover:bg-[#f5f3e7]"
+										   ? "border-transparent bg-primary-500 text-white hover:bg-primary-400"
+										   : "border-[#e5e0c3] bg-white/90 text-primary-900 hover:bg-[#f5f3e7]"
 								}`}
 							>
 								{zone.name}
@@ -167,8 +167,8 @@ function ThresholdsList() {
 							onClick={() => setActiveFilter(null)}
 							className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 								activeFilter === null
-									? "border-transparent bg-emerald-500 text-white"
-									: "border-[#e5e0c3] bg-white text-emerald-900 hover:bg-[#f5f3e7]"
+									? "border-transparent bg-primary-500 text-white"
+									: "border-[#e5e0c3] bg-white text-primary-900 hover:bg-[#f5f3e7]"
 							}`}
 						>
 							Todos ({thresholds.length})
@@ -177,8 +177,8 @@ function ThresholdsList() {
 							onClick={() => setActiveFilter(true)}
 							className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 								activeFilter === true
-									? "border-transparent bg-emerald-500 text-white"
-									: "border-[#e5e0c3] bg-white text-emerald-900 hover:bg-[#f5f3e7]"
+									? "border-transparent bg-primary-500 text-white"
+									: "border-[#e5e0c3] bg-white text-primary-900 hover:bg-[#f5f3e7]"
 							}`}
 						>
 							Activos ({thresholds.filter((threshold) => threshold?.isActive !== false).length})
@@ -187,8 +187,8 @@ function ThresholdsList() {
 							onClick={() => setActiveFilter(false)}
 							className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
 								activeFilter === false
-									? "border-transparent bg-emerald-500 text-white"
-									: "border-[#e5e0c3] bg-white text-emerald-900 hover:bg-[#f5f3e7]"
+									? "border-transparent bg-primary-500 text-white"
+									: "border-[#e5e0c3] bg-white text-primary-900 hover:bg-[#f5f3e7]"
 							}`}
 						>
 							Inactivos ({thresholds.filter((threshold) => threshold?.isActive === false).length})
@@ -199,7 +199,7 @@ function ThresholdsList() {
 
 			{filteredThresholds.length === 0 ? (
 				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-10 text-center">
-					<p className="text-emerald-700/60">
+					<p className="text-primary-700/60">
 						{zones.length === 0
 							? "Crea zonas primero para agregar umbrales"
 							: "No hay umbrales con ese filtro"}
@@ -227,3 +227,4 @@ function ThresholdsList() {
 }
 
 export default ThresholdsList;
+

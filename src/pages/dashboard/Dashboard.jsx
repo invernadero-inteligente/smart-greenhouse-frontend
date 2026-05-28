@@ -1,4 +1,4 @@
-Ôªø
+
 import { useMemo } from "react";
 import { useSensors } from "../../hooks/useSensors";
 import { useZones } from "../../hooks/useZones";
@@ -19,7 +19,7 @@ export default function Dashboard() {
   const { crops } = useCrops();
   const { alerts } = useAlerts();
 
-  // Agrupar sensores por variable para gr√°ficas
+  // Agrupar sensores por variable para gr·ficas
   const charts = useMemo(() => {
     if (!sensors || sensors.length === 0) return [];
     const grouped = sensors.reduce((acc, sensor) => {
@@ -70,8 +70,8 @@ export default function Dashboard() {
       value: zones.filter(z => z.isActive !== false).length,
       icon: "map",
       trend: "",
-      color: "text-emerald-500",
-      bg: "bg-emerald-50"
+      color: "text-primary-500",
+      bg: "bg-primary-50"
     },
     {
       label: "Cultivos",
@@ -114,7 +114,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* GR√ÅFICAS SECTION */}
+      {/* GR¡FICAS SECTION */}
       <section className="w-full">
         <AnalyticsCharts charts={charts} />
       </section>
@@ -122,7 +122,7 @@ export default function Dashboard() {
       {/* SENSORES EN TIEMPO REAL */}
       <SensorsPanel />
 
-      {/* CAT√ÅLOGO MANUAL DE SENSORES */}
+      {/* CAT¡LOGO MANUAL DE SENSORES */}
       <SensorCatalogManager />
     </div>
   );
@@ -130,7 +130,7 @@ export default function Dashboard() {
 
 function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return "Buenos d√≠as";
+  if (h < 12) return "Buenos dÌas";
   if (h < 18) return "Buenas tardes";
   return "Buenas noches";
 }
@@ -138,7 +138,7 @@ function getGreeting() {
 function KpiCard({ label, value, icon, trend, color, bg }) {
   // Iconos Lucide
   const icons = {
-    map: <svg className="w-8 h-8 mb-3 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A2 2 0 013 15.382V5.618a2 2 0 011.053-1.764l5.447-2.724a2 2 0 011.788 0l5.447 2.724A2 2 0 0121 5.618v9.764a2 2 0 01-1.053 1.764L14.5 20.5a2 2 0 01-1.788 0L9 20z" /></svg>,
+    map: <svg className="w-8 h-8 mb-3 text-primary-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A2 2 0 013 15.382V5.618a2 2 0 011.053-1.764l5.447-2.724a2 2 0 011.788 0l5.447 2.724A2 2 0 0121 5.618v9.764a2 2 0 01-1.053 1.764L14.5 20.5a2 2 0 01-1.788 0L9 20z" /></svg>,
     leaf: <svg className="w-8 h-8 mb-3 text-lime-500" style={{overflow: 'visible'}} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 21c0-4.418 7-10 7-10s7 5.582 7 10a7 7 0 01-14 0z" /></svg>,
     alert: <svg className="w-8 h-8 mb-3 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     package: <svg className="w-8 h-8 mb-3 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 16V8a2 2 0 00-1.106-1.789l-7-4a2 2 0 00-1.788 0l-7 4A2 2 0 003 8v8a2 2 0 001.106 1.789l7 4a2 2 0 001.788 0l7-4A2 2 0 0021 16z" /></svg>,
@@ -146,9 +146,10 @@ function KpiCard({ label, value, icon, trend, color, bg }) {
   return (
     <div className={`rounded-3xl shadow-xl border border-[#e5e0c3]/60 ${bg} p-8 flex flex-col items-center hover:scale-[1.03] transition-transform duration-200 group min-h-[180px]`}> 
       {icons[icon]}
-      <span className="text-4xl md:text-5xl font-bold text-emerald-900 mb-2">{value}</span>
-      <span className="text-base font-semibold text-emerald-700/80 mb-1">{label}</span>
-      {trend && <span className="text-xs mt-1 font-semibold text-emerald-500">{trend} hoy</span>}
+      <span className="text-4xl md:text-5xl font-bold text-primary-900 mb-2">{value}</span>
+      <span className="text-base font-semibold text-primary-700/80 mb-1">{label}</span>
+      {trend && <span className="text-xs mt-1 font-semibold text-primary-500">{trend} hoy</span>}
     </div>
   );
 }
+
