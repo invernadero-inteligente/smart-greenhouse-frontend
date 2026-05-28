@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, useCallback } from "react";
 import { thresholdService } from "../services/threshold.service";
+import { normalizeCreatedAt } from "../lib/utils";
 
 const THRESHOLDS_ACTIVE_OVERRIDES_KEY = "smart-greenhouse.thresholds.active-overrides.v1";
 
@@ -49,10 +50,31 @@ export function useThresholds(zoneIds = [], variables = []) {
 				return true;
 			});
 
-			setThresholds(flat.map((item) => {
+			const normalizedFlat = flat.map((item) => {
+				const normalized = { ...item, createdAt: normalizeCreatedAt(item) };
 				const override = activeOverrides[String(item.id)];
-				return override === undefined ? item : { ...item, isActive: override };
-			}));
+				return override === undefined ? normalized : { ...normalized, isActive: override };
+			});
+
+			setThresholds(normalizedFlat);
+			if (normalizedFlat.length > 0 && !normalizedFlat.some((item) => item.createdAt)) {
+				console.log("[useThresholds] No se encontró createdAt en umbrales. Sample:", normalizedFlat.slice(0, 3));
+				const missing = normalizedFlat.filter((item) => !item.createdAt);
+				try {
+					const details = await Promise.all(
+						missing.map((item) => thresholdService.getThresholdById(item.id).catch(() => null))
+					);
+					console.log("[useThresholds] threshold detail responses:", details);
+					setThresholds((prev) =>
+						prev.map((threshold) => {
+							const det = details.find((d) => d && d.id === threshold.id);
+							return det ? { ...threshold, createdAt: normalizeCreatedAt(det) ?? threshold.createdAt } : threshold;
+						})
+					);
+				} catch {
+					// fallback silently
+				}
+			}
 			setError(null);
 		} catch (err) {
 			setError(err.message || "Error del servidor");

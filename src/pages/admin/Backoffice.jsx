@@ -5,7 +5,9 @@ import { useZones } from "../../hooks/useZones";
 import { useCrops } from "../../hooks/useCrops";
 import { useThresholds } from "../../hooks/useThresholds";
 import { useAlerts } from "../../hooks/useAlerts";
-import * as userService from "../../services/user.service";
+import { userService } from "../../services/user.service";
+import { getApiErrorMessage, api } from "../../services/api";
+import { normalizeCreatedAt } from "../../lib/utils";
 
 const ROLES = ["ADMIN", "MANAGER", "TECHNICIAN", "VIEWER"];
 
@@ -86,6 +88,14 @@ function SectionTitle({ title, sub }) {
 			)}
 		</div>
 	);
+}
+
+function formatDate(value) {
+	const date = new Date(value);
+	if (!value || Number.isNaN(date.getTime())) {
+		return "-";
+	}
+	return date.toLocaleDateString("es");
 }
 
 function StatCard({ label, value, sub, valueColor }) {
@@ -191,21 +201,53 @@ export default function Backoffice() {
 		setUserError("");
 
 		try {
+			// DEBUG: mostrar baseURL y la llamada para ayudar a depurar en el cliente
+			console.log("[Backoffice] API baseURL:", api?.defaults?.baseURL, "env VITE_API_URL:", import.meta.env?.VITE_API_URL);
 			const res = await userService.listUsers();
+			console.log("[Backoffice] userService.listUsers response:", res);
+			const usersList = Array.isArray(res)
+				? res
+				: Array.isArray(res?.data)
+				? res.data
+				: (res?.content ?? res?.data ?? []);
 
-			setUsers(
-				Array.isArray(res)
-					? res
-					: (res.content ?? [])
-			);
+			// Normalizar campos de fecha que puedan venir como created_at
+			const normalizedUsers = usersList.map((u) => ({
+				...u,
+				createdAt: normalizeCreatedAt(u),
+			}));
+setUsers(normalizedUsers);
+if (normalizedUsers.length > 0 && !normalizedUsers.some((item) => item.createdAt)) {
+	console.log("[Backoffice] No se encontró createdAt en usuarios. Sample:", normalizedUsers.slice(0, 3));
+}
+
+			// Si el listado no incluye fechas de creación, intentar obtener detalles por usuario
+			(async () => {
+				const missing = usersList.filter(u => !(
+					u?.createdAt || u?.created_at || u?.created || u?.creationDate || u?.created_on
+				));
+				if (missing.length === 0) return;
+
+				try {
+						console.log("[Backoffice] user ids missing createdAt:", missing.map((u) => u.id));
+							const details = await Promise.all(
+								missing.map(u => userService.getUser(u.id).catch(() => null))
+							);
+							console.log("[Backoffice] user details response:", details);
+					setUsers(prev => prev.map(p => {
+						const det = details.find(d => d && d.id === p.id);
+						if (!det) return p;
+						return {
+							...p,
+							createdAt: normalizeCreatedAt(det) ?? p.createdAt,
+						};
+					}));
+				} catch (e) {
+					// no-op
+				}
+			})();
 		} catch (err) {
-			if (!err.response) {
-				setUserError("Sin conexión con el servidor");
-			} else {
-				setUserError(
-					err.message ?? "Error al cargar usuarios"
-				);
-			}
+			setUserError(getApiErrorMessage(err));
 		} finally {
 			setLoading(false);
 		}
@@ -656,11 +698,188 @@ export default function Backoffice() {
 										</Td>
 
 										<Td className="text-zinc-500">
-											{new Date(
-												z.createdAt
-											).toLocaleDateString(
-												"es"
-											)}
+											{formatDate(z.createdAt)}
+										</Td>
+									</tr>
+								))}
+							</tbody>
+						</TableWrap>
+					</>
+				)}
+
+				{/* CULTIVOS */}
+				{active === "cultivos" && (
+					<>
+						<SectionTitle
+							title="Gestión de cultivos"
+							sub={`Total: ${crops.length} cultivos registrados`}
+						/>
+
+						<TableWrap>
+							<thead className="border-b border-zinc-200 bg-zinc-50">
+								<tr>
+									<Th>Nombre</Th>
+									<Th>Variedad</Th>
+									<Th>Zona</Th>
+									<Th>Estado</Th>
+									<Th>Creado</Th>
+								</tr>
+							</thead>
+							<tbody>
+								{crops.map((c, i) => {
+									const status = STATUS_CROP[c.status] ?? {
+										label: c.status || "Desconocido",
+										cls: "bg-zinc-100 text-zinc-600",
+									};
+									return (
+										<tr
+											key={c.id}
+											className={
+												"border-b border-zinc-200 " +
+												(i % 2 === 0 ? "bg-white" : "bg-zinc-50")
+											}
+										>
+											<Td>
+												<span className="font-semibold text-zinc-900">
+													{c.name}
+												</span>
+											</Td>
+											<Td className="text-zinc-600">
+												{c.variety || "-"}
+											</Td>
+											<Td className="text-zinc-600">
+												{c.zoneName || "-"}
+											</Td>
+											<Td>
+												<Badge cls={status.cls}>{status.label}</Badge>
+											</Td>
+											<Td className="text-zinc-500">
+												{formatDate(c.createdAt)}
+											</Td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</TableWrap>
+					</>
+				)}
+
+				{/* UMBRALES */}
+				{active === "umbrales" && (
+					<>
+						<SectionTitle
+							title="Gestión de umbrales"
+							sub={`Total: ${thresholds.length} umbrales cargados`}
+						/>
+
+						<TableWrap>
+							<thead className="border-b border-zinc-200 bg-zinc-50">
+								<tr>
+									<Th>Variable</Th>
+									<Th>Zona</Th>
+									<Th>Valor mínimo</Th>
+									<Th>Valor máximo</Th>
+									<Th>Creado</Th>
+									<Th>Estado</Th>
+								</tr>
+							</thead>
+							<tbody>
+								{thresholds.map((t, i) => {
+									const variableLabel =
+										VAR_NAMES[t.variableName || t.name || t.variable] ||
+										(t.variableName || t.name || t.variable || "Variable");
+									const zoneName = zones.find((z) => z.id === t.zoneId)?.name || "-";
+									return (
+										<tr
+											key={t.id}
+											className={
+												"border-b border-zinc-200 " +
+												(i % 2 === 0 ? "bg-white" : "bg-zinc-50")
+											}
+										>
+											<Td className="text-zinc-900">{variableLabel}</Td>
+											<Td className="text-zinc-600">{zoneName}</Td>
+											<Td className="text-zinc-900">
+												{t.minValue ?? "-"} {t.unit || ""}
+											</Td>
+											<Td className="text-zinc-900">
+												{t.maxValue ?? "-"} {t.unit || ""}
+											</Td>
+											<Td className="text-zinc-500">
+												{formatDate(t.createdAt)}
+											</Td>
+											<Td>
+												<Badge
+													cls={
+														(t.isActive ?? true)
+															? "bg-emerald-100 text-emerald-700"
+															: "bg-zinc-100 text-zinc-600"
+													}
+												>
+													{(t.isActive ?? true) ? "Activo" : "Inactivo"}
+												</Badge>
+											</Td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</TableWrap>
+					</>
+				)}
+
+				{/* USUARIOS */}
+				{active === "usuarios" && (
+					<>
+						<SectionTitle
+							title="Gestión de usuarios"
+							sub={`Total: ${users.length} usuarios registrados`}
+						/>
+
+						{userError && (
+							<div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+								{userError}
+							</div>
+						)}
+
+						<TableWrap>
+							<thead className="border-b border-zinc-200 bg-zinc-50">
+								<tr>
+									<Th>Nombre</Th>
+									<Th>Email</Th>
+									<Th>Rol</Th>
+									<Th>Estado</Th>
+									<Th>Creado</Th>
+								</tr>
+							</thead>
+							<tbody>
+								{sortedUsers.map((u, i) => (
+									<tr
+										key={u.id}
+										className={
+											"border-b border-zinc-200 " +
+											(i % 2 === 0 ? "bg-white" : "bg-zinc-50")
+										}
+									>
+										<Td>
+											<span className="font-semibold text-zinc-900">
+												{u.fullName || u.name || "-"}
+											</span>
+										</Td>
+										<Td className="text-zinc-600">{u.email}</Td>
+										<Td className="text-zinc-900">{ROLE_LABELS[u.role] || u.role || "-"}</Td>
+										<Td>
+											<Badge
+												cls={
+													(u.active ?? true)
+													? "bg-emerald-100 text-emerald-700"
+													: "bg-zinc-100 text-zinc-600"
+											}
+											>
+												{(u.active ?? true) ? "Activo" : "Inactivo"}
+											</Badge>
+										</Td>
+										<Td className="text-zinc-500">
+											{formatDate(u.createdAt)}
 										</Td>
 									</tr>
 								))}
@@ -672,3 +891,4 @@ export default function Backoffice() {
 		</div>
 	);
 }
+

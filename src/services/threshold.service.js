@@ -47,6 +47,11 @@ export const thresholdService = {
 		};
 	},
 
+	async getThresholdById(id) {
+		const { data } = await api.get(`/api/thresholds/${id}`);
+		return data;
+	},
+
 	async createThreshold(payload) {
 		const { data } = await api.post("/api/thresholds", payload);
 		return data;

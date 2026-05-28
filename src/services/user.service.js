@@ -8,7 +8,7 @@ export const userService = {
 
 	async getUser(id) {
 		const { data } = await api.get(`/api/admin/users/${id}`);
-		return data;
+		return data?.data ?? data;
 	},
 
 	async createUser(payload) {
@@ -26,3 +26,5 @@ export const userService = {
 		return data;
 	}
 };
+
+export default userService;

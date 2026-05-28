@@ -1,17 +1,48 @@
 ﻿import { useState, useEffect, useCallback } from "react";
 import { zoneService } from "../services/zone.service";
+import { normalizeCreatedAt } from "../lib/utils";
 
 export function useZones(isActive = null) {
 const [zones, setZones] = useState([]);
 const [loading, setLoading] = useState(false);
 const [error, setError] = useState(null);
 
+const extractList = (response) => {
+	if (Array.isArray(response)) return response;
+	if (Array.isArray(response?.data)) return response.data;
+	if (Array.isArray(response?.content)) return response.content;
+	if (Array.isArray(response?.payload)) return response.payload;
+	if (Array.isArray(response?.data?.data)) return response.data.data;
+	if (Array.isArray(response?.data?.content)) return response.data.content;
+	if (Array.isArray(response?.data?.payload)) return response.data.payload;
+	return [];
+};
+
 const fetchZones = useCallback(async () => {
 try {
 setLoading(true);
 const response = await zoneService.listZones(isActive);
-const list = Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : (response?.data?.content ?? response?.content ?? []);
-setZones(list);
+const list = extractList(response);
+const normalizedZones = list.map((item) => ({ ...item, createdAt: normalizeCreatedAt(item) }));
+setZones(normalizedZones);
+const missing = normalizedZones.filter((item) => !item.createdAt);
+if (missing.length > 0) {
+	console.log("[useZones] No se encontró createdAt en zonas. Sample:", normalizedZones.slice(0, 3));
+	try {
+		const details = await Promise.all(
+			missing.map((item) => zoneService.getZoneById(item.id).catch(() => null))
+		);
+		console.log("[useZones] zone detail responses:", details);
+		setZones((prev) =>
+			prev.map((zone) => {
+				const det = details.find((d) => d && d.id === zone.id);
+				return det ? { ...zone, createdAt: normalizeCreatedAt(det) ?? zone.createdAt } : zone;
+			})
+		);
+	} catch {
+		// fallback silently
+	}
+}
 setError(null);
 } catch (err) {
 setError(err.message || "Error del servidor");

@@ -1,10 +1,22 @@
 ﻿import { useState, useEffect, useCallback } from "react";
 import { cropService } from "../services/crop.service";
+import { normalizeCreatedAt } from "../lib/utils";
 
 export function useCrops(status = null, zoneId = null) {
 const [crops, setCrops] = useState([]);
 const [loading, setLoading] = useState(false);
 const [error, setError] = useState(null);
+
+const extractList = (response) => {
+	if (Array.isArray(response)) return response;
+	if (Array.isArray(response?.data)) return response.data;
+	if (Array.isArray(response?.content)) return response.content;
+	if (Array.isArray(response?.payload)) return response.payload;
+	if (Array.isArray(response?.data?.data)) return response.data.data;
+	if (Array.isArray(response?.data?.content)) return response.data.content;
+	if (Array.isArray(response?.data?.payload)) return response.data.payload;
+	return [];
+};
 
 const fetchCrops = useCallback(async () => {
 try {
@@ -13,23 +25,42 @@ const response = await cropService.listCrops(status, zoneId);
 // El endpoint /api/crops devuelve CropsDataResponseDTO con zona-grupos:
 // { data: [{ zoneId, zoneName, info: [{id, name, ...}] }] }
 // Aplanamos en un array de cultivos individuales
-const raw = response?.data ?? response ?? [];
+const raw = extractList(response);
 let list;
-if (Array.isArray(raw) && raw.length > 0 && raw[0]?.info !== undefined) {
+if (raw.length > 0 && raw[0]?.info !== undefined) {
 // Respuesta zona-agrupada: aplanamos
-list = raw.flatMap(group =>
-(group.info ?? []).map(crop => ({
-...crop,
-zoneId: group.zoneId,
-zoneName: group.zoneName,
-}))
+list = raw.flatMap((group) =>
+	(group.info ?? []).map((crop) => ({
+		...crop,
+		zoneId: group.zoneId,
+		zoneName: group.zoneName,
+	}))
 );
 } else if (Array.isArray(raw)) {
-list = raw;
+	list = raw;
 } else {
-list = [];
+	list = [];
 }
-setCrops(list);
+const normalizedCrops = list.map((item) => ({ ...item, createdAt: normalizeCreatedAt(item) }));
+setCrops(normalizedCrops);
+const missing = normalizedCrops.filter((item) => !item.createdAt);
+if (missing.length > 0) {
+	console.log("[useCrops] No se encontró createdAt en cultivos. Sample:", normalizedCrops.slice(0, 3));
+	try {
+		const details = await Promise.all(
+			missing.map((item) => cropService.getCropById(item.id).catch(() => null))
+		);
+		console.log("[useCrops] crop detail responses:", details);
+		setCrops((prev) =>
+			prev.map((crop) => {
+				const det = details.find((d) => d && d.id === crop.id);
+				return det ? { ...crop, createdAt: normalizeCreatedAt(det) ?? crop.createdAt } : crop;
+			})
+		);
+	} catch {
+		// fallback silently
+	}
+}
 setError(null);
 } catch (err) {
 setError(err.message || "Error del servidor");
