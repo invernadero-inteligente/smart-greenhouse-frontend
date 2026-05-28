@@ -179,6 +179,87 @@ async function sendActuatorCommand(
 
 /*
 |--------------------------------------------------------------------------
+| ENVIAR COMANDO IOT-IA POR ZONA
+|--------------------------------------------------------------------------
+*/
+
+async function sendIotActuatorEvent(
+  zoneId,
+  actuatorName,
+  action
+) {
+  try {
+    const payload = {
+      name: String(actuatorName).trim(),
+      action: String(action).toUpperCase(),
+    };
+
+    console.log(
+      "Enviando evento IOT-IA:",
+      zoneId,
+      payload
+    );
+
+    const response = await api.post(
+      `/api/iot/actuator/event/${zoneId}`,
+      payload
+    );
+
+    return response.data?.data || response.data;
+  } catch (error) {
+    console.error(
+      "Error enviando evento IOT-IA:",
+      error
+    );
+
+    throw new Error(getApiErrorMessage(error));
+  }
+}
+
+async function requestCameraPhoto(zoneId) {
+  const candidatePaths = [
+    `/api/iot/camera/photo/request/${zoneId}`,
+    `/api/iot/camera/phot/request/${zoneId}`,
+  ];
+
+  let lastError = null;
+
+  for (const path of candidatePaths) {
+    try {
+      const response = await api.post(path);
+      return response.data?.data || response.data;
+    } catch (error) {
+      lastError = error;
+
+      const status =
+        error?.response?.status;
+
+      if (status === 404) {
+        continue;
+      }
+
+      console.error(
+        "Error solicitando foto:",
+        error
+      );
+
+      throw new Error(getApiErrorMessage(error));
+    }
+  }
+
+  console.error(
+    "Error solicitando foto (ruta no encontrada):",
+    lastError
+  );
+
+  throw new Error(
+    getApiErrorMessage(lastError) ||
+      "Recurso no encontrado"
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
 | COMPATIBILIDAD
 |--------------------------------------------------------------------------
 | Esto arregla:
@@ -212,4 +293,8 @@ export const actuatorService = {
   // nombres válidos
   sendActuatorCommand,
   sendCommand,
+
+  // IOT-IA
+  sendIotActuatorEvent,
+  requestCameraPhoto,
 };

@@ -16,6 +16,7 @@ import {
   FiZap,
   FiAlertTriangle,
   FiActivity,
+  FiCamera,
 } from "react-icons/fi";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -50,6 +51,15 @@ export default function ActuatorsList() {
 
   const [sendSuccess, setSendSuccess] =
     useState("");
+
+  const [photoLoading, setPhotoLoading] =
+    useState(false);
+  const [photoError, setPhotoError] =
+    useState("");
+  const [photoSuccess, setPhotoSuccess] =
+    useState("");
+  const [photoResult, setPhotoResult] =
+    useState(null);
 
   // crear actuador
   const [newActuatorZone, setNewActuatorZone] =
@@ -162,10 +172,23 @@ export default function ActuatorsList() {
       // ENVÍO COMANDO
       // ========================================
 
-      await actuatorService.sendCommand(
-        actuatorId,
-        nextAction
-      );
+      const zoneId =
+        actuator?.zoneId ||
+        selectedZone?.id ||
+        selectedZoneId;
+
+      if (zoneId) {
+        await actuatorService.sendIotActuatorEvent(
+          zoneId,
+          actuator?.name,
+          nextAction
+        );
+      } else {
+        await actuatorService.sendCommand(
+          actuatorId,
+          nextAction
+        );
+      }
 
       // ========================================
       // UPDATE LOCAL INMEDIATO
@@ -229,6 +252,53 @@ export default function ActuatorsList() {
   // =========================================================
   // CREATE ACTUATOR
   // =========================================================
+
+  const handleRequestPhoto = async () => {
+    if (!selectedZone?.id) {
+      setPhotoError(
+        "Selecciona una zona para tomar la foto"
+      );
+      setTimeout(() => {
+        setPhotoError("");
+      }, 4000);
+      return;
+    }
+
+    setPhotoLoading(true);
+    setPhotoError("");
+    setPhotoSuccess("");
+    setPhotoResult(null);
+
+    try {
+      const response = await actuatorService.requestCameraPhoto(
+        selectedZone.id
+      );
+
+      const resultText =
+        response?.message ||
+        response?.description ||
+        JSON.stringify(response);
+
+      setPhotoSuccess(
+        "Solicitud de foto enviada"
+      );
+      setPhotoResult(resultText);
+
+      setTimeout(() => {
+        setPhotoSuccess("");
+      }, 5000);
+    } catch (err) {
+      console.error(err);
+      setPhotoError(
+        getApiErrorMessage(err)
+      );
+      setTimeout(() => {
+        setPhotoError("");
+      }, 5000);
+    } finally {
+      setPhotoLoading(false);
+    }
+  };
 
   const handleCreateActuator = async (
     e
@@ -326,7 +396,7 @@ export default function ActuatorsList() {
           </div>
         </div>
 
-        <div>
+        <div className="flex items-center gap-2">
           <select
             value={targetZoneId}
             onChange={(e) =>
@@ -355,6 +425,21 @@ export default function ActuatorsList() {
               </option>
             ))}
           </select>
+
+          <button
+            type="button"
+            onClick={handleRequestPhoto}
+            disabled={
+              photoLoading ||
+              !selectedZone?.id
+            }
+            className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 text-white px-4 py-3 text-sm font-semibold shadow-sm transition-all hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <FiCamera size={18} />
+            {photoLoading
+              ? "Solicitando..."
+              : "Tomar foto"}
+          </button>
         </div>
       </div>
 
@@ -515,8 +600,8 @@ export default function ActuatorsList() {
               Actuadores registrados
             </h2>
 
-            <div className="min-h-[36px]">
-              <AnimatePresence mode="wait">
+            <div className="min-h-[36px] space-y-2">
+              <AnimatePresence>
                 {sendError && (
                   <motion.div
                     key="error"
@@ -556,6 +641,72 @@ export default function ActuatorsList() {
                     className="rounded-xl bg-emerald-100 text-emerald-700 px-4 py-2 text-sm font-medium"
                   >
                     {sendSuccess}
+                  </motion.div>
+                )}
+
+                {photoError && (
+                  <motion.div
+                    key="photo-error"
+                    initial={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    className="rounded-xl bg-rose-100 text-rose-700 px-4 py-2 text-sm font-medium"
+                  >
+                    {photoError}
+                  </motion.div>
+                )}
+
+                {photoSuccess && (
+                  <motion.div
+                    key="photo-success"
+                    initial={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    className="rounded-xl bg-emerald-100 text-emerald-700 px-4 py-2 text-sm font-medium"
+                  >
+                    {photoSuccess}
+                  </motion.div>
+                )}
+
+                {photoResult && (
+                  <motion.div
+                    key="photo-result"
+                    initial={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    className="rounded-xl bg-zinc-50 text-zinc-700 px-4 py-2 text-sm font-medium"
+                  >
+                    <span className="font-semibold">
+                      Resultado:
+                    </span>{" "}
+                    {photoResult}
                   </motion.div>
                 )}
               </AnimatePresence>
