@@ -1,5 +1,9 @@
 import { api } from "./api";
 
+function unwrapResponsePayload(response) {
+	return response?.data ?? response?.payload ?? response;
+}
+
 export const cropService = {
 	async listCrops(status = null, zoneId = null) {
 		const params = new URLSearchParams();
@@ -15,7 +19,7 @@ export const cropService = {
 
 	async getCropById(id) {
 		const { data } = await api.get(`/api/crops/${id}`);
-		return data;
+		return unwrapResponsePayload(data);
 	},
 
 	async createCrop(payload) {

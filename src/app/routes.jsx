@@ -14,103 +14,73 @@ import Inventory from "../pages/inventory/Inventory";
 import ActuatorsList from "../pages/actuators/ActuatorsList";
 import NotFound from "../pages/NotFound";
 import ActuatorAdmin from "../pages/actuators/ActuatorAdmin";
+import Reports from "../pages/reports/Reports"; // IMPORTACIÓN CORRECTA
 import { useAuth } from "../hooks/useAuth";
 
 function ProtectedRoute() {
-	const { isAuthenticated } = useAuth();
-	return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+    const { isAuthenticated } = useAuth();
+    return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
 function AdminRoute() {
-	const { isAuthenticated, isAdmin } = useAuth();
+    const { isAuthenticated, isAdmin } = useAuth();
 
-	if (!isAuthenticated) {
-		return <Navigate to="/login" replace />;
-	}
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
-	return isAdmin ? <Outlet /> : <Navigate to="/panel" replace />;
+    return isAdmin ? <Outlet /> : <Navigate to="/panel" replace />;
 }
 
 function ProtectedLayout() {
-	return <Layout />;
+    return <Layout />;
 }
 
 const routes = [
-	{
-		path: "/",
-		element: <Home />
-	},
-	{
-		path: "/login",
-		element: <Login />
-	},
-	{
-		path: "/register",
-		element: <Register />
-	},
-	{
-		element: <ProtectedRoute />,
-		children: [
-			{
-				element: <ProtectedLayout />,
-				children: [
-					{
-						path: "/panel",
-						element: <Dashboard />
-					},
-					{
-						path: "/zonas",
-						element: <ZonesList />
-					},
-					{
-						path: "/cultivos",
-						element: <CropsList />
-					},
-					{
-						path: "/umbrales",
-						element: <Thresholds />
-					},
-					{
-						path: "/alertas",
-						element: <AlertsList />
-					},
-					{
-						path: "/inventario",
-						element: <Inventory />
-					},
-					{
-						path: "/actuadores",
-						element: <ActuatorsList />
-					},
-					{
-						element: <AdminRoute />,
-						children: [
-							{
-								path: "/backoffice",
-								element: <Backoffice />
-							},
-							{
-								path: "/admin/usuarios",
-								element: <AdminUsers />
-							},
-							{
-								path: "/admin/users",
-								element: <Navigate to="/admin/usuarios" replace />
-							},
-							{
-								path: "/admin/actuadores",
-								element: <ActuatorAdmin />
-							}
-						]
-					}
-				]
-			}
-		]
-	},
-	{
-		path: "*",
-		element: <NotFound />
-	}
+    {
+        path: "/",
+        element: <Home />
+    },
+    {
+        path: "/login",
+        element: <Login />
+    },
+    {
+        path: "/register",
+        element: <Register />
+    },
+    {
+        element: <ProtectedRoute />,
+        children: [
+            {
+                element: <ProtectedLayout />,
+                children: [
+                    { path: "/panel", element: <Dashboard /> },
+                    { path: "/zonas", element: <ZonesList /> },
+                    { path: "/cultivos", element: <CropsList /> },
+                    { path: "/umbrales", element: <Thresholds /> },
+                    { path: "/alertas", element: <AlertsList /> },
+                    { path: "/inventario", element: <Inventory /> },
+                    { path: "/actuadores", element: <ActuatorsList /> },
+                    {
+                        element: <AdminRoute />,
+                        children: [
+                            { path: "/backoffice", element: <Backoffice /> },
+                            { path: "/admin/usuarios", element: <AdminUsers /> },
+                            { path: "/admin/users", element: <Navigate to="/admin/usuarios" replace /> },
+                            { path: "/admin/actuadores", element: <ActuatorAdmin /> },
+                            // 👇 RESTAURADO A COMO ESTABA EN TU CÓDIGO ORIGINAL 👇
+                            { path: "/reports", element: <Reports /> }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        path: "*",
+        element: <NotFound />
+    }
 ];
 
 export default routes;

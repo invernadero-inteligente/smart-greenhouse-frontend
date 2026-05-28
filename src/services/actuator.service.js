@@ -1,104 +1,300 @@
-import { api } from "./api";
-import { getApiErrorMessage } from "./api";
+import { api, getApiErrorMessage } from "./api";
 
+/*
+|--------------------------------------------------------------------------
+| LISTAR ACTUADORES
+|--------------------------------------------------------------------------
+*/
 
-// CRUD actuadores backend
-async function createActuator({ zoneId, name }) {
-	if (!zoneId || !name?.trim()) throw new Error("Zona y nombre requeridos");
-	const { data } = await api.post("/api/iot/actuator", {
-		zone: { id: zoneId },
-		name: name.trim(),
-	});
-	return data;
+async function listActuators(zoneId = null) {
+  try {
+    const params = {};
+
+    if (zoneId) {
+      params.zoneId = zoneId;
+    }
+
+    const response = await api.get("/api/actuators", {
+      params,
+    });
+
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Error listando actuadores:", error);
+    return [];
+  }
 }
 
-async function updateActuator({ id, zoneId, name }) {
-	if (!id || !zoneId || !name?.trim()) throw new Error("ID, zona y nombre requeridos");
-	const { data } = await api.put(`/api/iot/actuator/${id}`,
-		{ id, zone: { id: zoneId }, name: name.trim() }
-	);
-	return data;
+/*
+|--------------------------------------------------------------------------
+| OBTENER ACTUADOR POR ID
+|--------------------------------------------------------------------------
+*/
+
+async function getActuatorById(id) {
+  try {
+    const response = await api.get(`/api/actuators/${id}`);
+
+    return response.data?.data;
+  } catch (error) {
+    console.error("Error obteniendo actuador:", error);
+    throw new Error(getApiErrorMessage(error));
+  }
 }
+
+/*
+|--------------------------------------------------------------------------
+| CREAR ACTUADOR
+|--------------------------------------------------------------------------
+*/
+
+async function createActuator({
+  zoneId,
+  name,
+  currentAction = "OFF",
+}) {
+  try {
+    const payload = {
+      zoneId: Number(zoneId),
+      name: name.trim(),
+      currentAction: currentAction.toUpperCase(),
+    };
+
+    console.log(
+      "Payload creando actuador:",
+      payload
+    );
+
+    const response = await api.post(
+      "/api/actuators",
+      payload
+    );
+
+    return response.data?.data;
+  } catch (error) {
+    console.error("Error creando actuador:", error);
+    throw new Error(getApiErrorMessage(error));
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| ACTUALIZAR ACTUADOR
+|--------------------------------------------------------------------------
+*/
+
+async function updateActuator({
+  id,
+  zoneId,
+  name,
+  currentAction,
+}) {
+  try {
+    const payload = {};
+
+    if (zoneId !== undefined) {
+      payload.zoneId = Number(zoneId);
+    }
+
+    if (name !== undefined) {
+      payload.name = name.trim();
+    }
+
+    if (currentAction !== undefined) {
+      payload.currentAction =
+        currentAction.toUpperCase();
+    }
+
+    const response = await api.patch(
+      `/api/actuators/${id}`,
+      payload
+    );
+
+    return response.data?.data;
+  } catch (error) {
+    console.error(
+      "Error actualizando actuador:",
+      error
+    );
+
+    throw new Error(getApiErrorMessage(error));
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| ELIMINAR ACTUADOR
+|--------------------------------------------------------------------------
+*/
 
 async function deleteActuator(id) {
-	if (!id) throw new Error("ID requerido");
-	await api.delete(`/api/iot/actuator/${id}`);
+  try {
+    await api.delete(`/api/actuators/${id}`);
+  } catch (error) {
+    console.error(
+      "Error eliminando actuador:",
+      error
+    );
+
+    throw new Error(getApiErrorMessage(error));
+  }
 }
 
-async function tryPost(paths, payload) {
-	let lastError;
-	for (const path of paths) {
-		try {
-			await api.post(path, payload);
-			return;
-		} catch (error) {
-			lastError = error;
-			if (error?.response?.status !== 404) {
-				throw error;
-			}
-		}
-	}
-	throw lastError;
+/*
+|--------------------------------------------------------------------------
+| ENVIAR COMANDO ON/OFF
+|--------------------------------------------------------------------------
+*/
+
+async function sendActuatorCommand(
+  actuatorId,
+  action
+) {
+  try {
+    const payload = {
+      action: String(action).toUpperCase(),
+    };
+
+    console.log(
+      "Enviando comando:",
+      actuatorId,
+      payload
+    );
+
+    const response = await api.post(
+      `/api/actuators/${actuatorId}/command`,
+      payload
+    );
+
+    return response.data?.data;
+  } catch (error) {
+    console.error(
+      "Error enviando comando:",
+      error
+    );
+
+    throw new Error(getApiErrorMessage(error));
+  }
 }
+
+/*
+|--------------------------------------------------------------------------
+| ENVIAR COMANDO IOT-IA POR ZONA
+|--------------------------------------------------------------------------
+*/
+
+async function sendIotActuatorEvent(
+  zoneId,
+  actuatorName,
+  action
+) {
+  try {
+    const payload = {
+      name: String(actuatorName).trim(),
+      action: String(action).toUpperCase(),
+    };
+
+    console.log(
+      "Enviando evento IOT-IA:",
+      zoneId,
+      payload
+    );
+
+    const response = await api.post(
+      `/api/iot/actuator/event/${zoneId}`,
+      payload
+    );
+
+    return response.data?.data || response.data;
+  } catch (error) {
+    console.error(
+      "Error enviando evento IOT-IA:",
+      error
+    );
+
+    throw new Error(getApiErrorMessage(error));
+  }
+}
+
+async function requestCameraPhoto(zoneId) {
+  const candidatePaths = [
+    `/api/iot/camera/photo/request/${zoneId}`,
+    `/api/iot/camera/phot/request/${zoneId}`,
+  ];
+
+  let lastError = null;
+
+  for (const path of candidatePaths) {
+    try {
+      const response = await api.post(path);
+      return response.data?.data || response.data;
+    } catch (error) {
+      lastError = error;
+
+      const status =
+        error?.response?.status;
+
+      if (status === 404) {
+        continue;
+      }
+
+      console.error(
+        "Error solicitando foto:",
+        error
+      );
+
+      throw new Error(getApiErrorMessage(error));
+    }
+  }
+
+  console.error(
+    "Error solicitando foto (ruta no encontrada):",
+    lastError
+  );
+
+  throw new Error(
+    getApiErrorMessage(lastError) ||
+      "Recurso no encontrado"
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| COMPATIBILIDAD
+|--------------------------------------------------------------------------
+| Esto arregla:
+| actuatorService.sendCommand is not a function
+|--------------------------------------------------------------------------
+*/
+
+async function sendCommand(
+  actuatorId,
+  action
+) {
+  return sendActuatorCommand(
+    actuatorId,
+    action
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| EXPORTS
+|--------------------------------------------------------------------------
+*/
 
 export const actuatorService = {
-		createActuator,
-		updateActuator,
-		deleteActuator,
-	async sendActuatorEvent(zoneId, actuatorName, action) {
-		const normalizedAction = String(action ?? "").toUpperCase();
+  listActuators,
+  getActuatorById,
+  createActuator,
+  updateActuator,
+  deleteActuator,
 
-		if (!zoneId) {
-			throw new Error("Debe seleccionar una zona");
-		}
+  // nombres válidos
+  sendActuatorCommand,
+  sendCommand,
 
-		if (!actuatorName?.trim()) {
-			throw new Error("Debe indicar el nombre del actuador");
-		}
-
-		if (!["ON", "OFF"].includes(normalizedAction)) {
-			throw new Error("La acción del actuador debe ser ON u OFF");
-		}
-
-		const payload = {
-			name: actuatorName.trim(),
-			action: normalizedAction,
-		};
-
-		try {
-			await tryPost([
-				`/api/iot/actuator/event/${zoneId}`,
-				`/iot/actuator/event/${zoneId}`,
-			], payload);
-		} catch (error) {
-			const status = error?.response?.status;
-			if (status === 404) {
-				throw new Error(
-					"No existe el endpoint o el actuador/zona no está registrado en backend. Verifica zona ID, nombre del actuador y que el backend esté actualizado."
-				);
-			}
-			throw new Error(getApiErrorMessage(error));
-		}
-
-		return {
-			zoneId,
-			actuatorName: payload.name,
-			action: normalizedAction,
-			sentAt: new Date().toISOString(),
-		};
-	},
-
-	// Backward-compatible method for stale views/HMR chunks.
-	async listActuators(zoneId = null) {
-		try {
-			const params = new URLSearchParams();
-			if (zoneId != null) {
-				params.append("zoneId", zoneId);
-			}
-			const { data } = await api.get(`/api/actuators${params.toString() ? "?" + params.toString() : ""}`);
-			return data;
-		} catch {
-			return [];
-		}
-	},
+  // IOT-IA
+  sendIotActuatorEvent,
+  requestCameraPhoto,
 };

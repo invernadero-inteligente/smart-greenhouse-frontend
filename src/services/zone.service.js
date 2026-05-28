@@ -1,5 +1,9 @@
 import { api } from "./api";
 
+function unwrapResponsePayload(response) {
+	return response?.data ?? response?.payload ?? response;
+}
+
 export const zoneService = {
 	async listZones(isActive = null) {
 		if (isActive === null) {
@@ -30,7 +34,7 @@ export const zoneService = {
 
 	async getZoneById(id) {
 		const { data } = await api.get(`/api/zones/${id}`);
-		return data;
+		return unwrapResponsePayload(data);
 	},
 
 	async createZone(payload) {

@@ -1,722 +1,815 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { useZones } from "../../hooks/useZones";
-import { canOperate } from "../../utils/permissions";
+import { useZones } from "../../hooks/useZonesList";
+import { canOperate, canEdit } from "../../utils/permissions";
 import { actuatorService } from "../../services/actuator.service";
 import { getApiErrorMessage } from "../../services/api";
-import { getActuatorSuggestionsForZone, isActuatorSuggested } from "../../utils/actuatorCatalog";
+
+import ActuatorCard from "./ActuatorCard";
+import EmptyState from "./EmptyState";
+import SkeletonCard from "./SkeletonCard";
+
 import {
-	createTemplateForZone,
-	isCustomTemplate,
-	listTemplatesForZone,
-	loadOperatorTemplatesStore,
-	removeTemplateForZone,
-	saveOperatorTemplatesStore,
-} from "../../utils/operatorTemplates";
+  FiCpu,
+  FiWifi,
+  FiPlus,
+  FiZap,
+  FiAlertTriangle,
+  FiActivity,
+  FiCamera,
+} from "react-icons/fi";
 
-
-const QUICK_ACTUATORS = ["Ventilador", "BombaRiego", "Nebulizador", "Extractor"];
-const ACTUATOR_HISTORY_KEY = "invernadero_actuator_history";
-
-function normalizeText(value) {
-	return String(value ?? "")
-		.toLowerCase()
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "");
-}
-
-function loadHistory() {
-	try {
-		const raw = localStorage.getItem(ACTUATOR_HISTORY_KEY);
-		const parsed = raw ? JSON.parse(raw) : [];
-		return Array.isArray(parsed) ? parsed : [];
-	} catch {
-		return [];
-	}
-}
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ActuatorsList() {
-	const { auth } = useAuth();
-	const { zones, loading: loadingZones } = useZones(true);
-	const allowOperate = canOperate(auth.role);
+  const { auth } = useAuth();
+  const { zones, loading: loadingZones } = useZones();
 
-	const [selectedZoneId, setSelectedZoneId] = useState("");
-	const [actuatorName, setActuatorName] = useState(QUICK_ACTUATORS[0]);
-	const [action, setAction] = useState("ON");
-	const [sending, setSending] = useState(false);
-	const [error, setError] = useState(null);
-	const [history, setHistory] = useState(loadHistory);
-	const [templatesStore, setTemplatesStore] = useState(() => loadOperatorTemplatesStore());
-	const [allowCustomActuator, setAllowCustomActuator] = useState(false);
-	const [runningTemplateId, setRunningTemplateId] = useState(null);
-	const [templateFeedback, setTemplateFeedback] = useState("");
-	const [newTemplateName, setNewTemplateName] = useState("");
-	const [newTemplateDescription, setNewTemplateDescription] = useState("");
-	const [newTemplateSteps, setNewTemplateSteps] = useState([
-		{ actuatorName: "BombaRiego", action: "ON" },
-	]);
-	const [mobileSection, setMobileSection] = useState("catalog");
-	const [quickSearch, setQuickSearch] = useState("");
-	const [historyFilter, setHistoryFilter] = useState("ALL");
-	const [historySort, setHistorySort] = useState("DATE_DESC");
-	const [retryingHistoryId, setRetryingHistoryId] = useState(null);
-	const [retryingAll, setRetryingAll] = useState(false);
+  const allowOperate = canOperate(auth.role);
+  const allowEdit = canEdit(auth.role);
 
-	const zonesList = useMemo(() => (Array.isArray(zones) ? zones : []), [zones]);
-	const targetZoneId = selectedZoneId || (zonesList[0]?.id ? String(zonesList[0].id) : "");
-	const selectedZone = zonesList.find((zone) => String(zone.id) === String(targetZoneId));
-	const suggestedActuators = useMemo(
-		() => getActuatorSuggestionsForZone(selectedZone?.name, history),
-		[selectedZone?.name, history]
-	);
-	const isSuggestedName = isActuatorSuggested(actuatorName, suggestedActuators);
-	const filteredSuggestedActuators = useMemo(() => {
-		const search = normalizeText(quickSearch);
-		if (!search) return suggestedActuators;
-		return suggestedActuators.filter((name) => normalizeText(name).includes(search));
-	}, [suggestedActuators, quickSearch]);
-	const zoneTemplates = useMemo(
-		() => listTemplatesForZone(templatesStore, targetZoneId),
-		[templatesStore, targetZoneId]
-	);
-	const [showTemplateEditor, setShowTemplateEditor] = useState(false);
+  // =========================================================
+  // STATES
+  // =========================================================
 
-	const successCount = history.filter((item) => item.ok).length;
-	// Eliminado: zoneActuatorCount
-	const zoneTemplateCount = zoneTemplates.length;
-	const filteredHistory = useMemo(() => {
-		if (historyFilter === "SENT") {
-			return history.filter((item) => item.ok);
-		}
-		if (historyFilter === "ERROR") {
-			return history.filter((item) => !item.ok);
-		}
-		return history;
-	}, [history, historyFilter]);
-	const displayedHistory = useMemo(() => {
-		const list = [...filteredHistory];
-		if (historySort === "DATE_ASC") {
-			return list.sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime());
-		}
-		if (historySort === "ACTUATOR_ASC") {
-			return list.sort((a, b) => String(a.actuatorName ?? "").localeCompare(String(b.actuatorName ?? ""), "es"));
-		}
-		if (historySort === "STATUS") {
-			return list.sort((a, b) => Number(b.ok) - Number(a.ok));
-		}
-		return list.sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
-	}, [filteredHistory, historySort]);
-const failedVisibleCount = useMemo(() => displayedHistory.filter((item) => !item.ok).length, [displayedHistory]);
+  const [selectedZoneId, setSelectedZoneId] =
+    useState("");
 
-	useEffect(() => {
-		localStorage.setItem(ACTUATOR_HISTORY_KEY, JSON.stringify(history));
-	}, [history]);
+  const [actuators, setActuators] = useState([]);
 
-	// Eliminado: useEffect para zoneCatalog
+  const [loadingActuators, setLoadingActuators] =
+    useState(true);
 
-	useEffect(() => {
-		saveOperatorTemplatesStore(templatesStore);
-	}, [templatesStore]);
+  const [mqttConnected] = useState(true);
 
-	useEffect(() => {
-		setAllowCustomActuator(false);
-	}, [targetZoneId]);
+  // mensajes
+  const [sendLoading, setSendLoading] =
+    useState(false);
 
-	// Eliminado: addCatalogActuator y setZoneCatalog
+  const [sendError, setSendError] =
+    useState("");
 
-	// Eliminado: removeCatalogActuator y setZoneCatalog
+  const [sendSuccess, setSendSuccess] =
+    useState("");
 
-	const addTemplateStep = () => {
-		setNewTemplateSteps((prev) => [...prev, { actuatorName: "", action: "ON" }]);
-	};
+  const [photoLoading, setPhotoLoading] =
+    useState(false);
+  const [photoError, setPhotoError] =
+    useState("");
+  const [photoSuccess, setPhotoSuccess] =
+    useState("");
+  const [photoResult, setPhotoResult] =
+    useState(null);
 
-	const updateTemplateStep = (idx, field, value) => {
-		setNewTemplateSteps((prev) => prev.map((step, index) => {
-			if (index !== idx) return step;
-			return {
-				...step,
-				[field]: field === "action" ? String(value).toUpperCase() : value,
-			};
-		}));
-	};
+  // crear actuador
+  const [newActuatorZone, setNewActuatorZone] =
+    useState("");
 
-	const removeTemplateStep = (idx) => {
-		setNewTemplateSteps((prev) => prev.filter((_, index) => index !== idx));
-	};
+  const [newActuatorName, setNewActuatorName] =
+    useState("");
 
-	const createTemplate = () => {
-		if (!targetZoneId || !newTemplateName.trim()) {
-			setError("Debes seleccionar zona y nombre de plantilla.");
-			return;
-		}
+  const [newActuatorState, setNewActuatorState] =
+    useState("OFF");
 
-		const cleanSteps = newTemplateSteps
-			.map((step) => ({ actuatorName: String(step.actuatorName ?? "").trim(), action: step.action === "OFF" ? "OFF" : "ON" }))
-			.filter((step) => step.actuatorName);
+  const [creatingActuator, setCreatingActuator] =
+    useState(false);
 
-		if (cleanSteps.length === 0) {
-			setError("La plantilla debe tener al menos un paso con actuador.");
-			return;
-		}
+  const [createError, setCreateError] =
+    useState("");
 
-		setTemplatesStore((prev) => createTemplateForZone(prev, targetZoneId, {
-			name: newTemplateName,
-			description: newTemplateDescription,
-			steps: cleanSteps,
-		}));
+  const [createSuccess, setCreateSuccess] =
+    useState("");
 
-		setTemplateFeedback("Plantilla guardada correctamente.");
-		setNewTemplateName("");
-		setNewTemplateDescription("");
-		setNewTemplateSteps([{ actuatorName: "", action: "ON" }]);
-		setError(null);
-	};
+  // auditoría
+  const [auditLogs, setAuditLogs] = useState([]);
 
-	const deleteTemplate = (templateId) => {
-		if (!targetZoneId) return;
-		setTemplatesStore((prev) => removeTemplateForZone(prev, targetZoneId, templateId));
-	};
+  // =========================================================
+  // ZONAS
+  // =========================================================
 
-	const sendCommand = async (customAction, customActuatorName, forceCustom = false) => {
-		if (!allowOperate) {
-			return false;
-		}
+  const zonesList = useMemo(() => {
+    return Array.isArray(zones) ? zones : [];
+  }, [zones]);
 
-		const finalAction = customAction ?? action;
-		const finalActuatorName = customActuatorName ?? actuatorName;
+  const targetZoneId =
+    selectedZoneId ||
+    (zonesList[0]?.id
+      ? String(zonesList[0].id)
+      : "");
 
+  const selectedZone = zonesList.find(
+    (zone) =>
+      String(zone.id) ===
+      String(targetZoneId)
+  );
 
+  // =========================================================
+  // LOAD ACTUATORS
+  // =========================================================
 
-		if (!isActuatorSuggested(finalActuatorName, suggestedActuators) && !allowCustomActuator && !forceCustom) {
-			setError("El actuador no está en el catálogo de esta zona. Agrega el nombre al catálogo o activa 'Forzar envío'.");
-			return false;
-		}
+  const loadActuators = async () => {
+    setLoadingActuators(true);
 
-		try {
-			setSending(true);
-			setError(null);
+    try {
+      const response =
+        await actuatorService.listActuators(
+          selectedZoneId || null
+        );
 
-			const sent = await actuatorService.sendActuatorEvent(targetZoneId, finalActuatorName, finalAction);
-			const zoneName = zonesList.find((z) => String(z.id) === String(sent.zoneId))?.name ?? `Zona ${sent.zoneId}`;
+      const data =
+        response?.data ||
+        response ||
+        [];
 
-			setHistory((prev) => [
-				{
-					id: `${Date.now()}-${Math.random()}`,
-					...sent,
-					zoneName,
-					ok: true,
-				},
-				...prev,
-			].slice(0, 12));
-			return true;
-		} catch (err) {
-			const message = getApiErrorMessage(err);
-			setError(message);
-			const zoneName = zonesList.find((z) => String(z.id) === String(targetZoneId))?.name ?? `Zona ${targetZoneId}`;
+      setActuators(
+        Array.isArray(data) ? data : []
+      );
+    } catch (error) {
+      console.error(
+        "Error listando actuadores:",
+        error
+      );
 
-			setHistory((prev) => [
-				{
-					id: `${Date.now()}-${Math.random()}`,
-					zoneId: targetZoneId,
-					zoneName,
-					actuatorName: finalActuatorName,
-					action: finalAction,
-					sentAt: new Date().toISOString(),
-					ok: false,
-					message,
-				},
-				...prev,
-			].slice(0, 12));
-			return false;
-		} finally {
-			setSending(false);
-		}
-	};
+      setActuators([]);
+    } finally {
+      setLoadingActuators(false);
+    }
+  };
 
-	const runTemplate = async (template) => {
-		if (!allowOperate || !targetZoneId || !template?.steps?.length) {
-			return;
-		}
+  useEffect(() => {
+    loadActuators();
+  }, [selectedZoneId]);
 
-		setTemplateFeedback("");
-		setRunningTemplateId(template.id);
+  // =========================================================
+  // TOGGLE ON/OFF
+  // =========================================================
 
-		let success = 0;
-		for (const step of template.steps) {
-			const ok = await sendCommand(step.action, step.actuatorName);
-			if (ok) {
-				success += 1;
-			}
-		}
+  const handleToggle = async (actuator) => {
+    if (!allowOperate) return;
 
-		setRunningTemplateId(null);
-		setTemplateFeedback(`Plantilla ejecutada: ${success}/${template.steps.length} comandos exitosos.`);
-	};
+    setSendLoading(true);
+    setSendError("");
+    setSendSuccess("");
 
-	const retryHistoryItem = async (item) => {
-		if (!item || item.ok) return;
-		setRetryingHistoryId(item.id);
-		await sendCommand(item.action, item.actuatorName, true);
-		setRetryingHistoryId(null);
-	};
+    try {
+      const actuatorId = actuator?.id;
 
-	const retryAllFailed = async () => {
-		const failed = displayedHistory.filter((item) => !item.ok);
-		if (failed.length === 0) return;
+      if (!actuatorId) {
+        throw new Error(
+          "El actuador no tiene ID válido"
+        );
+      }
 
-		setRetryingAll(true);
-		for (const item of failed) {
-			await sendCommand(item.action, item.actuatorName, true);
-		}
-		setRetryingAll(false);
-	};
+      const currentState =
+        actuator?.currentAction || "OFF";
 
-	const exportHistoryCsv = () => {
-		const rows = displayedHistory.map((item) => ([
-			item.sentAt,
-			item.zoneName ?? "",
-			item.actuatorName ?? "",
-			item.action ?? "",
-			item.ok ? "Enviado" : "Error",
-			item.message ?? "",
-		]));
+      const nextAction =
+        currentState === "ON"
+          ? "OFF"
+          : "ON";
 
-		const header = ["sentAt", "zone", "actuator", "action", "status", "detail"];
-		const csv = [header, ...rows]
-			.map((line) => line.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
-			.join("\n");
+      // ========================================
+      // ENVÍO COMANDO
+      // ========================================
 
-		const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `actuadores-historial-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.csv`;
-		a.click();
-		URL.revokeObjectURL(url);
-	};
+      const zoneId =
+        actuator?.zoneId ||
+        selectedZone?.id ||
+        selectedZoneId;
 
-		return (
-			<div className="space-y-7">
-				<div className="overflow-hidden rounded-3xl border border-[#e5e0c3] bg-white/90 p-7 text-emerald-900 shadow-md">
-					<div className="flex flex-wrap items-start justify-between gap-4">
-						<div>
-							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-600">Centro de control IoT</p>
-							<h1 className="mt-1 font-heading text-2xl font-bold text-emerald-700 md:text-3xl">Control de actuadores</h1>
-							<p className="mt-1 text-sm text-emerald-700/80">
-								Comando MQTT por zona en <span className="font-semibold text-emerald-600">/api/iot/actuator/event/{targetZoneId}</span>
-							</p>
-							{!allowOperate && (
-								<p className="mt-2 inline-flex items-center rounded-full border border-emerald-200 bg-[#EFE7D7] px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Solo lectura - no puedes enviar comandos</p>
-							)}
-						</div>
+      if (zoneId) {
+        await actuatorService.sendIotActuatorEvent(
+          zoneId,
+          actuator?.name,
+          nextAction
+        );
+      } else {
+        await actuatorService.sendCommand(
+          actuatorId,
+          nextAction
+        );
+      }
 
-						<div className="rounded-2xl border border-[#e5e0c3] bg-[#FAF7F2] px-5 py-4 text-right shadow-sm">
-							<p className="text-[10px] uppercase tracking-wide text-emerald-600">Comandos exitosos</p>
-							<p className="font-heading text-2xl font-bold text-emerald-700">{successCount}</p>
-						</div>
-					</div>
+      // ========================================
+      // UPDATE LOCAL INMEDIATO
+      // ========================================
 
-					<div className="mt-5 grid gap-4 md:grid-cols-3">
-						<div className="rounded-2xl border border-[#e5e0c3] bg-[#FAF7F2] p-4 shadow-sm">
-							<p className="text-[10px] uppercase tracking-wide text-emerald-600">Zona seleccionada</p>
-							<p className="mt-1 text-base font-semibold text-emerald-700">{selectedZone?.name ?? "Sin zona"}</p>
-						</div>
+      setActuators((prev) =>
+        prev.map((item) =>
+          item.id === actuatorId
+            ? {
+                ...item,
+                currentAction:
+                  nextAction,
+                updatedAt:
+                  new Date().toISOString(),
+              }
+            : item
+        )
+      );
 
-						<div className="rounded-2xl border border-[#e5e0c3] bg-[#FAF7F2] p-4 shadow-sm">
-							<p className="text-[10px] uppercase tracking-wide text-emerald-600">Plantillas disponibles</p>
-							<p className="mt-1 text-base font-semibold text-emerald-700">{zoneTemplateCount}</p>
-						</div>
-					</div>
-				</div>
+      // ========================================
+      // AUDITORÍA
+      // ========================================
 
-			<div className="grid gap-4 xl:grid-cols-12">
-				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6 xl:col-span-8">
-				<h2 className="font-heading text-lg font-bold text-emerald-900">Enviar comando</h2>
-				<p className="mt-1 text-xs text-emerald-700/70">Selecciona zona, actuador y acción para ejecutar control remoto.</p>
+      setAuditLogs((prev) => [
+        {
+          id: Date.now(),
+          actuator: actuator.name,
+          action: nextAction,
+          time: new Date().toLocaleTimeString(),
+        },
+        ...prev,
+      ]);
 
-					<div className="mt-4 grid gap-3 md:grid-cols-3">
-						<label className="space-y-1">
-						<span className="text-xs font-semibold uppercase tracking-wide text-emerald-700/70">Zona</span>
-							<select
-								value={targetZoneId}
-								onChange={(e) => setSelectedZoneId(e.target.value)}
-								className="card-input"
-								disabled={loadingZones || !allowOperate || zonesList.length === 0}
-							>
-								{zonesList.length === 0 && <option value="">Sin zonas activas</option>}
-								{zonesList.map((zone) => (
-									<option key={zone.id} value={zone.id}>{zone.name}</option>
-								))}
-							</select>
-						</label>
+      setSendSuccess(
+        `Comando ${nextAction} enviado a ${actuator.name}`
+      );
 
-						<label className="space-y-1">
-						<span className="text-xs font-semibold uppercase tracking-wide text-emerald-700/70">Actuador</span>
-							<input
-								value={actuatorName}
-								onChange={(e) => setActuatorName(e.target.value)}
-								list="quick-actuator-names"
-								className={"card-input " + (isSuggestedName ? "" : "border-rose-200 text-rose-700")}
-								placeholder="Ej. Ventilador"
-								disabled={!allowOperate}
-							/>
-							<datalist id="quick-actuator-names">
-								{suggestedActuators.map((name) => (
-									<option key={name} value={name} />
-								))}
-							</datalist>
-							{!isSuggestedName && actuatorName.trim() && (
-								<p className="text-[11px] font-semibold text-rose-700">
-									Nombre fuera del catálogo sugerido para esta zona.
-								</p>
-							)}
-						</label>
+      // refresco backend
+      setTimeout(async () => {
+        await loadActuators();
+      }, 700);
 
-						<label className="space-y-1">
-						<span className="text-xs font-semibold uppercase tracking-wide text-emerald-700/70">Acción</span>
-							<select
-								value={action}
-								onChange={(e) => setAction(e.target.value)}
-								className="card-input"
-								disabled={!allowOperate}
-							>
-								<option value="ON">ON</option>
-								<option value="OFF">OFF</option>
-							</select>
-						</label>
-					</div>
+      setTimeout(() => {
+        setSendSuccess("");
+      }, 3000);
+    } catch (err) {
+      console.error(err);
 
-					<div className="mt-5 grid gap-2 sm:grid-cols-2">
-						<button
-							onClick={() => sendCommand("ON")}
-							disabled={sending || !allowOperate || !targetZoneId || !actuatorName.trim()}
-							className="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-						>
-							Encender
+      setSendError(
+        getApiErrorMessage(err)
+      );
 
-						</button>
-					</div>
+      setTimeout(() => {
+        setSendError("");
+      }, 5000);
+    } finally {
+      setSendLoading(false);
+    }
+  };
 
-					<label className="mt-3 inline-flex items-center gap-2 rounded-full border border-[#e5e0c3] bg-[#f5f3e7] px-3 py-1.5 text-xs font-semibold text-emerald-900">
-						<input
-							type="checkbox"
-							checked={allowCustomActuator}
-							onChange={(e) => setAllowCustomActuator(e.target.checked)}
-							disabled={!allowOperate}
-						/>
-						Forzar envío con nombre personalizado
-					</label>
+  // =========================================================
+  // CREATE ACTUATOR
+  // =========================================================
 
+  const handleRequestPhoto = async () => {
+    if (!selectedZone?.id) {
+      setPhotoError(
+        "Selecciona una zona para tomar la foto"
+      );
+      setTimeout(() => {
+        setPhotoError("");
+      }, 4000);
+      return;
+    }
 
-					{error && (
-						<div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-							{error}
-						</div>
-					)}
-				</div>
+    setPhotoLoading(true);
+    setPhotoError("");
+    setPhotoSuccess("");
+    setPhotoResult(null);
 
-				<div className="rounded-2xl border border-[#e5e0c3] bg-white/90 p-6 xl:col-span-4 xl:sticky xl:top-24 self-start">
-				<h2 className="font-heading text-lg font-bold text-emerald-900">Centro operativo</h2>
-				<p className="mt-1 text-xs text-emerald-700/70">Acciones rápidas, catálogo por zona y automatizaciones.</p>
-				<p className="mt-1 text-[11px] font-semibold text-emerald-700">Zona actual: {selectedZone?.name ?? "No seleccionada"}</p>
+    try {
+      const response = await actuatorService.requestCameraPhoto(
+        selectedZone.id
+      );
 
+      const resultText =
+        response?.message ||
+        response?.description ||
+        JSON.stringify(response);
 
+      setPhotoSuccess(
+        "Solicitud de foto enviada"
+      );
+      setPhotoResult(resultText);
 
-					<div className="mt-3 card-muted p-3.5">
-						<button
-							onClick={() => setMobileSection((prev) => prev === "quick" ? "" : "quick")}
-							className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-white px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700 lg:hidden"
-						>
-							<span>Acciones rápidas</span>
-							<span>{mobileSection === "quick" ? "Ocultar" : "Mostrar"}</span>
-						</button>
-						<div className={(mobileSection === "quick" ? "block" : "hidden") + " lg:block"}>
-						<div className="mb-2">
-							<input
-								value={quickSearch}
-								onChange={(e) => setQuickSearch(e.target.value)}
-								placeholder="Buscar actuador..."
-								className="card-input text-xs"
-							/>
-						</div>
-						<div className="max-h-[280px] space-y-2 overflow-y-auto pr-1">
-						{filteredSuggestedActuators.map((name) => (
-							<div key={name} className={
-								"card-surface p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md " +
-								   "border-[#e5e0c3] bg-white/90"
-							}>
-								<div className="flex items-center gap-2">
-									   <p className="text-sm font-semibold text-emerald-900">{name}</p>
+      setTimeout(() => {
+        setPhotoSuccess("");
+      }, 5000);
+    } catch (err) {
+      console.error(err);
+      setPhotoError(
+        getApiErrorMessage(err)
+      );
+      setTimeout(() => {
+        setPhotoError("");
+      }, 5000);
+    } finally {
+      setPhotoLoading(false);
+    }
+  };
 
-								</div>
-								<div className="mt-2 grid grid-cols-2 gap-2">
-									<button
-										onClick={() => {
-											setActuatorName(name);
-											setAction("ON");
-											sendCommand("ON", name);
-										}}
-										disabled={sending || !allowOperate || !targetZoneId}
-										className={
-											"rounded-xl border px-2 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 " +
-											   "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-										}
-									>
-										ON
-									</button>
-									<button
-										onClick={() => {
-											setActuatorName(name);
-											setAction("OFF");
-											sendCommand("OFF", name);
-										}}
-										disabled={sending || !allowOperate || !targetZoneId}
-										className={
-											"rounded-xl border px-2 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 " +
-											   "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
-										}
-									>
-										OFF
-									</button>
-								</div>
-							</div>
-						))}
-						{filteredSuggestedActuators.length === 0 && (
-							<div className="rounded-lg border border-zinc-200 bg-white p-3 text-xs text-zinc-700">
-								No hay actuadores que coincidan con la búsqueda.
-							</div>
-						)}
-						</div>
-						</div>
-					</div>
+  const handleCreateActuator = async (
+    e
+  ) => {
+    e.preventDefault();
 
-					<div className="mt-4 card-muted p-3.5">
-						<button
-							onClick={() => setMobileSection((prev) => prev === "operator" ? "" : "operator")}
-							className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-white px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700 lg:hidden"
-						>
-							<span>Modo operador</span>
-							<span>{mobileSection === "operator" ? "Ocultar" : "Mostrar"}</span>
-						</button>
-						<div className={(mobileSection === "operator" ? "block" : "hidden") + " lg:block"}>
-						<p className="text-xs font-bold uppercase tracking-wide text-zinc-500">Modo operador</p>
-						<p className="mt-1 text-[11px] text-zinc-600">Plantillas por zona para ejecutar secuencias en un clic.</p>
-						<div className="mt-2 max-h-[240px] space-y-2 overflow-y-auto pr-1">
-							{zoneTemplates.map((template) => (
-								<div key={template.id} className="card-surface p-3 shadow-sm transition hover:shadow-md">
-									<div className="flex items-center justify-between gap-2">
-										<p className="text-xs font-semibold text-zinc-900">{template.name}</p>
-										{isCustomTemplate(template.id) && (
-											<button
-												onClick={() => deleteTemplate(template.id)}
-												className="rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700"
-											>
-												Borrar
-											</button>
-										)}
-									</div>
-									<p className="mt-0.5 text-[11px] text-zinc-600">{template.description}</p>
-									<p className="mt-0.5 text-[10px] text-zinc-500">Pasos: {template.steps.map((s) => `${s.actuatorName}:${s.action}`).join(" | ")}</p>
-									<button
-										onClick={() => runTemplate(template)}
-										disabled={sending || runningTemplateId !== null || !allowOperate || !targetZoneId}
-										className="mt-2 w-full rounded-xl bg-emerald-600 px-2 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-									>
-										{runningTemplateId === template.id ? "Ejecutando..." : "Ejecutar plantilla"}
-									</button>
-								</div>
-							))}
-						</div>
-						{templateFeedback && (
-							<p className="mt-2 text-[11px] font-semibold text-emerald-700">{templateFeedback}</p>
-						)}
+    setCreateError("");
+    setCreateSuccess("");
+    setCreatingActuator(true);
 
-						<div className="mt-3 rounded-xl border border-zinc-200 bg-white p-2.5">
-							<button
-								onClick={() => setShowTemplateEditor((prev) => !prev)}
-								className="flex w-full items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1.5 text-left text-xs font-bold uppercase tracking-wide text-zinc-700"
-							>
-								<span>Nueva plantilla</span>
-								<span>{showTemplateEditor ? "Ocultar" : "Mostrar"}</span>
-							</button>
+    try {
+      await actuatorService.createActuator({
+        zoneId: Number(
+          newActuatorZone
+        ),
+        name: newActuatorName.trim(),
+        currentAction:
+          newActuatorState,
+      });
 
-							{showTemplateEditor && (
-								<>
-							<input
-								value={newTemplateName}
-								onChange={(e) => setNewTemplateName(e.target.value)}
-								placeholder="Nombre"
-								className="card-input text-xs mt-2"
-							/>
-							<input
-								value={newTemplateDescription}
-								onChange={(e) => setNewTemplateDescription(e.target.value)}
-								placeholder="Descripción"
-								className="card-input text-xs mt-2"
-							/>
-							<div className="mt-2 space-y-1.5">
-								{newTemplateSteps.map((step, idx) => (
-									<div key={`step-${idx}`} className="grid grid-cols-[1fr_auto_auto] gap-1.5">
-										<input
-											value={step.actuatorName}
-											onChange={(e) => updateTemplateStep(idx, "actuatorName", e.target.value)}
-											placeholder="Actuador"
-											className="card-input text-xs"
-										/>
-										<select
-											value={step.action}
-											onChange={(e) => updateTemplateStep(idx, "action", e.target.value)}
-											className="card-input text-xs"
-										>
-											<option value="ON">ON</option>
-											<option value="OFF">OFF</option>
-										</select>
-										<button
-											onClick={() => removeTemplateStep(idx)}
-											className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1.5 text-[10px] font-semibold text-rose-700"
-										>
-											X
-										</button>
-									</div>
-								))}
-							</div>
-							<div className="mt-2 flex gap-1.5">
-								<button
-									onClick={addTemplateStep}
-									className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-[10px] font-semibold text-zinc-700 transition hover:bg-zinc-100"
-								>
-									+ Paso
-								</button>
-								<button
-									onClick={createTemplate}
-									disabled={!allowOperate || !targetZoneId}
-									className="rounded-lg bg-emerald-600 px-2 py-1.5 text-[10px] font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-								>
-									Guardar plantilla
-								</button>
-							</div>
-								</>
-							)}
-						</div>
-						</div>
-					</div>
-				</div>
-			</div>
+      setCreateSuccess(
+        "Actuador creado correctamente"
+      );
 
+      setNewActuatorZone("");
+      setNewActuatorName("");
+      setNewActuatorState("OFF");
 
+      await loadActuators();
 
-			<div className="card-surface">
-				<div className="flex flex-wrap items-center justify-between gap-2">
-							<h2 className="font-heading text-lg font-bold text-zinc-900">Historial local de comandos</h2>
-					<div className="flex flex-wrap items-center gap-2">
-						<div className="flex items-center gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-1 text-xs">
-						<button
-							onClick={() => setHistoryFilter("ALL")}
-							className={(historyFilter === "ALL" ? "bg-emerald-600 text-white " : "text-zinc-700 ") + "rounded-lg px-2.5 py-1.5 font-semibold transition"}
-						>
-							Todos
-						</button>
-						<button
-							onClick={() => setHistoryFilter("SENT")}
-							className={(historyFilter === "SENT" ? "bg-emerald-600 text-white " : "text-zinc-700 ") + "rounded-lg px-2.5 py-1.5 font-semibold transition"}
-						>
-							Enviados
-						</button>
-						<button
-							onClick={() => setHistoryFilter("ERROR")}
-							className={(historyFilter === "ERROR" ? "bg-rose-600 text-white " : "text-zinc-700 ") + "rounded-lg px-2.5 py-1.5 font-semibold transition"}
-						>
-							Error
-						</button>
-						</div>
-						<select
-							value={historySort}
-							onChange={(e) => setHistorySort(e.target.value)}
-							className="rounded-xl border border-zinc-300 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700"
-						>
-							<option value="DATE_DESC">Recientes</option>
-							<option value="DATE_ASC">Antiguos</option>
-							<option value="ACTUATOR_ASC">Actuador A-Z</option>
-							<option value="STATUS">Estado</option>
-						</select>
-						<button
-							onClick={exportHistoryCsv}
-							disabled={displayedHistory.length === 0}
-							className="rounded-xl border border-zinc-300 bg-zinc-50 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
-						>
-							Exportar CSV
-						</button>
-						<button
-							onClick={retryAllFailed}
-							disabled={failedVisibleCount === 0 || retryingAll || sending}
-							className="rounded-xl bg-rose-600 px-2.5 py-1.5 text-xs font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-50"
-						>
-							{retryingAll ? "Reintentando..." : `Reintentar fallidos (${failedVisibleCount})`}
-						</button>
-					</div>
-				</div>
-						<p className="mt-1 text-xs text-zinc-600">Registro de la sesión actual (éxitos y fallos).</p>
+      setTimeout(() => {
+        setCreateSuccess("");
+      }, 3000);
+    } catch (err) {
+      console.error(
+        "Error creando actuador:",
+        err
+      );
 
-				{history.length === 0 ? (
-							<div className="mt-3 rounded-xl border border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-600">Aún no has enviado comandos.</div>
-				) : (
-							<div className="mt-3 overflow-x-auto rounded-2xl border border-zinc-200">
-						<table className="min-w-full text-left text-sm">
-							<thead>
-								<tr className="border-b border-zinc-200 bg-zinc-50 text-xs uppercase tracking-wide text-zinc-700">
-									<th className="px-2 py-2">Hora</th>
-									<th className="px-2 py-2">Zona</th>
-									<th className="px-2 py-2">Actuador</th>
-									<th className="px-2 py-2">Acción</th>
-									<th className="px-2 py-2">Estado</th>
-									<th className="px-2 py-2">Detalle</th>
-									<th className="px-2 py-2">Reintento</th>
-								</tr>
-							</thead>
-							<tbody>
-								{displayedHistory.map((item) => (
-									<tr key={item.id} className="border-b border-zinc-200 odd:bg-white even:bg-zinc-50 transition hover:bg-zinc-100">
-										<td className="px-2 py-2 text-zinc-600">
-											{new Date(item.sentAt).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-										</td>
-										<td className="px-2 py-2">{item.zoneName}</td>
-										<td className="px-2 py-2">{item.actuatorName}</td>
-										<td className="px-2 py-2">
-											<span className={"rounded-full px-2 py-0.5 text-[11px] font-bold " + (item.action === "ON" ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700")}>{item.action}</span>
-										</td>
-										<td className="px-2 py-2">
-											<span className={"rounded px-2 py-0.5 text-xs font-semibold " + (item.ok ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700")}>
-												{item.ok ? "Enviado" : "Error"}
-											</span>
-										</td>
-										<td className="max-w-[260px] truncate px-2 py-2 text-xs text-zinc-600" title={item.message ?? "-"}>{item.message ?? "-"}</td>
-										<td className="px-2 py-2">
-											{!item.ok ? (
-												<button
-													onClick={() => retryHistoryItem(item)}
-													disabled={sending || retryingHistoryId === item.id}
-													className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] font-semibold text-rose-700 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
-												>
-													{retryingHistoryId === item.id ? "Reintentando..." : "Reintentar"}
-												</button>
-											) : (
-												<span className="text-xs text-zinc-500">-</span>
-											)}
-										</td>
-									</tr>
-								))}
-								{displayedHistory.length === 0 && (
-									<tr>
-										<td className="px-2 py-3 text-xs text-zinc-600" colSpan={7}>
-											No hay registros para el filtro seleccionado.
-										</td>
-									</tr>
-								)}
-							</tbody>
-						</table>
-					</div>
-				)}
-			</div>
-		</div>
-	);
+      setCreateError(
+        getApiErrorMessage(err)
+      );
+    } finally {
+      setCreatingActuator(false);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-8">
+      {/* ================================================= */}
+      {/* HEADER */}
+      {/* ================================================= */}
+
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-emerald-900 tracking-tight flex items-center gap-3">
+            <FiCpu
+              className="text-emerald-500"
+              size={28}
+            />
+            Control de actuadores
+          </h1>
+
+          <div className="flex flex-wrap items-center gap-4 mt-3">
+            <span className="inline-flex items-center gap-2 text-sm text-zinc-600 font-medium">
+              <FiWifi
+                className={
+                  mqttConnected
+                    ? "text-emerald-500"
+                    : "text-rose-400 animate-pulse"
+                }
+              />
+
+              MQTT{" "}
+              {mqttConnected
+                ? "conectado"
+                : "desconectado"}
+            </span>
+
+            <span className="inline-flex items-center gap-2 text-sm text-zinc-600 font-medium">
+              Zona:
+              <span className="font-bold text-emerald-700">
+                {selectedZone?.name ??
+                  "Sin zona"}
+              </span>
+            </span>
+
+            <span className="inline-flex items-center gap-2 text-sm text-zinc-600 font-medium">
+              <FiZap className="text-emerald-500" />
+              {loadingActuators
+                ? "-"
+                : actuators.length}{" "}
+              actuadores
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <select
+            value={targetZoneId}
+            onChange={(e) =>
+              setSelectedZoneId(
+                e.target.value
+              )
+            }
+            className="rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-700 shadow-sm focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all"
+            disabled={
+              loadingZones ||
+              zonesList.length === 0
+            }
+          >
+            {zonesList.length === 0 && (
+              <option value="">
+                Sin zonas activas
+              </option>
+            )}
+
+            {zonesList.map((zone) => (
+              <option
+                key={zone.id}
+                value={zone.id}
+              >
+                {zone.name}
+              </option>
+            ))}
+          </select>
+
+          <button
+            type="button"
+            onClick={handleRequestPhoto}
+            disabled={
+              photoLoading ||
+              !selectedZone?.id
+            }
+            className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 text-white px-4 py-3 text-sm font-semibold shadow-sm transition-all hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <FiCamera size={18} />
+            {photoLoading
+              ? "Solicitando..."
+              : "Tomar foto"}
+          </button>
+        </div>
+      </div>
+
+      {/* ================================================= */}
+      {/* GRID */}
+      {/* ================================================= */}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* ================================================= */}
+        {/* FORM CREAR */}
+        {/* ================================================= */}
+
+        {allowEdit && (
+          <motion.div
+            className="rounded-3xl bg-white border border-zinc-200 shadow-xl p-7 h-fit"
+            initial={{
+              opacity: 0,
+              y: 20,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+          >
+            <h2 className="text-xl font-bold text-emerald-900 flex items-center gap-2 mb-6">
+              <FiPlus className="text-emerald-500" />
+              Nuevo actuador
+            </h2>
+
+            <form
+              onSubmit={
+                handleCreateActuator
+              }
+              className="flex flex-col gap-4"
+            >
+              <div>
+                <label className="text-sm font-semibold text-zinc-700 mb-1 block">
+                  Zona
+                </label>
+
+                <select
+                  value={newActuatorZone}
+                  onChange={(e) =>
+                    setNewActuatorZone(
+                      e.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-400 outline-none"
+                  required
+                >
+                  <option value="">
+                    Selecciona zona
+                  </option>
+
+                  {zonesList.map((z) => (
+                    <option
+                      key={z.id}
+                      value={z.id}
+                    >
+                      {z.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-zinc-700 mb-1 block">
+                  Nombre
+                </label>
+
+                <input
+                  value={newActuatorName}
+                  onChange={(e) =>
+                    setNewActuatorName(
+                      e.target.value
+                    )
+                  }
+                  placeholder="Ej. BOMBA"
+                  className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-400 outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-zinc-700 mb-1 block">
+                  Estado inicial
+                </label>
+
+                <select
+                  value={newActuatorState}
+                  onChange={(e) =>
+                    setNewActuatorState(
+                      e.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-zinc-200 px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-400 outline-none"
+                >
+                  <option value="OFF">
+                    OFF
+                  </option>
+
+                  <option value="ON">
+                    ON
+                  </option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                disabled={
+                  creatingActuator
+                }
+                className="mt-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 transition-all text-white font-semibold py-3 shadow-lg disabled:opacity-50"
+              >
+                {creatingActuator
+                  ? "Creando..."
+                  : "Crear actuador"}
+              </button>
+
+              {createError && (
+                <div className="rounded-xl bg-rose-100 text-rose-700 px-4 py-3 text-sm">
+                  {createError}
+                </div>
+              )}
+
+              {createSuccess && (
+                <div className="rounded-xl bg-emerald-100 text-emerald-700 px-4 py-3 text-sm">
+                  {createSuccess}
+                </div>
+              )}
+            </form>
+          </motion.div>
+        )}
+
+        {/* ================================================= */}
+        {/* ACTUADORES */}
+        {/* ================================================= */}
+
+        <motion.div
+          className={`rounded-3xl bg-white border border-zinc-200 shadow-xl p-7 flex flex-col gap-6 ${
+            allowEdit
+              ? "lg:col-span-2"
+              : "lg:col-span-3"
+          }`}
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+        >
+          {/* TOP */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-100 pb-5">
+            <h2 className="text-xl font-bold text-emerald-900 flex items-center gap-2">
+              <FiCpu className="text-emerald-500" />
+              Actuadores registrados
+            </h2>
+
+            <div className="min-h-[36px] space-y-2">
+              <AnimatePresence>
+                {sendError && (
+                  <motion.div
+                    key="error"
+                    initial={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    className="rounded-xl bg-rose-100 text-rose-700 px-4 py-2 text-sm font-medium"
+                  >
+                    {sendError}
+                  </motion.div>
+                )}
+
+                {sendSuccess && (
+                  <motion.div
+                    key="success"
+                    initial={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    className="rounded-xl bg-emerald-100 text-emerald-700 px-4 py-2 text-sm font-medium"
+                  >
+                    {sendSuccess}
+                  </motion.div>
+                )}
+
+                {photoError && (
+                  <motion.div
+                    key="photo-error"
+                    initial={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    className="rounded-xl bg-rose-100 text-rose-700 px-4 py-2 text-sm font-medium"
+                  >
+                    {photoError}
+                  </motion.div>
+                )}
+
+                {photoSuccess && (
+                  <motion.div
+                    key="photo-success"
+                    initial={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    className="rounded-xl bg-emerald-100 text-emerald-700 px-4 py-2 text-sm font-medium"
+                  >
+                    {photoSuccess}
+                  </motion.div>
+                )}
+
+                {photoResult && (
+                  <motion.div
+                    key="photo-result"
+                    initial={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: 20,
+                    }}
+                    className="rounded-xl bg-zinc-50 text-zinc-700 px-4 py-2 text-sm font-medium"
+                  >
+                    <span className="font-semibold">
+                      Resultado:
+                    </span>{" "}
+                    {photoResult}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* GRID */}
+          {loadingActuators ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {[...Array(4)].map(
+                (_, i) => (
+                  <SkeletonCard
+                    key={i}
+                  />
+                )
+              )}
+            </div>
+          ) : actuators.length === 0 ? (
+            <EmptyState
+              icon={
+                <FiAlertTriangle
+                  size={40}
+                />
+              }
+              title="No hay actuadores"
+              description="Crea uno para comenzar."
+              cta={null}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <AnimatePresence>
+                {actuators.map((act) => (
+                  <ActuatorCard
+                    key={act.id}
+                    actuator={act}
+                    onToggle={
+                      handleToggle
+                    }
+                    loading={
+                      sendLoading
+                    }
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* ================================================= */}
+          {/* AUDITORÍA */}
+          {/* ================================================= */}
+
+          <div className="mt-6 border-t border-zinc-100 pt-6">
+            <div className="flex items-center gap-2 mb-4">
+              <FiActivity className="text-emerald-500" />
+              <h3 className="text-lg font-bold text-zinc-800">
+                Auditoría reciente
+              </h3>
+            </div>
+
+            {auditLogs.length === 0 ? (
+              <div className="text-sm text-zinc-500">
+                Aún no hay registros.
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 max-h-[280px] overflow-y-auto pr-2">
+                {auditLogs.map((log) => (
+                  <div
+                    key={log.id}
+                    className="flex items-center justify-between rounded-2xl border border-zinc-100 bg-zinc-50 px-4 py-3"
+                  >
+                    <div>
+                      <div className="text-sm font-semibold text-zinc-800">
+                        {log.actuator}
+                      </div>
+
+                      <div className="text-xs text-zinc-500 mt-1">
+                        Cambio de estado
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          log.action ===
+                          "ON"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-zinc-200 text-zinc-700"
+                        }`}
+                      >
+                        {log.action}
+                      </span>
+
+                      <span className="text-xs text-zinc-400">
+                        {log.time}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
 }
