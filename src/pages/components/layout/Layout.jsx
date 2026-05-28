@@ -38,19 +38,20 @@ export default function Layout() {
 	};
 
 	const title = useMemo(() => {
-		const route = location.pathname.split("/").filter(Boolean).at(0) ?? "panel";
-		const labels = {
-			panel: "Dashboard",
-			zonas: "Zonas",
-			cultivos: "Cultivos",
-			umbrales: "Umbrales",
-			alertas: "Alertas",
-			actuadores: "Actuadores",
-			inventario: "Inventario",
-			admin: "Administración",
-			backoffice: "Backoffice"
-		};
-		return labels[route] ?? "Panel";
+		   const route = location.pathname.split("/").filter(Boolean).at(0) ?? "panel";
+		   const labels = {
+			   panel: "Dashboard",
+			   zonas: "Zonas",
+			   cultivos: "Cultivos",
+			   umbrales: "Umbrales",
+			   alertas: "Alertas",
+			   actuadores: "Actuadores",
+			   inventario: "Inventario",
+			   admin: "Administración",
+			   backoffice: "Backoffice",
+			   reportes: "Reportes"
+		   };
+		   return labels[route] ?? "Reportes";
 	}, [location.pathname]);
 
 	return (

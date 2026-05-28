@@ -55,7 +55,7 @@ export default function ReportForm() {
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, type: 'spring', bounce: 0.18 }}
-      className="w-full max-w-md p-6 md:p-10 shadow-lg rounded-3xl border border-[var(--secondary)] bg-[#fffdf5]/95 flex flex-col gap-2 items-center"
+      className="w-full max-w-md p-6 md:p-10 shadow-lg rounded-3xl border border-[var(--secondary)] bg-white flex flex-col gap-2 items-center"
       style={{ boxSizing: 'border-box' }}
     >
       <PdfIcon />
@@ -68,7 +68,7 @@ export default function ReportForm() {
         <select
           value={type}
           onChange={e => setType(e.target.value)}
-          className="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--input-bg)] focus:ring-2 focus:ring-[var(--ring)]"
+          className="w-full border border-[var(--border)] rounded-lg p-2 bg-[#f7f2df] focus:ring-2 focus:ring-[var(--ring)]"
         >
           {REPORT_TYPES.map(opt => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -82,7 +82,7 @@ export default function ReportForm() {
             type="datetime-local"
             value={from}
             onChange={e => setFrom(e.target.value)}
-            className="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--input-bg)] focus:ring-2 focus:ring-[var(--ring)]"
+            className="w-full border border-[var(--border)] rounded-lg p-2 bg-[#f7f2df] focus:ring-2 focus:ring-[var(--ring)]"
             required
           />
         </div>
@@ -92,7 +92,7 @@ export default function ReportForm() {
             type="datetime-local"
             value={to}
             onChange={e => setTo(e.target.value)}
-            className="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--input-bg)] focus:ring-2 focus:ring-[var(--ring)]"
+            className="w-full border border-[var(--border)] rounded-lg p-2 bg-[#f7f2df] focus:ring-2 focus:ring-[var(--ring)]"
             required
           />
         </div>
@@ -103,7 +103,7 @@ export default function ReportForm() {
           <select
             value={zoneId}
             onChange={e => setZoneId(e.target.value)}
-            className="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--input-bg)] focus:ring-2 focus:ring-[var(--ring)]"
+            className="w-full border border-[var(--border)] rounded-lg p-2 bg-[#f7f2df] focus:ring-2 focus:ring-[var(--ring)]"
             disabled={loadingZones}
           >
             <option value="">Todas las zonas</option>
@@ -116,7 +116,7 @@ export default function ReportForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-2 rounded-lg font-semibold bg-[var(--primary)] text-white hover:bg-green-800 transition-colors mt-2 disabled:opacity-60 shadow-md"
+        className="w-full py-2 rounded-lg font-semibold bg-[#2f7f3c] text-white hover:bg-green-800 transition-colors mt-2 disabled:opacity-60 shadow-md"
         style={{ minWidth: 0 }}
       >
         {loading ? 'Generando...' : 'Descargar PDF'}
